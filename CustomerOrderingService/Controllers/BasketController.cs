@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CustomerOrderingService.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -27,7 +28,7 @@ namespace CustomerOrderingService.Controllers
 
         //Add item to basket
         [HttpPost]
-        public Task<IActionResult> Create(int customerId, int productId)
+        public Task<IActionResult> Create(NewItemDto newItem)
         {
             throw new NotImplementedException();
         }
