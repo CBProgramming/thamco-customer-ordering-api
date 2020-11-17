@@ -1,29 +1,30 @@
-﻿using OrderRepository.Data;
+﻿using Order.Repository.Data;
+using Order.Repository.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderRepository
+namespace Order.Repository
 {
     public interface IOrderRepository
     {
-        public Task<bool> AddProduct(int customerId, ProductEFModel product)
+        public Task<bool> AddBasketItem(BasketItemModel newItem)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> EditProduct(int customerId, int productId, int quantity)
+        public Task<bool> EditBasketItem(BasketItemModel editedItem)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteProduct(int customerId, int productId)
+        public Task<bool> DeleteBasketItem(int customerId, int productId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IList<ProductEFModel>> GetBasket(int customerId)
+        public Task<IList<BasketProductsModel>> GetBasket(int customerId)
         {
             throw new NotImplementedException();
         }

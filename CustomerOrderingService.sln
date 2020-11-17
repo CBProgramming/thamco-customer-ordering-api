@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29318.209
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerOrderingService", "CustomerOrderingService\CustomerOrderingService.csproj", "{974B371F-858D-40A8-A349-6687736917DD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderRepository", "OrderRepository\OrderRepository.csproj", "{E21691F1-D607-47A8-A0A7-A9978242724A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Order.Repository", "OrderRepository\Order.Repository.csproj", "{E21691F1-D607-47A8-A0A7-A9978242724A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderData", "OrderData\OrderData.csproj", "{A9B44BFC-F864-4884-9F8E-93F4C3F97B3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderData", "OrderData\OrderData.csproj", "{A9B44BFC-F864-4884-9F8E-93F4C3F97B3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

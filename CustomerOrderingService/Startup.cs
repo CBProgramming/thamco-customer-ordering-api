@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrderData;
+using Order.Repository;
+using AutoMapper;
 
 namespace CustomerOrderingService
 {
@@ -28,12 +30,13 @@ namespace CustomerOrderingService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
+            services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<OrderDb>(options =>
             {
                 var cs = Configuration.GetConnectionString("OrderConnection");
                 options.UseSqlServer(cs);
             });
+            services.AddScoped<IOrderRepository, OrderRepository>();
 
         }
 

@@ -32,6 +32,14 @@ namespace OrderData
 
             builder.Entity<OrderedItem>()
                     .HasKey(b => new { b.OrderId, b.ProductId });
+
+            builder.Entity<Customer>()
+                .Property(c => c.Id)
+                .ValueGeneratedNever();
+
+            builder.Entity<Product>()
+                .Property(c => c.Id)
+                .ValueGeneratedNever();
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace CustomerOrderingService.Data
+namespace Order.Repository.Data
 {
-    public class ProductModel
+    public class ProductEFModel
     {
         public int ProductId { get; set; }
 
