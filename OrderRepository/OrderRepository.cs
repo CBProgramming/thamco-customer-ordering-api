@@ -66,26 +66,6 @@ namespace Order.Repository
             }
         }
 
-        private async Task<bool> EditItemInBasket(BasketItemModel basketItemModel)
-        {
-            try
-            {
-                _context.Update(_mapper.Map<BasketItem>(basketItemModel));
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return false;
-            }
-        }
-
-        private async Task<bool> IsItemInBasket(int customerId, int productId)
-        {
-            return _context.BasketItems.SingleOrDefault(
-                b => b.CustomerId == customerId && b.ProductId == productId) != null;
-        }
-
         public async Task<bool> DeleteBasketItem(int customerId, int productId)
         {
             try
@@ -114,7 +94,7 @@ namespace Order.Repository
                 {
                     ProductId = product.ProductId,
                     ProductName = product.Name,
-                    Price = product.Value,
+                    Price = product.Price,
                     Quantity = basketItem.Quantity
                 });
             return basketItems == null ? null : basketItems.ToList();
@@ -150,7 +130,7 @@ namespace Order.Repository
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception e)
+            catch (DbUpdateConcurrencyException)
             {
                 return false;
             }
@@ -162,6 +142,85 @@ namespace Order.Repository
             {
                 _context.Update(_mapper.Map<Product>(product));
                 await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> EditItemInBasket(BasketItemModel basketItemModel)
+        {
+            try
+            {
+                _context.Update(_mapper.Map<BasketItem>(basketItemModel));
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> IsItemInBasket(int customerId, int productId)
+        {
+            return _context.BasketItems.SingleOrDefault(
+                b => b.CustomerId == customerId && b.ProductId == productId) != null;
+        }
+
+        public async Task<CustomerEFModel> GetCustomer(int customerId)
+        {
+            return _mapper.Map<CustomerEFModel>(_context.Customers.SingleOrDefault(c => c.CustomerId == customerId));
+        }
+
+        public async Task<IList<OrderEFModel>> GetCustomerOrders(int customerId)
+        {
+            return _mapper.Map<List<OrderEFModel>>(_context.Orders.Where(o => o.CustomerId == customerId));
+        }
+
+        public async Task<IList<OrderedItemEFModel>> GetOrderItems(int orderId)
+        {
+            return _mapper.Map<List<OrderedItemEFModel>>(_context.OrderedItems.Where(o => o.OrderId == orderId));
+        }
+
+        public async Task<bool> CreateOrder(FinalisedOrderEFModel finalisedOrder)
+        {
+            try
+            {
+                var order = _mapper.Map<OrderData.Order>(finalisedOrder);
+                _context.Add(order);
+                foreach (OrderedItemEFModel orderedItem in finalisedOrder.OrderedItems)
+                {
+                    var item = new OrderedItem
+                    {
+                        Order = order,
+                        ProductId = orderedItem.ProductId,
+                        Quantity = orderedItem.Quantity,
+                        Price = orderedItem.Price,
+                        Name = orderedItem.Name
+                    };
+                    _context.Add(item);
+                }
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ClearBasket(int customerId)
+        {
+            try
+            {
+                foreach (BasketItem item in _context.BasketItems.Where(b => b.CustomerId == customerId))
+                {
+                    _context.BasketItems.Remove(item);
+                    await _context.SaveChangesAsync();
+                }
                 return true;
             }
             catch (DbUpdateConcurrencyException)

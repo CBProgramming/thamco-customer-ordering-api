@@ -6,7 +6,7 @@ namespace OrderData
 {
     public class Customer
     {
-        public int Id { get; set; }
+        public int CustomerId { get; set; }
 
         public string FirstName { get; set; }
 

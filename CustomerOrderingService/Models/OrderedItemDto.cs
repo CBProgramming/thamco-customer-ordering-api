@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace OrderData
+namespace CustomerOrderingService.Models
 {
-    public class OrderedItem
+    public class OrderedItemDto
     {
         public int OrderId { get; set; }
 
-        public Order Order { get; set; }
-
         public int ProductId { get; set; }
-
-        public Product Product { get; set; }
 
         public int Quantity { get; set; }
 

@@ -33,5 +33,15 @@ namespace Order.Repository
         {
             throw new NotImplementedException();
         }
+
+        public Task<CustomerEFModel> GetCustomer(int customerId);
+
+        public Task<IList<OrderEFModel>> GetCustomerOrders(int customerId);
+
+        public Task<IList<OrderedItemEFModel>> GetOrderItems(int orderId);
+
+        public Task<bool> CreateOrder(FinalisedOrderEFModel order);
+
+        public Task<bool> ClearBasket(int customerId);
     }
 }

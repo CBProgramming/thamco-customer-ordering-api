@@ -34,11 +34,11 @@ namespace OrderData
                     .HasKey(b => new { b.OrderId, b.ProductId });
 
             builder.Entity<Customer>()
-                .Property(c => c.Id)
+                .Property(c => c.CustomerId)
                 .ValueGeneratedNever();
 
             builder.Entity<Product>()
-                .Property(c => c.Id)
+                .Property(c => c.ProductId)
                 .ValueGeneratedNever();
         }
     }
