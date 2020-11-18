@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Order.Repository;
 using Order.Repository.Models;
+using StaffProduct.Facade;
+using StaffProduct.Facade.Models;
 
 namespace CustomerOrderingService.Controllers
 {
@@ -19,12 +21,15 @@ namespace CustomerOrderingService.Controllers
         private readonly ILogger<OrderController> _logger;
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
+        private readonly IStaffProductFacade _staffProductFacade;
+        
 
-        public OrderController(ILogger<OrderController> logger, IOrderRepository orderRepository, IMapper mapper)
+        public OrderController(ILogger<OrderController> logger, IOrderRepository orderRepository, IMapper mapper, IStaffProductFacade staffProductFacade)
         {
             _logger = logger;
             _orderRepository = orderRepository;
             _mapper = mapper;
+            _staffProductFacade = staffProductFacade;
         }
 
         [HttpGet]
@@ -48,12 +53,22 @@ namespace CustomerOrderingService.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(FinalisedOrderDto order)
         {
+            //how is stock reduced in customer product service
+            //need to send the order to invoice service
             if (await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderEFModel>(order)))
             {
-
-                _orderRepository.ClearBasket(order.CustomerId);
+                var stockReductionList = new List<StockReductionDto>();
+                foreach (OrderedItemDto item in order.OrderedItems)
+                {
+                    stockReductionList.Add(_mapper.Map<StockReductionDto>(item));
+                }
+                if(await _staffProductFacade.UpdateStock(stockReductionList))
+                {
+                    await _orderRepository.ClearBasket(order.CustomerId);
+                    return Ok();
+                }
             }
-
+            return NotFound();
         }
 
         //could also have edit order and cancel order however not in brief, implement later if time

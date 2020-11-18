@@ -4,6 +4,7 @@ using CustomerOrderingService.Models;
 using Order.Repository.Data;
 using Order.Repository.Models;
 using OrderData;
+using StaffProduct.Facade.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,8 @@ namespace CustomerOrderingService
             CreateMap<OrderedItemEFModel, OrderedItem>();
             CreateMap<OrderedItemDto, OrderedItemEFModel>();
             CreateMap<OrderedItemEFModel, OrderedItemDto>();
+            CreateMap<StockReductionDto, OrderedItemDto>();
+            CreateMap<OrderedItemDto, StockReductionDto>();
         }
     }
 }

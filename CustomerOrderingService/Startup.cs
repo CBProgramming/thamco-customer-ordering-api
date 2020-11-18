@@ -14,6 +14,9 @@ using Microsoft.Extensions.Logging;
 using OrderData;
 using Order.Repository;
 using AutoMapper;
+using StaffProduct.Facade;
+using Polly;
+using System.Net.Http;
 
 namespace CustomerOrderingService
 {
@@ -31,12 +34,23 @@ namespace CustomerOrderingService
         {
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
-            services.AddDbContext<OrderDb>(options =>
-            {
-                var cs = Configuration.GetConnectionString("OrderConnection");
-                options.UseSqlServer(cs);
-            });
+            services.AddDbContext<OrderDb>(options => options.UseSqlServer(
+                 Configuration.GetConnectionString("OrderConnection"), optionsBuilder =>
+                 {
+                     optionsBuilder.EnableRetryOnFailure(10, TimeSpan.FromSeconds(10), null);
+                 }
+                ));
+            services.AddHttpClient("StaffProductAPI", client =>
+                {
+                    client.BaseAddress = new Uri("https://something");
+                })
+                    .AddTransientHttpErrorPolicy(p => p.OrResult(
+                        msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IStaffProductFacade, StaffProductFacade>();
+
 
         }
 

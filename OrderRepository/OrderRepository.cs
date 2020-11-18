@@ -12,10 +12,10 @@ namespace Order.Repository
 {
     public class OrderRepository : IOrderRepository
     {
-        private readonly OrderDb _context;
+        private readonly DbContext _context;
         private readonly IMapper _mapper;
 
-        public OrderRepository(OrderDb context, IMapper mapper)
+        public OrderRepository(DbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
