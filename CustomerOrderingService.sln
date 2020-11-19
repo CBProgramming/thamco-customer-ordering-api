@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Order.Repository", "OrderRe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderData", "OrderData\OrderData.csproj", "{A9B44BFC-F864-4884-9F8E-93F4C3F97B3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaffProduct.Facade", "StaffProductFacade\StaffProduct.Facade.csproj", "{0EA2499C-0789-4D91-950D-92CCBA4E7ECE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StaffProduct.Facade", "StaffProductFacade\StaffProduct.Facade.csproj", "{0EA2499C-0789-4D91-950D-92CCBA4E7ECE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerOrderingService.UnitTests", "CustomerOrderingService.UnitTests\CustomerOrderingService.UnitTests.csproj", "{271A8924-1706-4594-B5F7-F74817D89032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerOrderingService.UnitTests", "CustomerOrderingService.UnitTests\CustomerOrderingService.UnitTests.csproj", "{271A8924-1706-4594-B5F7-F74817D89032}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaffProductServicePlaceholder", "StaffProductServicePlaceholder\StaffProductServicePlaceholder.csproj", "{54FE7252-1FF7-489B-AEA9-3222BE3F0E66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{271A8924-1706-4594-B5F7-F74817D89032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{271A8924-1706-4594-B5F7-F74817D89032}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{271A8924-1706-4594-B5F7-F74817D89032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54FE7252-1FF7-489B-AEA9-3222BE3F0E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54FE7252-1FF7-489B-AEA9-3222BE3F0E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54FE7252-1FF7-489B-AEA9-3222BE3F0E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54FE7252-1FF7-489B-AEA9-3222BE3F0E66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

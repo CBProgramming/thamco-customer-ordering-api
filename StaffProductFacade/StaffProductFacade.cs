@@ -19,7 +19,7 @@ namespace StaffProduct.Facade
         public async Task<bool> UpdateStock(List<StockReductionDto> stockReductions)
         {
             var httpClient = _httpClientFactory.CreateClient("StaffProductAPI");
-            string uri = "/api/Stock/";
+            string uri = "/api/Products/";
             if((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(uri,stockReductions)).IsSuccessStatusCode)
             {
                 return true;
