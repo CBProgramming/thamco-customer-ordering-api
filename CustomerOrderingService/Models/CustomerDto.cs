@@ -7,7 +7,7 @@ namespace CustomerOrderingService.Models
 {
     public class CustomerDto
     {
-        public int Id { get; set; }
+        public int CustomerId { get; set; }
 
         public string Name { get; set; }
     }

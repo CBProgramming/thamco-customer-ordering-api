@@ -43,5 +43,15 @@ namespace Order.Repository
         public Task<bool> CreateOrder(FinalisedOrderEFModel order);
 
         public Task<bool> ClearBasket(int customerId);
+
+        public bool CustomerExists(int customerId);
+
+        public bool ProductsExist(List<ProductEFModel> products);
+
+        public bool ProductExists(ProductEFModel product);
+
+        public bool ProductsInStock(List<ProductEFModel> products);
+
+        public bool ProductInStock(ProductEFModel product);
     }
 }

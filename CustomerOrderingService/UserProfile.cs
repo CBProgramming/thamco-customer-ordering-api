@@ -23,6 +23,8 @@ namespace CustomerOrderingService
             CreateMap<BasketItemModel, ProductEFModel>();
             CreateMap<ProductEFModel, BasketItemModel>();
             CreateMap<ProductEFModel, Product>();
+            CreateMap<OrderedItemDto, ProductEFModel>();
+            CreateMap<ProductEFModel, OrderedItemDto>();
             CreateMap<Product, BasketItemModel>();
             CreateMap<CustomerDto, CustomerEFModel>();
             CreateMap<CustomerEFModel, CustomerDto>();
@@ -38,6 +40,8 @@ namespace CustomerOrderingService
             CreateMap<OrderedItemEFModel, OrderedItemDto>();
             CreateMap<StockReductionDto, OrderedItemDto>();
             CreateMap<OrderedItemDto, StockReductionDto>();
+            CreateMap<FinalisedOrderDto, FinalisedOrderEFModel>();
+            CreateMap<FinalisedOrderEFModel, FinalisedOrderDto>();
         }
     }
 }

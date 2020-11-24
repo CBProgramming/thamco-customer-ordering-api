@@ -228,5 +228,44 @@ namespace Order.Repository
                 return false;
             }
         }
+
+        public bool CustomerExists(int customerId)
+        {
+            return _context.Customers.Any(c => c.CustomerId == customerId);
+        }
+
+        public bool ProductsExist(List<ProductEFModel> products)
+        {
+            foreach (ProductEFModel product in products)
+            {
+                if (!ProductExists(product))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool ProductExists(ProductEFModel product)
+        {
+            return _context.Products.Any(p => p.ProductId == product.ProductId);
+        }
+
+        public bool ProductsInStock(List<ProductEFModel> products)
+        {
+            foreach (ProductEFModel product in products)
+            {
+                if (!ProductInStock(product))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool ProductInStock(ProductEFModel product)
+        {
+            return product.Quantity <= _mapper.Map<ProductEFModel>(_context.Products.Any(p => p.ProductId == product.ProductId)).Quantity;
+        }
     }
 }
