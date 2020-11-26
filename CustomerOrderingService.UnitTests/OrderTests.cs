@@ -18,74 +18,142 @@ namespace CustomerOrderingService.UnitTests
 {
     public class OrderTests
     {
-        [Fact]
-        public async Task GetOrderHistory_ShouldOkObject()
+        private List<OrderEFModel> setupStandardOrderEFModels()
         {
-            //Arrange
-            var customer = new CustomerEFModel
+            return new List<OrderEFModel>()
+            {
+                new OrderEFModel {OrderId = 1, Date = new DateTime(2020,11,01), Total = 10.99 },
+                new OrderEFModel {OrderId = 2, Date = new DateTime(2020,11,02), Total = 20.99 }
+            };
+        }
+
+        private CustomerEFModel setupStandardCustomer()
+        {
+            return new CustomerEFModel
             {
                 CustomerId = 1,
                 Name = "Fake Name"
             };
-            var orders = new List<OrderEFModel>()
-            {
-                new OrderEFModel {Id = 1, OrderDate = new DateTime(2020,11,01), Total = 10.99 },
-                new OrderEFModel {Id = 2, OrderDate = new DateTime(2020,11,02), Total = 20.99 }
-            };
-            var orderedItems = new List<OrderedItemEFModel>()
+        }
+
+        private List<OrderedItemEFModel> setupStandardOrderedItemEFModels()
+        {
+            return new List<OrderedItemEFModel>()
             {
                 new OrderedItemEFModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
                 new OrderedItemEFModel{OrderId = 2, ProductId = 1, Name = "Product 1", Price = 2.99, Quantity = 3},
                 new OrderedItemEFModel{OrderId = 1, ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var fakeRepo = new FakeOrderRepository
+        }
+
+        private FakeOrderRepository setupFakeRepo(CustomerEFModel customer, List<OrderEFModel> orders, List<OrderedItemEFModel> orderedItems)
+        {
+            return new FakeOrderRepository
             {
                 Customer = customer,
                 Orders = orders,
                 OrderedItems = orderedItems
             };
-            var mockMapper = new MapperConfiguration(cfg =>
+        }
+
+        private IMapper setupMapper()
+        {
+            return new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-            var sp = new ServiceCollection()
+            }).CreateMapper();
+        }
+
+        private ILogger<OrderController> setupLogger()
+        {
+            return new ServiceCollection()
                 .AddLogging()
-                .BuildServiceProvider();
+                .BuildServiceProvider()
+                .GetService<ILoggerFactory>()
+                .CreateLogger<OrderController>();
+        }
 
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
+        private List<OrderedItemDto> setupStandardOrderedItemDtos()
+        {
+            return new List<OrderedItemDto>()
+            {
+                new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
+                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
+            };
+        }
+
+        private List<ProductEFModel> setupStandardProductsInStock()
+        {
+            return new List<ProductEFModel>()
+            {
+                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
+                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
+                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
+            };
+        }
+
+        private FinalisedOrderDto setupStandardFinalisedOrderDto(List<OrderedItemDto> orderedItems)
+        {
+            return new FinalisedOrderDto
+            {
+                CustomerId = 1,
+                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
+                OrderedItems = orderedItems,
+                Total = 5.98
+            };
+        }
+
+        private FakeOrderRepository setupFakeRepo(CustomerEFModel customer, List<ProductEFModel> productsInStock)
+        {
+            return new FakeOrderRepository
+            {
+                Customer = customer,
+                Products = productsInStock
+            };
+        }
+
+        private FakeOrderRepository setupStandardFakeRepo()
+        {
+            return new FakeOrderRepository
+            {
+                Customer = setupStandardCustomer(),
+                Orders = setupStandardOrderEFModels(),
+                OrderedItems = setupStandardOrderedItemEFModels(),
+                Products = setupStandardProductsInStock()
+            };
+        }
+
+        private OrderController setupStandardOrderController(FakeOrderRepository fakeRepo)
+        {
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
+            return new OrderController(logger, fakeRepo, mapper, fakeFacade);
+        }
 
-            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+        [Fact]
+        public async Task GetOrderHistory_ShouldOkObject()
+        {
+            //Arrange
+            var fakeRepo = setupStandardFakeRepo();
+            var controller = setupStandardOrderController(fakeRepo);
+            var customerId = 1;
 
             //Act
-            var result = await controller.Get(1);
+            var result = await controller.Get(customerId,null);
 
             //Assert
             var objResult = result as OkObjectResult;
             Assert.NotNull(objResult);
-            var historyResult = objResult.Value as OrderHistoryDto;
+            var historyResult = objResult.Value as List<OrderHistoryDto>;
             Assert.NotNull(historyResult);
-            var customerResult = historyResult.Customer;
-            Assert.Equal(customerResult.Name, customer.Name);
-            Assert.Equal(customerResult.CustomerId, customer.CustomerId);
-            var ordersResult = historyResult.Orders as List<OrderDto>;
-            Assert.True(orders.Count == ordersResult.Count);
-            for (int i = 0; i < orders.Count; i++)
+            Assert.True(fakeRepo.Orders.Count == historyResult.Count);
+            for (int i = 0; i < fakeRepo.Orders.Count; i++)
             {
-                Assert.Equal(orders[i].Id, ordersResult[i].Id);
-                Assert.Equal(orders[i].OrderDate, ordersResult[i].OrderDate);
-                Assert.Equal(orders[i].Total, ordersResult[i].Total);
-                Assert.True(orderedItems.Count == ordersResult[i].Products.Count);
-                for (int j = 0; j < orderedItems.Count; j++)
-                {
-                    Assert.Equal(orderedItems[j].Name, ordersResult[i].Products[j].Name);
-                    Assert.Equal(orderedItems[j].OrderId, ordersResult[i].Products[j].OrderId);
-                    Assert.Equal(orderedItems[j].Price, ordersResult[i].Products[j].Price);
-                    Assert.Equal(orderedItems[j].ProductId, ordersResult[i].Products[j].ProductId);
-                    Assert.Equal(orderedItems[j].Quantity, ordersResult[i].Products[j].Quantity);
-                }
+                Assert.Equal(customerId, historyResult[i].CustomerId);
+                Assert.Equal(fakeRepo.Orders[i].OrderId, historyResult[i].OrderId);
+                Assert.Equal(fakeRepo.Orders[i].Date, historyResult[i].Date);
+                Assert.Equal(fakeRepo.Orders[i].Total, historyResult[i].Total);
             }
         }
 
@@ -93,45 +161,17 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrderHistory_ShouldNotFound()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var orders = new List<OrderEFModel>()
-            {
-                new OrderEFModel {Id = 1, OrderDate = new DateTime(2020,11,01), Total = 10.99 },
-                new OrderEFModel {Id = 2, OrderDate = new DateTime(2020,11,02), Total = 20.99 }
-            };
-            var orderedItems = new List<OrderedItemEFModel>()
-            {
-                new OrderedItemEFModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemEFModel{OrderId = 2, ProductId = 1, Name = "Product 1", Price = 2.99, Quantity = 3},
-                new OrderedItemEFModel{OrderId = 1, ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Orders = orders,
-                OrderedItems = orderedItems
-            };
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
+            var customer = setupStandardCustomer();
+            var orders = setupStandardOrderEFModels();
+            var orderedItems = setupStandardOrderedItemEFModels();
+            var fakeRepo = setupFakeRepo(customer, orders, orderedItems);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
-
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
 
             //Act
-            var result = await controller.Get(2);
+            var result = await controller.Get(2, null);
 
             //Assert
             Assert.NotNull(result);
@@ -143,98 +183,36 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrderHistory_NoOrders()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var orderedItems = new List<OrderedItemEFModel>()
-            {
-                new OrderedItemEFModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemEFModel{OrderId = 2, ProductId = 1, Name = "Product 1", Price = 2.99, Quantity = 3},
-                new OrderedItemEFModel{OrderId = 1, ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Orders = null,
-                OrderedItems = orderedItems
-            };
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
+            var customer = setupStandardCustomer();
+            var orderedItems = setupStandardOrderedItemEFModels();
+            var fakeRepo = setupFakeRepo(customer, null, orderedItems);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
-
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
 
             //Act
-            var result = await controller.Get(1);
+            var result = await controller.Get(1, null);
 
             //Assert
             var objResult = result as OkObjectResult;
             Assert.NotNull(objResult);
-            var historyResult = objResult.Value as OrderHistoryDto;
+            var historyResult = objResult.Value as List<OrderHistoryDto>;
             Assert.NotNull(historyResult);
-            var customerResult = historyResult.Customer;
-            Assert.Equal(customerResult.Name, customer.Name);
-            Assert.Equal(customerResult.CustomerId, customer.CustomerId);
-            var ordersResult = historyResult.Orders as List<OrderDto>;
-            Assert.True(0 == ordersResult.Count);
+            Assert.True(0 == historyResult.Count);
         }
 
         [Fact]
         public async Task CreateOrder_ShouldOk()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var orderedItems = new List<OrderedItemDto>()
-            {
-                new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var customer = setupStandardCustomer();
+            var orderedItems = setupStandardOrderedItemDtos();
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -250,50 +228,17 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_InvalidCustomerId_ShouldNotFound()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 2,
-                Name = "Fake Name"
-            };
-            var orderedItems = new List<OrderedItemDto>()
-            {
-                new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var customer = setupStandardCustomer();
+            var orderedItems = setupStandardOrderedItemDtos();
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
-
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            //set invalid customer Id
+            finalisedOrder.CustomerId = 2;
 
             //Act
             var result = await controller.Create(finalisedOrder);
@@ -306,47 +251,17 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_InvalidProductId_ShouldNotFound()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
                 new OrderedItemDto{ ProductId = 4, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -362,47 +277,18 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_OutOfStock_ShouldConflict()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var orderedItems = new List<OrderedItemDto>()
-            {
-                new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
+            var customer = setupStandardCustomer();
+            var orderedItems = setupStandardOrderedItemDtos();
             var productsInStock = new List<ProductEFModel>()
             {
                 new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
                 new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 0},
                 new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
             };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -418,47 +304,17 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NotEnoughStock_ShouldConflict()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 10}
+                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 15}
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 5},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -474,47 +330,17 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeQuantity_ShouldConflict()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = -2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -535,47 +361,14 @@ namespace CustomerOrderingService.UnitTests
                 System.Threading.Thread.Sleep(2000);
             }
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var orderedItems = new List<OrderedItemDto>()
-            {
-                new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2099, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var customer = setupStandardCustomer();
+            var orderedItems = setupStandardOrderedItemDtos();
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            finalisedOrder.Date = new DateTime(2099, 1, 1, 1, 1, 1, 1);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -600,47 +393,14 @@ namespace CustomerOrderingService.UnitTests
                 System.Threading.Thread.Sleep(2000);
             }
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var orderedItems = new List<OrderedItemDto>()
-            {
-                new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = DateTime.Now.Subtract(TimeSpan.FromDays(7)),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var customer = setupStandardCustomer();
+            var orderedItems = setupStandardOrderedItemDtos();
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            finalisedOrder.Date = DateTime.Now.Subtract(TimeSpan.FromDays(7));
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -664,30 +424,12 @@ namespace CustomerOrderingService.UnitTests
                 System.Threading.Thread.Sleep(2000);
             }
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var orderedItems = new List<OrderedItemDto>()
-            {
-                new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
-            };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                //set date two seconds before 7 day limit (any shorter a time and there's a risk of a correct failure)
-                Date = DateTime.Now.Subtract(TimeSpan.FromDays(7)).Add(TimeSpan.FromSeconds(2)),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
+            var customer = setupStandardCustomer();
+            var orderedItems = setupStandardOrderedItemDtos();
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            //set date two seconds before 7 day limit (any shorter a time and there's a risk of a correct failure)
+            finalisedOrder.Date = DateTime.Now.Subtract(TimeSpan.FromDays(7)).Add(TimeSpan.FromSeconds(2));
             int year = finalisedOrder.Date.Year;
             int month = finalisedOrder.Date.Month;
             int day = finalisedOrder.Date.Day;
@@ -695,24 +437,9 @@ namespace CustomerOrderingService.UnitTests
             int minute = finalisedOrder.Date.Minute;
             int second = finalisedOrder.Date.Second;
             int millisecond = finalisedOrder.Date.Millisecond;
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -735,45 +462,15 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NoOrderedItems()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -790,42 +487,12 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NullOrderedItems()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = null,
-                Total = 5.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var customer = setupStandardCustomer();
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(null);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -841,47 +508,17 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ZeroUnitPrice_ShouldOk()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 0, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 3.99
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -897,47 +534,18 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ZeroTotalPrice_ShouldOk()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 0, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 0, Quantity = 5}
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 0
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            finalisedOrder.Total = 0;
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -953,47 +561,17 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeUnitPrice_ShouldOk()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = -0.01, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = 3.98
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -1009,47 +587,18 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeTotalPrice_ShouldOk()
         {
             //Arrange
-            var customer = new CustomerEFModel
-            {
-                CustomerId = 1,
-                Name = "Fake Name"
-            };
+            var customer = setupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = -0.01, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = -0.01, Quantity = 5}
             };
-            var productsInStock = new List<ProductEFModel>()
-            {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
-            };
-            var finalisedOrder = new FinalisedOrderDto
-            {
-                CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
-                OrderedItems = orderedItems,
-                Total = -0.02
-            };
-            var fakeRepo = new FakeOrderRepository
-            {
-                Customer = customer,
-                Products = productsInStock
-            };
-
-            var mockMapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new UserProfile());
-            });
-            var mapper = mockMapper.CreateMapper();
-
-            var sp = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logFactory = sp.GetService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<OrderController>();
-
+            var productsInStock = setupStandardProductsInStock();
+            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            finalisedOrder.Total = -0.02;
+            var fakeRepo = setupFakeRepo(customer, productsInStock);
+            var mapper = setupMapper();
+            var logger = setupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);

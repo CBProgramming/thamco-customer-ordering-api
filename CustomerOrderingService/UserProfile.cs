@@ -42,6 +42,8 @@ namespace CustomerOrderingService
             CreateMap<OrderedItemDto, StockReductionDto>();
             CreateMap<FinalisedOrderDto, FinalisedOrderEFModel>();
             CreateMap<FinalisedOrderEFModel, FinalisedOrderDto>();
+            CreateMap<OrderEFModel, OrderHistoryDto>();
+            CreateMap<OrderHistoryDto, OrderEFModel>();
         }
     }
 }

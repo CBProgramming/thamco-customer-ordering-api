@@ -9,36 +9,21 @@ namespace Order.Repository
 {
     public interface IOrderRepository
     {
-        public Task<bool> AddBasketItem(BasketItemModel newItem)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<bool> AddBasketItem(BasketItemModel newItem);
 
-        public Task<bool> EditBasketItem(BasketItemModel editedItem)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<bool> EditBasketItem(BasketItemModel editedItem);
 
-        public Task<bool> DeleteBasketItem(int customerId, int productId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<bool> DeleteBasketItem(int customerId, int productId);
 
-        public Task<IList<BasketProductsModel>> GetBasket(int customerId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<IList<BasketProductsModel>> GetBasket(int customerId);
 
-        public Task<bool> FinaliseOrder(int customerId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<bool> FinaliseOrder(int customerId);
 
         public Task<CustomerEFModel> GetCustomer(int customerId);
 
         public Task<IList<OrderEFModel>> GetCustomerOrders(int customerId);
 
-        public Task<IList<OrderedItemEFModel>> GetOrderItems(int orderId);
+        public Task<IList<OrderedItemEFModel>> GetOrderItems(int? orderId);
 
         public Task<bool> CreateOrder(FinalisedOrderEFModel order);
 
@@ -53,5 +38,7 @@ namespace Order.Repository
         public bool ProductsInStock(List<ProductEFModel> products);
 
         public bool ProductInStock(ProductEFModel product);
+
+        public Task<OrderEFModel> GetCustomerOrder(int? orderId);
     }
 }

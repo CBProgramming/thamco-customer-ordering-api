@@ -7,7 +7,9 @@ namespace CustomerOrderingService.Models
 {
     public class OrderDto
     {
-        public int Id { get; set; }
+        public int CustomerId { get; set; }
+
+        public int OrderId { get; set; }
 
         public DateTime OrderDate { get; set; }
 

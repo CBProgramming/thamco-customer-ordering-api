@@ -7,8 +7,12 @@ namespace CustomerOrderingService.Models
 {
     public class OrderHistoryDto
     {
-        public CustomerDto Customer { get; set; }
+        public int CustomerId { get; set; }
 
-        public List<OrderDto> Orders { get; set; }
+        public int OrderId { get; set; }
+
+        public double Total { get; set; }
+
+        public DateTime Date { get; set; }
     }
 }

@@ -180,7 +180,12 @@ namespace Order.Repository
             return _mapper.Map<List<OrderEFModel>>(_context.Orders.Where(o => o.CustomerId == customerId));
         }
 
-        public async Task<IList<OrderedItemEFModel>> GetOrderItems(int orderId)
+        public async Task<OrderEFModel> GetCustomerOrder(int? orderId)
+        {
+            return _mapper.Map<OrderEFModel>(_context.Orders.Where(o => o.OrderId == orderId));
+        }
+
+        public async Task<IList<OrderedItemEFModel>> GetOrderItems(int? orderId)
         {
             return _mapper.Map<List<OrderedItemEFModel>>(_context.OrderedItems.Where(o => o.OrderId == orderId));
         }

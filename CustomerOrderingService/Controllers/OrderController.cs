@@ -34,25 +34,27 @@ namespace CustomerOrderingService.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get (int customerId)
+        public async Task<IActionResult> Get (int customerId, [FromQuery] int? orderId)
         {
             CustomerDto customer = _mapper.Map<CustomerDto>(await _orderRepository.GetCustomer(customerId));
             if (customer != null)
             {
-                List<OrderDto> orders = _mapper.Map<List<OrderDto>>(await _orderRepository.GetCustomerOrders(customerId));
-                foreach (OrderDto order in orders)
+                //get list of orders
+                if (orderId == null)
                 {
-                    order.Products = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(order.Id));
+                    List<OrderHistoryDto> orders = _mapper.Map<List<OrderHistoryDto>>(await _orderRepository.GetCustomerOrders(customerId));
+                    orders.ForEach(o => o.CustomerId = customerId);
+                    return Ok(orders);
                 }
-                OrderHistoryDto orderHistory = new OrderHistoryDto
+                //get specific order
+                else
                 {
-                    Customer = customer,
-                    Orders = orders
-                };
-                return Ok(orderHistory);
+                    OrderDto order = _mapper.Map<OrderDto>(await _orderRepository.GetCustomerOrder(orderId));
+                    order.Products = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(orderId));
+                    return Ok(order);
+                }
             }
             return NotFound();
-
         }
 
         [HttpPost]

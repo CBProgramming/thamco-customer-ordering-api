@@ -103,5 +103,40 @@ namespace Order.Repository
             }
             return false;
         }
+
+        public Task<bool> AddBasketItem(BasketItemModel newItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> EditBasketItem(BasketItemModel editedItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteBasketItem(int customerId, int productId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<BasketProductsModel>> GetBasket(int customerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> FinaliseOrder(int customerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<OrderedItemEFModel>> GetOrderItems(int? orderId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OrderEFModel> GetCustomerOrder(int? orderId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
