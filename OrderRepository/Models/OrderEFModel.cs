@@ -8,7 +8,7 @@ namespace Order.Repository.Models
     {
         public int OrderId { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime OrderDate { get; set; }
 
         public double Total { get; set; }
     }

@@ -11,7 +11,7 @@ namespace CustomerOrderingService.Models
         public int CustomerId { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime OrderDate { get; set; }
 
         public List<OrderedItemDto> OrderedItems {get; set;}
 

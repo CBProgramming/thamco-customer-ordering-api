@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Order.Repository.Models
@@ -12,6 +13,7 @@ namespace Order.Repository.Models
 
         public List<OrderedItemEFModel> OrderedItems { get; set; }
 
+        [Range(0,double.MaxValue)]
         public double Total { get; set; }
     }
 }

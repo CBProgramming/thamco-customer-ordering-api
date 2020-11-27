@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CustomerOrderingService.Data;
 using CustomerOrderingService.Models;
 using Order.Repository.Data;
 using Order.Repository.Models;
@@ -16,16 +15,18 @@ namespace CustomerOrderingService
     {
         public UserProfile()
         {
-            CreateMap<BasketItemDto, BasketItemModel>();
-            CreateMap<BasketItemModel, BasketItemDto>();
-            CreateMap<BasketItemModel, BasketItem>();
-            CreateMap<BasketItem, BasketItemModel>();
-            CreateMap<BasketItemModel, ProductEFModel>();
-            CreateMap<ProductEFModel, BasketItemModel>();
+            CreateMap<BasketItemDto, BasketItemEFModel>();
+            CreateMap<BasketItemEFModel, BasketItemDto>();
+            CreateMap<BasketItemDto, BasketProductsEFModel>();
+            CreateMap<BasketProductsEFModel, BasketItemDto>();
+            CreateMap<BasketItemEFModel, BasketItem>();
+            CreateMap<BasketItem, BasketItemEFModel>();
+            CreateMap<BasketItemEFModel, ProductEFModel>();
+            CreateMap<ProductEFModel, BasketItemEFModel>();
             CreateMap<ProductEFModel, Product>();
             CreateMap<OrderedItemDto, ProductEFModel>();
             CreateMap<ProductEFModel, OrderedItemDto>();
-            CreateMap<Product, BasketItemModel>();
+            CreateMap<Product, BasketItemEFModel>();
             CreateMap<CustomerDto, CustomerEFModel>();
             CreateMap<CustomerEFModel, CustomerDto>();
             CreateMap<CustomerEFModel, Customer>();

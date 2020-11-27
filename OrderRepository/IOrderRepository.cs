@@ -9,13 +9,13 @@ namespace Order.Repository
 {
     public interface IOrderRepository
     {
-        public Task<bool> AddBasketItem(BasketItemModel newItem);
+        public Task<bool> AddBasketItem(BasketItemEFModel newItem);
 
-        public Task<bool> EditBasketItem(BasketItemModel editedItem);
+        public Task<bool> EditBasketItem(BasketItemEFModel editedItem);
 
         public Task<bool> DeleteBasketItem(int customerId, int productId);
 
-        public Task<IList<BasketProductsModel>> GetBasket(int customerId);
+        public Task<IList<BasketProductsEFModel>> GetBasket(int customerId);
 
         public Task<bool> FinaliseOrder(int customerId);
 
@@ -29,16 +29,24 @@ namespace Order.Repository
 
         public Task<bool> ClearBasket(int customerId);
 
-        public bool CustomerExists(int customerId);
+        public Task<bool> CustomerExists(int customerId);
 
-        public bool ProductsExist(List<ProductEFModel> products);
+        public Task<bool> ProductsExist(List<ProductEFModel> products);
 
-        public bool ProductExists(ProductEFModel product);
+        public Task<bool> ProductExists(ProductEFModel product);
 
-        public bool ProductsInStock(List<ProductEFModel> products);
+        public Task<bool> ProductExists(int productId);
 
-        public bool ProductInStock(ProductEFModel product);
+        public Task<bool> OrderExists(int? orderId);
+
+        public Task<bool> ProductsInStock(List<ProductEFModel> products);
+
+        public Task<bool> ProductInStock(ProductEFModel product);
 
         public Task<OrderEFModel> GetCustomerOrder(int? orderId);
+
+        public Task<bool> IsCustomerActive(int customerId);
+
+        public Task<bool> CanCustomerPurchase(int customerId);
     }
 }

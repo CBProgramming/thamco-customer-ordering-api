@@ -22,8 +22,8 @@ namespace CustomerOrderingService.UnitTests
         {
             return new List<OrderEFModel>()
             {
-                new OrderEFModel {OrderId = 1, Date = new DateTime(2020,11,01), Total = 10.99 },
-                new OrderEFModel {OrderId = 2, Date = new DateTime(2020,11,02), Total = 20.99 }
+                new OrderEFModel {OrderId = 1, OrderDate = new DateTime(2020,11,01), Total = 10.99 },
+                new OrderEFModel {OrderId = 2, OrderDate = new DateTime(2020,11,02), Total = 20.99 }
             };
         }
 
@@ -32,21 +32,30 @@ namespace CustomerOrderingService.UnitTests
             return new CustomerEFModel
             {
                 CustomerId = 1,
-                Name = "Fake Name"
+                GivenName = "Fake",
+                FamilyName = "Name",
+                AddressOne = "Address 1",
+                AddressTwo = "Address 2",
+                Town = "Town",
+                State = "State",
+                AreaCode = "Area Code",
+                TelephoneNumber = "Telephone Number",
+                CanPurchase = true,
+                Active = true
             };
         }
 
-        private List<OrderedItemEFModel> setupStandardOrderedItemEFModels()
+        private List<OrderedItemEFModel> SetupStandardOrderedItemEFModels()
         {
             return new List<OrderedItemEFModel>()
             {
                 new OrderedItemEFModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemEFModel{OrderId = 2, ProductId = 1, Name = "Product 1", Price = 2.99, Quantity = 3},
+                new OrderedItemEFModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 2.99, Quantity = 3},
                 new OrderedItemEFModel{OrderId = 1, ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
         }
 
-        private FakeOrderRepository setupFakeRepo(CustomerEFModel customer, List<OrderEFModel> orders, List<OrderedItemEFModel> orderedItems)
+        private FakeOrderRepository SetupFakeRepo(CustomerEFModel customer, List<OrderEFModel> orders, List<OrderedItemEFModel> orderedItems)
         {
             return new FakeOrderRepository
             {
@@ -56,7 +65,7 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private IMapper setupMapper()
+        private IMapper SetupMapper()
         {
             return new MapperConfiguration(cfg =>
             {
@@ -64,7 +73,7 @@ namespace CustomerOrderingService.UnitTests
             }).CreateMapper();
         }
 
-        private ILogger<OrderController> setupLogger()
+        private ILogger<OrderController> SetupLogger()
         {
             return new ServiceCollection()
                 .AddLogging()
@@ -73,7 +82,7 @@ namespace CustomerOrderingService.UnitTests
                 .CreateLogger<OrderController>();
         }
 
-        private List<OrderedItemDto> setupStandardOrderedItemDtos()
+        private List<OrderedItemDto> SetupStandardOrderedItemDtos()
         {
             return new List<OrderedItemDto>()
             {
@@ -82,7 +91,7 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private List<ProductEFModel> setupStandardProductsInStock()
+        private List<ProductEFModel> SetupStandardProductsInStock()
         {
             return new List<ProductEFModel>()
             {
@@ -92,18 +101,18 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private FinalisedOrderDto setupStandardFinalisedOrderDto(List<OrderedItemDto> orderedItems)
+        private FinalisedOrderDto SetupStandardFinalisedOrderDto(List<OrderedItemDto> orderedItems)
         {
             return new FinalisedOrderDto
             {
                 CustomerId = 1,
-                Date = new DateTime(2020, 1, 1, 1, 1, 1, 1),
+                OrderDate = new DateTime(2020, 1, 1, 1, 1, 1, 1),
                 OrderedItems = orderedItems,
                 Total = 5.98
             };
         }
 
-        private FakeOrderRepository setupFakeRepo(CustomerEFModel customer, List<ProductEFModel> productsInStock)
+        private FakeOrderRepository SetupFakeRepo(CustomerEFModel customer, List<ProductEFModel> productsInStock)
         {
             return new FakeOrderRepository
             {
@@ -112,37 +121,25 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private FakeOrderRepository setupStandardFakeRepo()
-        {
-            return new FakeOrderRepository
-            {
-                Customer = setupStandardCustomer(),
-                Orders = setupStandardOrderEFModels(),
-                OrderedItems = setupStandardOrderedItemEFModels(),
-                Products = setupStandardProductsInStock()
-            };
-        }
-
-        private OrderController setupStandardOrderController(FakeOrderRepository fakeRepo)
-        {
-            var mapper = setupMapper();
-            var logger = setupLogger();
-            var fakeFacade = new FakeStaffProductFacade();
-            return new OrderController(logger, fakeRepo, mapper, fakeFacade);
-        }
-
         [Fact]
         public async Task GetOrderHistory_ShouldOkObject()
         {
             //Arrange
-            var fakeRepo = setupStandardFakeRepo();
-            var controller = setupStandardOrderController(fakeRepo);
+            var customer = setupStandardCustomer();
+            var orders = setupStandardOrderEFModels();
+            var orderedItems = SetupStandardOrderedItemEFModels();
+            var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
             var customerId = 1;
 
             //Act
             var result = await controller.Get(customerId,null);
 
             //Assert
+            Assert.NotNull(result);
             var objResult = result as OkObjectResult;
             Assert.NotNull(objResult);
             var historyResult = objResult.Value as List<OrderHistoryDto>;
@@ -152,21 +149,21 @@ namespace CustomerOrderingService.UnitTests
             {
                 Assert.Equal(customerId, historyResult[i].CustomerId);
                 Assert.Equal(fakeRepo.Orders[i].OrderId, historyResult[i].OrderId);
-                Assert.Equal(fakeRepo.Orders[i].Date, historyResult[i].Date);
+                Assert.Equal(fakeRepo.Orders[i].OrderDate, historyResult[i].OrderDate);
                 Assert.Equal(fakeRepo.Orders[i].Total, historyResult[i].Total);
             }
         }
 
         [Fact]
-        public async Task GetOrderHistory_ShouldNotFound()
+        public async Task GetOrderHistory_InvalidCustomerId_ShouldNotFound()
         {
             //Arrange
             var customer = setupStandardCustomer();
             var orders = setupStandardOrderEFModels();
-            var orderedItems = setupStandardOrderedItemEFModels();
-            var fakeRepo = setupFakeRepo(customer, orders, orderedItems);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var orderedItems = SetupStandardOrderedItemEFModels();
+            var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
 
@@ -180,14 +177,38 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
+        public async Task GetOrderHistory_InactiveCustomerId_ShouldNotFound()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orders = setupStandardOrderEFModels();
+            var orderedItems = SetupStandardOrderedItemEFModels();
+            var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+
+            customer.Active = false;
+
+            //Act
+            var result = await controller.Get(1, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var notResult = result as ForbidResult;
+            Assert.NotNull(notResult);
+        }
+
+        [Fact]
         public async Task GetOrderHistory_NoOrders()
         {
             //Arrange
             var customer = setupStandardCustomer();
-            var orderedItems = setupStandardOrderedItemEFModels();
-            var fakeRepo = setupFakeRepo(customer, null, orderedItems);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var orderedItems = SetupStandardOrderedItemEFModels();
+            var fakeRepo = SetupFakeRepo(customer, null, orderedItems);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
 
@@ -195,6 +216,7 @@ namespace CustomerOrderingService.UnitTests
             var result = await controller.Get(1, null);
 
             //Assert
+            Assert.NotNull(result);
             var objResult = result as OkObjectResult;
             Assert.NotNull(objResult);
             var historyResult = objResult.Value as List<OrderHistoryDto>;
@@ -203,16 +225,104 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
+        public async Task GetOrder_ShouldOkObject()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orders = setupStandardOrderEFModels();
+            var orderedItems = SetupStandardOrderedItemEFModels();
+            var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            int orderRequested = 1;
+
+            //Act
+            var result = await controller.Get(1, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var orderResult = objResult.Value as OrderDto;
+            Assert.NotNull(orderResult);
+            Assert.True(orders[orderRequested].OrderId == orderResult.OrderId);
+            Assert.True(orders[orderRequested].OrderDate == orderResult.OrderDate);
+            Assert.True(orders[orderRequested].Total == orderResult.Total);
+            Assert.True(orderedItems.Count == orderResult.Products.Count);
+            for (int i = 0; i < orderedItems.Count; i++)
+            {
+                Assert.True(orderedItems[i].OrderId == orderResult.Products[i].OrderId);
+                Assert.True(orderedItems[i].Name == orderResult.Products[i].Name);
+                Assert.True(orderedItems[i].ProductId == orderResult.Products[i].ProductId);
+                Assert.True(orderedItems[i].Price == orderResult.Products[i].Price);
+                Assert.True(orderedItems[i].Quantity == orderResult.Products[i].Quantity);
+            }
+        }
+
+        [Fact]
+        public async Task GetOrder_InvalidId_ShouldNotFound()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orders = setupStandardOrderEFModels();
+            var orderedItems = SetupStandardOrderedItemEFModels();
+            var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            int orderRequested = 99;
+
+            //Act
+            var result = await controller.Get(1, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task GetOrder_NoOrderedItems_ShouldOkObject()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orders = setupStandardOrderEFModels();
+            var fakeRepo = SetupFakeRepo(customer, orders, null);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            int orderRequested = 1;
+
+            //Act
+            var result = await controller.Get(1, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var orderResult = objResult.Value as OrderDto;
+            Assert.NotNull(orderResult);
+            Assert.True(orders[orderRequested].OrderId == orderResult.OrderId);
+            Assert.True(orders[orderRequested].OrderDate == orderResult.OrderDate);
+            Assert.True(orders[orderRequested].Total == orderResult.Total);
+            Assert.True(0 == orderResult.Products.Count);
+        }
+
+        [Fact]
         public async Task CreateOrder_ShouldOk()
         {
             //Arrange
             var customer = setupStandardCustomer();
-            var orderedItems = setupStandardOrderedItemDtos();
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -221,7 +331,146 @@ namespace CustomerOrderingService.UnitTests
             var result = await controller.Create(finalisedOrder);
 
             //Assert
+            Assert.NotNull(result);
             Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_NegativeItemPrice_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            orderedItems[0].Price = -0.01;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<UnprocessableEntityResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_ZeroItemPrice_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            orderedItems[0].Price = 0;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_NegativeTotalPrice_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            finalisedOrder.Total = -0.01;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<UnprocessableEntityResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_ZeroTotalPrice_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            finalisedOrder.Total = 0;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_NegativeItemQuantity_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            orderedItems[0].Quantity = -1;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<UnprocessableEntityResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_ZeroItemQuantity_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            orderedItems[0].Quantity = 0;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<UnprocessableEntityResult>(result);
         }
 
         [Fact]
@@ -229,12 +478,12 @@ namespace CustomerOrderingService.UnitTests
         {
             //Arrange
             var customer = setupStandardCustomer();
-            var orderedItems = setupStandardOrderedItemDtos();
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
             //set invalid customer Id
@@ -257,11 +506,11 @@ namespace CustomerOrderingService.UnitTests
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
                 new OrderedItemDto{ ProductId = 4, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -274,21 +523,67 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
+        public async Task CreateOrder_CustomerCantPurchase_ShouldForbid()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            customer.CanPurchase = false;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_CustomerNotActive_ShouldForbid()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            customer.Active = false;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
         public async Task CreateOrder_OutOfStock_ShouldConflict()
         {
             //Arrange
             var customer = setupStandardCustomer();
-            var orderedItems = setupStandardOrderedItemDtos();
+            var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = new List<ProductEFModel>()
             {
                 new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
                 new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 0},
                 new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
             };
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -310,11 +605,11 @@ namespace CustomerOrderingService.UnitTests
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 15}
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -336,11 +631,11 @@ namespace CustomerOrderingService.UnitTests
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = -2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -362,13 +657,13 @@ namespace CustomerOrderingService.UnitTests
             }
             //Arrange
             var customer = setupStandardCustomer();
-            var orderedItems = setupStandardOrderedItemDtos();
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            finalisedOrder.Date = new DateTime(2099, 1, 1, 1, 1, 1, 1);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            finalisedOrder.OrderDate = new DateTime(2099, 1, 1, 1, 1, 1, 1);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -377,9 +672,9 @@ namespace CustomerOrderingService.UnitTests
             var result = await controller.Create(finalisedOrder);
 
             //Assert
-            Assert.Equal(finalisedOrder.Date.Year, DateTime.Now.Year);
-            Assert.Equal(finalisedOrder.Date.Month, DateTime.Now.Month);
-            Assert.Equal(finalisedOrder.Date.Day, DateTime.Now.Day);
+            Assert.Equal(finalisedOrder.OrderDate.Year, DateTime.Now.Year);
+            Assert.Equal(finalisedOrder.OrderDate.Month, DateTime.Now.Month);
+            Assert.Equal(finalisedOrder.OrderDate.Day, DateTime.Now.Day);
             Assert.IsType<OkResult>(result);
         }
 
@@ -394,13 +689,13 @@ namespace CustomerOrderingService.UnitTests
             }
             //Arrange
             var customer = setupStandardCustomer();
-            var orderedItems = setupStandardOrderedItemDtos();
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            finalisedOrder.Date = DateTime.Now.Subtract(TimeSpan.FromDays(7));
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            finalisedOrder.OrderDate = DateTime.Now.Subtract(TimeSpan.FromDays(7));
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -409,9 +704,9 @@ namespace CustomerOrderingService.UnitTests
             var result = await controller.Create(finalisedOrder);
 
             //Assert
-            Assert.Equal(finalisedOrder.Date.Year, DateTime.Now.Year);
-            Assert.Equal(finalisedOrder.Date.Month, DateTime.Now.Month);
-            Assert.Equal(finalisedOrder.Date.Day, DateTime.Now.Day);
+            Assert.Equal(finalisedOrder.OrderDate.Year, DateTime.Now.Year);
+            Assert.Equal(finalisedOrder.OrderDate.Month, DateTime.Now.Month);
+            Assert.Equal(finalisedOrder.OrderDate.Day, DateTime.Now.Day);
             Assert.IsType<OkResult>(result);
         }
 
@@ -425,21 +720,21 @@ namespace CustomerOrderingService.UnitTests
             }
             //Arrange
             var customer = setupStandardCustomer();
-            var orderedItems = setupStandardOrderedItemDtos();
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
             //set date two seconds before 7 day limit (any shorter a time and there's a risk of a correct failure)
-            finalisedOrder.Date = DateTime.Now.Subtract(TimeSpan.FromDays(7)).Add(TimeSpan.FromSeconds(2));
-            int year = finalisedOrder.Date.Year;
-            int month = finalisedOrder.Date.Month;
-            int day = finalisedOrder.Date.Day;
-            int hour = finalisedOrder.Date.Hour;
-            int minute = finalisedOrder.Date.Minute;
-            int second = finalisedOrder.Date.Second;
-            int millisecond = finalisedOrder.Date.Millisecond;
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            finalisedOrder.OrderDate = DateTime.Now.Subtract(TimeSpan.FromDays(7)).Add(TimeSpan.FromSeconds(2));
+            int year = finalisedOrder.OrderDate.Year;
+            int month = finalisedOrder.OrderDate.Month;
+            int day = finalisedOrder.OrderDate.Day;
+            int hour = finalisedOrder.OrderDate.Hour;
+            int minute = finalisedOrder.OrderDate.Minute;
+            int second = finalisedOrder.OrderDate.Second;
+            int millisecond = finalisedOrder.OrderDate.Millisecond;
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -448,13 +743,13 @@ namespace CustomerOrderingService.UnitTests
             var result = await controller.Create(finalisedOrder);
 
             //Assert date has not been adjusted significantly
-            Assert.Equal(finalisedOrder.Date.Year, year);
-            Assert.Equal(finalisedOrder.Date.Month, month);
-            Assert.Equal(finalisedOrder.Date.Day, day);
-            Assert.Equal(finalisedOrder.Date.Hour, hour);
-            Assert.Equal(finalisedOrder.Date.Minute, minute);
-            Assert.Equal(finalisedOrder.Date.Second, second);
-            Assert.Equal(finalisedOrder.Date.Millisecond, millisecond);
+            Assert.Equal(finalisedOrder.OrderDate.Year, year);
+            Assert.Equal(finalisedOrder.OrderDate.Month, month);
+            Assert.Equal(finalisedOrder.OrderDate.Day, day);
+            Assert.Equal(finalisedOrder.OrderDate.Hour, hour);
+            Assert.Equal(finalisedOrder.OrderDate.Minute, minute);
+            Assert.Equal(finalisedOrder.OrderDate.Second, second);
+            Assert.Equal(finalisedOrder.OrderDate.Millisecond, millisecond);
             Assert.IsType<OkResult>(result);
         }
 
@@ -466,11 +761,11 @@ namespace CustomerOrderingService.UnitTests
             var orderedItems = new List<OrderedItemDto>()
             {
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -488,11 +783,11 @@ namespace CustomerOrderingService.UnitTests
         {
             //Arrange
             var customer = setupStandardCustomer();
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(null);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(null);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -514,11 +809,11 @@ namespace CustomerOrderingService.UnitTests
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 0, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -540,12 +835,12 @@ namespace CustomerOrderingService.UnitTests
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 0, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 0, Quantity = 5}
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
             finalisedOrder.Total = 0;
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -567,11 +862,11 @@ namespace CustomerOrderingService.UnitTests
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = -0.01, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -593,12 +888,12 @@ namespace CustomerOrderingService.UnitTests
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = -0.01, Quantity = 2},
                 new OrderedItemDto{ ProductId = 2, Name = "Product 2", Price = -0.01, Quantity = 5}
             };
-            var productsInStock = setupStandardProductsInStock();
-            var finalisedOrder = setupStandardFinalisedOrderDto(orderedItems);
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
             finalisedOrder.Total = -0.02;
-            var fakeRepo = setupFakeRepo(customer, productsInStock);
-            var mapper = setupMapper();
-            var logger = setupLogger();
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
             var fakeFacade = new FakeStaffProductFacade();
 
             var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
@@ -608,6 +903,52 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.IsType<UnprocessableEntityResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_RepoFailure_ShouldNotFound()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            fakeRepo.CompletesOrders = false;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_FacadeFailure_ShouldNotFound()
+        {
+            //Arrange
+            var customer = setupStandardCustomer();
+            var orderedItems = SetupStandardOrderedItemDtos();
+            var productsInStock = SetupStandardProductsInStock();
+            var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
+            var fakeRepo = SetupFakeRepo(customer, productsInStock);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var fakeFacade = new FakeStaffProductFacade();
+            var controller = new OrderController(logger, fakeRepo, mapper, fakeFacade);
+            fakeFacade.CompletesStockReduction = false;
+
+            //Act
+            var result = await controller.Create(finalisedOrder);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<NotFoundResult>(result);
         }
     }
 }

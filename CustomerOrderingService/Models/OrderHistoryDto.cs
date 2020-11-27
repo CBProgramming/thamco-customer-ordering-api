@@ -13,6 +13,6 @@ namespace CustomerOrderingService.Models
 
         public double Total { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime OrderDate { get; set; }
     }
 }
