@@ -36,19 +36,29 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private BasketItemDto SetupStandardBasketItem()
+        private BasketItemDto SetupStandardNewBasketItem()
         {
             return new BasketItemDto
             {
                 CustomerId = 1,
-                ProductId = 1,
+                ProductId = 5,
                 Price = 1.00,
                 Quantity = 1,
                 ProductName = "Fake name"
             };
         }
 
-
+        private BasketItemDto SetupStandardEditedBasketItem()
+        {
+            return new BasketItemDto
+            {
+                CustomerId = 1,
+                ProductId = 2,
+                Price = 1.00,
+                Quantity = 1,
+                ProductName = "Fake name"
+            };
+        }
 
         private FakeOrderRepository SetupFakeRepo(CustomerEFModel customer, List<BasketProductsEFModel>? currentBasket,
             List<ProductEFModel> products)
@@ -95,7 +105,9 @@ namespace CustomerOrderingService.UnitTests
             {
                 new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
                 new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
+                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10},
+                new ProductEFModel{ ProductId = 4, Name = "Fake", Quantity = 10},
+                new ProductEFModel{ ProductId = 5, Name = "Fake", Quantity = 10}
             };
         }
 
@@ -210,7 +222,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             var customerId = 1;
 
@@ -233,7 +245,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             basketItem.CustomerId = 2;
 
@@ -256,7 +268,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             customer.Active = false;
 
@@ -279,7 +291,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             basketItem.ProductId = 99;
 
@@ -302,7 +314,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             basketItem.ProductName = null;
 
@@ -325,7 +337,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             basketItem.Price = 0;
 
@@ -348,7 +360,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             basketItem.Price = -0.01;
 
@@ -371,7 +383,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             basketItem.Quantity = 0;
 
@@ -394,7 +406,7 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardBasketItem();
+            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             basketItem.Quantity = -1;
 
@@ -404,6 +416,813 @@ namespace CustomerOrderingService.UnitTests
             //Assert
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_RepoFailure_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            fakeRepo.AcceptsBasketItems = false;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_ShouldBeEdit_ShouldOk()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            var customerId = 1;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_InvalidCustomer_ShouldBeEdit_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.CustomerId = 2;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_InactiveCustomer_ShouldBeEdit_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            customer.Active = false;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as ForbidResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_InvalidProductId_ShouldBeEdit_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.ProductId = 99;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_InvalidProductName_ShouldBeEdit_ShouldShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.ProductName = null;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_ZeroPrice_ShouldBeEdit_ShouldOk()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Price = 0;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_NegativePrice_ShouldBeEdit_ShouldShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Price = -0.01;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_ZeroQuantity_ShouldBeEdit_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Quantity = 0;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_NegativeQuantity_ShouldBeEdit_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Quantity = -1;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task NewBasketItem_RepoFailure_ShouldBeEdit_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            fakeRepo.AcceptsBasketItems = false;
+
+            //Act
+            var result = await controller.Create(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_ShouldOk()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            var customerId = 1;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InvalidCustomer_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.CustomerId = 2;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InactiveCustomer_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            customer.Active = false;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as ForbidResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InvalidProductId_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.ProductId = 99;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InvalidProductName_ShouldShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.ProductName = null;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_ZeroPrice_ShouldOk()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Price = 0;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_NegativePrice_ShouldShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Price = -0.01;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_ZeroQuantity_ShouldOkResult()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Quantity = 0;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_NegativeQuantity_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Quantity = -1;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_RepoFailure_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardEditedBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            fakeRepo.AcceptsBasketItems = false;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_ShouldBeCreate_ShouldOk()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            var customerId = 1;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InvalidCustomer_ShouldBeCreate_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.CustomerId = 2;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InactiveCustomer_ShouldBeCreate_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            customer.Active = false;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as ForbidResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InvalidProductId_ShouldBeCreate_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.ProductId = 99;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_InvalidProductName_ShouldBeCreate_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.ProductName = null;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_ZeroPrice_ShouldBeCreate_ShouldOk()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Price = 0;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_NegativePrice_ShouldBeCreate_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Price = -0.01;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_ZeroQuantity_ShouldBeCreate_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Quantity = 0;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_NegativeQuantity_ShouldBeCreate_ShouldUnprocessableEntity()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            basketItem.Quantity = -1;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as UnprocessableEntityResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task EditBasketItem_RepoFailure_ShouldBeCreate_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            fakeRepo.AcceptsBasketItems = false;
+
+            //Act
+            var result = await controller.Edit(basketItem);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task DeleteBasketItem_ShouldOk()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            int itemId = 1;
+
+            //Act
+            var result = await controller.Delete(customer.CustomerId, itemId);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task DeleteBasketItem_InvalidCustomer_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var currentBasket = SetupProductsInBasket();
+            var products = SetupStandardProductsInStock();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            int customerId = 2;
+            int itemId = 1;
+
+            //Act
+            var result = await controller.Delete(customerId, itemId);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task DeleteBasketItem_InactiveCustomer_ShouldForbid()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            customer.Active = false;
+            int itemId = 1;
+
+            //Act
+            var result = await controller.Delete(customer.CustomerId, itemId);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as ForbidResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task DeleteBasketItem_InvalidProductId_ShouldNotFound()
+        {
+            //Arrange
+            var customer = SetupStandardCustomer();
+            var products = SetupStandardProductsInStock();
+            var currentBasket = SetupProductsInBasket();
+            var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
+            var mapper = SetupMapper();
+            var logger = SetupLogger();
+            var basketItem = SetupStandardNewBasketItem();
+            var controller = new BasketController(logger, fakeRepo, mapper);
+            int itemId = 99;
+
+            //Act
+            var result = await controller.Delete(customer.CustomerId, itemId);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
         }
     }

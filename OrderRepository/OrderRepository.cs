@@ -164,7 +164,7 @@ namespace Order.Repository
             }
         }
 
-        private async Task<bool> IsItemInBasket(int customerId, int productId)
+        public async Task<bool> IsItemInBasket(int customerId, int productId)
         {
             return _context.BasketItems.SingleOrDefault(
                 b => b.CustomerId == customerId && b.ProductId == productId) != null;

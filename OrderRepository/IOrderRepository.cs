@@ -48,5 +48,7 @@ namespace Order.Repository
         public Task<bool> IsCustomerActive(int customerId);
 
         public Task<bool> CanCustomerPurchase(int customerId);
+
+        public Task<bool> IsItemInBasket(int customerId, int productId);
     }
 }

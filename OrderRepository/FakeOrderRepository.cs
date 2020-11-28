@@ -12,6 +12,7 @@ namespace Order.Repository
     {
         public bool CompletesOrders = true;
         public bool AcceptsBasketItems = true;
+        public bool AcceptsDeletions = true;
         public CustomerEFModel Customer { get; set; }
 
         public List<OrderEFModel> Orders { get; set; }
@@ -120,9 +121,9 @@ namespace Order.Repository
             return AcceptsBasketItems;
         }
 
-        public Task<bool> DeleteBasketItem(int customerId, int productId)
+        public async Task<bool> DeleteBasketItem(int customerId, int productId)
         {
-            throw new NotImplementedException();
+            return AcceptsBasketItems;
         }
 
         public async Task<IList<BasketProductsEFModel>> GetBasket(int customerId)
@@ -172,6 +173,11 @@ namespace Order.Repository
         public async Task<bool> ProductExists(int productId)
         {
             return Products.Any(p => p.ProductId == productId);
+        }
+
+        public async Task<bool> IsItemInBasket(int customerId, int productId)
+        {
+            return CurrentBasket.Any(b => b.ProductId == productId);
         }
     }
 }

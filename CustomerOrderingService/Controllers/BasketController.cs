@@ -46,17 +46,45 @@ namespace CustomerOrderingService.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(BasketItemDto newItem)
         {
-            if (await _orderRepository.CustomerExists(newItem.CustomerId))
+            return await CreateOrEditBasketItem(newItem);
+        }
+
+        //Edit product in basket
+        [HttpPut]
+        public async Task<IActionResult> Edit(BasketItemDto editedItem)
+        {
+            return await CreateOrEditBasketItem(editedItem);
+        }
+
+        private async Task<IActionResult> CreateOrEditBasketItem(BasketItemDto basketItem)
+        {
+            if (await _orderRepository.CustomerExists(basketItem.CustomerId))
             {
-                if (await _orderRepository.IsCustomerActive(newItem.CustomerId))
+                if (await _orderRepository.IsCustomerActive(basketItem.CustomerId))
                 {
-                    if (await IsBasketItemValid(newItem))
+                    bool itemIsInBasket = await _orderRepository.IsItemInBasket(basketItem.CustomerId, basketItem.ProductId);
+                    if (itemIsInBasket && basketItem.Quantity == 0)
                     {
-                        if (await _orderRepository.ProductExists(newItem.ProductId))
+                        return await Delete(basketItem.CustomerId, basketItem.ProductId);
+                    }
+                    if (await IsBasketItemValid(basketItem))
+                    {
+                        if (await _orderRepository.ProductExists(basketItem.ProductId))
                         {
-                            if (await _orderRepository.AddBasketItem(_mapper.Map<BasketItemEFModel>(newItem)))
+                            if (itemIsInBasket)
                             {
-                                return Ok();
+                                if (await _orderRepository.EditBasketItem(_mapper.Map<BasketItemEFModel>(basketItem)))
+                                {
+                                    return Ok();
+                                }
+                            }
+                            else
+                            {
+                                if (await _orderRepository.AddBasketItem(_mapper.Map<BasketItemEFModel>(basketItem)))
+                                {
+                                    return Ok();
+                                }
+
                             }
                             return NotFound();
                         }
@@ -67,26 +95,34 @@ namespace CustomerOrderingService.Controllers
                 return Forbid();
             }
             return NotFound();
-            
-            
-        }
-
-        //Edit product in basket
-        [HttpPut]
-        public async Task<IActionResult> Edit(BasketItemDto editedItem)
-        {
-            if (await _orderRepository.EditBasketItem(_mapper.Map<BasketItemEFModel>(editedItem)))
-            {
-                return Ok();
-            }
-            return NotFound();
         }
 
         //Remove item from basket
         [HttpDelete]
-        public Task<IActionResult> Delete(int customerId, int productId)
+        public async Task<IActionResult> Delete(int customerId, int productId)
         {
-            throw new NotImplementedException();
+            if (await _orderRepository.CustomerExists(customerId))
+            {
+                if (await _orderRepository.IsCustomerActive(customerId))
+                {
+                    if (await _orderRepository.IsItemInBasket(customerId, productId))
+                    {
+                        return await DeleteBasketItem(customerId, productId);
+                    }
+                    return NotFound();
+                }
+                return Forbid();
+            }
+            return NotFound();
+        }
+
+        private async Task<IActionResult> DeleteBasketItem(int customerId, int productId)
+        {
+            if (await _orderRepository.DeleteBasketItem(customerId, productId))
+            {
+                return Ok();
+            }
+            return NotFound();
         }
 
         private async Task<bool> IsBasketItemValid(BasketItemDto newItem)
