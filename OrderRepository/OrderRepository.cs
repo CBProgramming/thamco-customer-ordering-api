@@ -97,7 +97,7 @@ namespace Order.Repository
                     Price = product.Price,
                     Quantity = basketItem.Quantity
                 });
-            return basketItems == null ? null : basketItems.ToList();
+            return basketItems?.ToList();
         }
 
         public async Task<bool> FinaliseOrder(int customerId)
@@ -107,7 +107,8 @@ namespace Order.Repository
 
         private async Task<bool> ProductDetailsCheck(ProductEFModel product)
         {
-            if (await ProductExists(product.ProductId))
+            var productExists = await ProductExists(product.ProductId);
+            if (productExists)
             {
                 return await CreateProduct(_mapper.Map<ProductEFModel>(product));
             }

@@ -35,14 +35,26 @@ namespace OrderData.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("BasketItems");
+
+                    b.HasData(
+                        new
+                        {
+                            CustomerId = 1,
+                            ProductId = 1,
+                            Quantity = 5
+                        },
+                        new
+                        {
+                            CustomerId = 1,
+                            ProductId = 2,
+                            Quantity = 3
+                        });
                 });
 
             modelBuilder.Entity("OrderData.Customer", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -53,35 +65,71 @@ namespace OrderData.Migrations
                     b.Property<string>("AddressTwo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("County")
+                    b.Property<string>("AreaCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
+                    b.Property<bool>("CanPurchase")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("EmailAddress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("FamilyName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PostCode")
+                    b.Property<string>("GivenName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Telephone")
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TelephoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Town")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CustomerId");
 
                     b.ToTable("Customers");
+
+                    b.HasData(
+                        new
+                        {
+                            CustomerId = 1,
+                            Active = true,
+                            AddressOne = "85 Clifton Road",
+                            AreaCode = "DL1 5RT",
+                            CanPurchase = true,
+                            EmailAddress = "t7145969@live.tees.ac.uk",
+                            FamilyName = "Burrell",
+                            GivenName = "Chris",
+                            State = "Durham",
+                            TelephoneNumber = "09876543210",
+                            Town = "Downtown"
+                        },
+                        new
+                        {
+                            CustomerId = 2,
+                            Active = true,
+                            AddressOne = "20 Fake Road",
+                            AreaCode = "DLF AKE",
+                            CanPurchase = true,
+                            EmailAddress = "fake@live.tees.ac.uk",
+                            FamilyName = "McFakeFace",
+                            GivenName = "Fakie",
+                            State = "FakeState",
+                            TelephoneNumber = "01010101010",
+                            Town = "FakeTown"
+                        });
                 });
 
             modelBuilder.Entity("OrderData.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
@@ -92,10 +140,10 @@ namespace OrderData.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
+                    b.Property<double>("Total")
+                        .HasColumnType("float");
 
-                    b.HasKey("Id");
+                    b.HasKey("OrderId");
 
                     b.HasIndex("CustomerId");
 
@@ -110,11 +158,11 @@ namespace OrderData.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -128,20 +176,38 @@ namespace OrderData.Migrations
 
             modelBuilder.Entity("OrderData.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Value")
-                        .HasColumnType("int");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProductId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            ProductId = 1,
+                            Name = "Fake Product 1",
+                            Price = 1.0
+                        },
+                        new
+                        {
+                            ProductId = 2,
+                            Name = "Fake Product 2",
+                            Price = 2.0
+                        },
+                        new
+                        {
+                            ProductId = 3,
+                            Name = "Fake Product 3",
+                            Price = 3.0
+                        });
                 });
 
             modelBuilder.Entity("OrderData.BasketItem", b =>

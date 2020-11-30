@@ -18,7 +18,7 @@ namespace CustomerOrderingService.UnitTests
 {
     public class OrderTests
     {
-        private List<OrderEFModel> setupStandardOrderEFModels()
+        private List<OrderEFModel> SetupStandardOrderEFModels()
         {
             return new List<OrderEFModel>()
             {
@@ -27,7 +27,7 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private CustomerEFModel setupStandardCustomer()
+        private CustomerEFModel SetupStandardCustomer()
         {
             return new CustomerEFModel
             {
@@ -125,8 +125,8 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrderHistory_ShouldOkObject()
         {
             //Arrange
-            var customer = setupStandardCustomer();
-            var orders = setupStandardOrderEFModels();
+            var customer = SetupStandardCustomer();
+            var orders = SetupStandardOrderEFModels();
             var orderedItems = SetupStandardOrderedItemEFModels();
             var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
             var mapper = SetupMapper();
@@ -158,8 +158,8 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrderHistory_InvalidCustomerId_ShouldNotFound()
         {
             //Arrange
-            var customer = setupStandardCustomer();
-            var orders = setupStandardOrderEFModels();
+            var customer = SetupStandardCustomer();
+            var orders = SetupStandardOrderEFModels();
             var orderedItems = SetupStandardOrderedItemEFModels();
             var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
             var mapper = SetupMapper();
@@ -180,8 +180,8 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrderHistory_InactiveCustomerId_ShouldNotFound()
         {
             //Arrange
-            var customer = setupStandardCustomer();
-            var orders = setupStandardOrderEFModels();
+            var customer = SetupStandardCustomer();
+            var orders = SetupStandardOrderEFModels();
             var orderedItems = SetupStandardOrderedItemEFModels();
             var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
             var mapper = SetupMapper();
@@ -204,7 +204,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrderHistory_NoOrders()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemEFModels();
             var fakeRepo = SetupFakeRepo(customer, null, orderedItems);
             var mapper = SetupMapper();
@@ -228,8 +228,8 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrder_ShouldOkObject()
         {
             //Arrange
-            var customer = setupStandardCustomer();
-            var orders = setupStandardOrderEFModels();
+            var customer = SetupStandardCustomer();
+            var orders = SetupStandardOrderEFModels();
             var orderedItems = SetupStandardOrderedItemEFModels();
             var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
             var mapper = SetupMapper();
@@ -265,8 +265,8 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrder_InvalidId_ShouldNotFound()
         {
             //Arrange
-            var customer = setupStandardCustomer();
-            var orders = setupStandardOrderEFModels();
+            var customer = SetupStandardCustomer();
+            var orders = SetupStandardOrderEFModels();
             var orderedItems = SetupStandardOrderedItemEFModels();
             var fakeRepo = SetupFakeRepo(customer, orders, orderedItems);
             var mapper = SetupMapper();
@@ -288,8 +288,8 @@ namespace CustomerOrderingService.UnitTests
         public async Task GetOrder_NoOrderedItems_ShouldOkObject()
         {
             //Arrange
-            var customer = setupStandardCustomer();
-            var orders = setupStandardOrderEFModels();
+            var customer = SetupStandardCustomer();
+            var orders = SetupStandardOrderEFModels();
             var fakeRepo = SetupFakeRepo(customer, orders, null);
             var mapper = SetupMapper();
             var logger = SetupLogger();
@@ -316,7 +316,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ShouldOk()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -339,7 +339,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeItemPrice_ShouldUnprocessableEntity()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -362,7 +362,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ZeroItemPrice_ShouldUnprocessableEntity()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -385,7 +385,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeTotalPrice_ShouldUnprocessableEntity()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -408,7 +408,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ZeroTotalPrice_ShouldUnprocessableEntity()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -431,7 +431,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeItemQuantity_ShouldUnprocessableEntity()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -454,7 +454,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ZeroItemQuantity_ShouldUnprocessableEntity()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -477,7 +477,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_InvalidCustomerId_ShouldNotFound()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -500,7 +500,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_InvalidProductId_ShouldNotFound()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
@@ -526,7 +526,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_CustomerCantPurchase_ShouldForbid()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -549,7 +549,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_CustomerNotActive_ShouldForbid()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -572,7 +572,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_OutOfStock_ShouldConflict()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = new List<ProductEFModel>()
             {
@@ -599,7 +599,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NotEnoughStock_ShouldConflict()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
@@ -625,7 +625,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeQuantity_ShouldConflict()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = -2},
@@ -656,7 +656,7 @@ namespace CustomerOrderingService.UnitTests
                 System.Threading.Thread.Sleep(2000);
             }
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -688,7 +688,7 @@ namespace CustomerOrderingService.UnitTests
                 System.Threading.Thread.Sleep(2000);
             }
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -719,7 +719,7 @@ namespace CustomerOrderingService.UnitTests
                 System.Threading.Thread.Sleep(2000);
             }
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -757,7 +757,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NoOrderedItems()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
             };
@@ -782,7 +782,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NullOrderedItems()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(null);
             var fakeRepo = SetupFakeRepo(customer, productsInStock);
@@ -803,7 +803,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ZeroUnitPrice_ShouldOk()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 0, Quantity = 2},
@@ -829,7 +829,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_ZeroTotalPrice_ShouldOk()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = 0, Quantity = 2},
@@ -856,7 +856,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeUnitPrice_ShouldOk()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = -0.01, Quantity = 2},
@@ -882,7 +882,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_NegativeTotalPrice_ShouldOk()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = new List<OrderedItemDto>()
             {
                 new OrderedItemDto{ ProductId = 1, Name = "Product 1", Price = -0.01, Quantity = 2},
@@ -909,7 +909,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_RepoFailure_ShouldNotFound()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
@@ -932,7 +932,7 @@ namespace CustomerOrderingService.UnitTests
         public async Task CreateOrder_FacadeFailure_ShouldNotFound()
         {
             //Arrange
-            var customer = setupStandardCustomer();
+            var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
             var productsInStock = SetupStandardProductsInStock();
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);

@@ -8,13 +8,17 @@ namespace OrderData
     public class OrderDb : DbContext
     {
 
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<BasketItem> BasketItems { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderedItem> OrderedItems { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<BasketItem> BasketItems { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderedItem> OrderedItems { get; set; }
 
         public OrderDb(DbContextOptions<OrderDb> options) : base(options)
+        {
+        }
+
+        public OrderDb()
         {
         }
 
@@ -45,8 +49,24 @@ namespace OrderData
                 .HasData(
                     new Customer { CustomerId = 1, GivenName = "Chris", FamilyName = "Burrell", AddressOne = "85 Clifton Road", 
                         Town = "Downtown", State = "Durham", AreaCode = "DL1 5RT", EmailAddress = "t7145969@live.tees.ac.uk", 
-                        TelephoneNumber = "09876543210", Active = true, CanPurchase = true }
+                        TelephoneNumber = "09876543210", Active = true, CanPurchase = true },
+                    new Customer { CustomerId = 2, GivenName = "Fakie", FamilyName = "McFakeFace", AddressOne = "20 Fake Road",
+                        Town = "FakeTown", State = "FakeState", AreaCode = "DLF AKE", EmailAddress = "fake@live.tees.ac.uk",
+                        TelephoneNumber = "01010101010", Active = true, CanPurchase = true}
                 );
+
+            builder.Entity<Product>()
+                .HasData(
+                    new Product { ProductId = 1, Name = "Fake Product 1", Price = 1.00 },
+                    new Product { ProductId = 2, Name = "Fake Product 2", Price = 2.00 },
+                    new Product { ProductId = 3, Name = "Fake Product 3", Price = 3.00 }
+                );
+
+            builder.Entity<BasketItem>()
+                .HasData(
+                    new BasketItem { CustomerId = 1, ProductId = 1, Quantity = 5 },
+                    new BasketItem { CustomerId = 1, ProductId = 2, Quantity = 3 }
+                    );
 
         }
     }

@@ -224,7 +224,6 @@ namespace CustomerOrderingService.UnitTests
             var logger = SetupLogger();
             var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
-            var customerId = 1;
 
             //Act
             var result = await controller.Create(basketItem);
@@ -454,7 +453,6 @@ namespace CustomerOrderingService.UnitTests
             var logger = SetupLogger();
             var basketItem = SetupStandardEditedBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
-            var customerId = 1;
 
             //Act
             var result = await controller.Create(basketItem);
@@ -684,7 +682,6 @@ namespace CustomerOrderingService.UnitTests
             var logger = SetupLogger();
             var basketItem = SetupStandardEditedBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
-            var customerId = 1;
 
             //Act
             var result = await controller.Edit(basketItem);
@@ -914,7 +911,6 @@ namespace CustomerOrderingService.UnitTests
             var logger = SetupLogger();
             var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
-            var customerId = 1;
 
             //Act
             var result = await controller.Edit(basketItem);
@@ -1142,7 +1138,6 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             int itemId = 1;
 
@@ -1165,7 +1160,6 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             int customerId = 2;
             int itemId = 1;
@@ -1189,7 +1183,6 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             customer.Active = false;
             int itemId = 1;
@@ -1213,7 +1206,6 @@ namespace CustomerOrderingService.UnitTests
             var fakeRepo = SetupFakeRepo(customer, currentBasket, products);
             var mapper = SetupMapper();
             var logger = SetupLogger();
-            var basketItem = SetupStandardNewBasketItem();
             var controller = new BasketController(logger, fakeRepo, mapper);
             int itemId = 99;
 
