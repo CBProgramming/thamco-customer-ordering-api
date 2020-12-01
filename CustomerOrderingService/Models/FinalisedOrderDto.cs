@@ -8,6 +8,9 @@ namespace CustomerOrderingService.Models
 {
     public class FinalisedOrderDto
     {
+
+        public int OrderId { get; set; }
+
         public int CustomerId { get; set; }
 
         [Required]

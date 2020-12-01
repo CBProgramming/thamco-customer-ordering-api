@@ -179,5 +179,20 @@ namespace Order.Repository
         {
             return CurrentBasket.Any(b => b.ProductId == productId);
         }
+
+        public Task<bool> NewCustomer(CustomerEFModel customer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> EditCustomer(CustomerEFModel customer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AnonymiseCustomer(CustomerEFModel customer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

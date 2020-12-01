@@ -291,5 +291,59 @@ namespace Order.Repository
         {
             return _context.Orders.Any(o => o.OrderId == orderId);
         }
+
+        public async Task<bool> NewCustomer(CustomerEFModel newCustomer)
+        {
+            if (newCustomer != null)
+            {
+                try
+                {
+                    var customer = _mapper.Map<Customer>(newCustomer);
+                    _context.Add(customer);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> EditCustomer(CustomerEFModel editedCustomer)
+        {
+            if (editedCustomer != null)
+            {
+                var customer = await _context.Customers.FindAsync(editedCustomer.CustomerId);
+                try
+                {
+                    customer.GivenName = editedCustomer.GivenName;
+                    customer.FamilyName = editedCustomer.FamilyName;
+                    customer.AddressOne = editedCustomer.AddressOne;
+                    customer.AddressTwo = editedCustomer.AddressTwo;
+                    customer.Town = editedCustomer.Town;
+                    customer.State = editedCustomer.State;
+                    customer.AreaCode = editedCustomer.AreaCode;
+                    customer.Country = editedCustomer.Country;
+                    customer.EmailAddress = editedCustomer.EmailAddress;
+                    customer.TelephoneNumber = editedCustomer.TelephoneNumber;
+                    customer.CanPurchase = editedCustomer.CanPurchase;
+                    customer.Active = editedCustomer.Active;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> AnonymiseCustomer(CustomerEFModel anonCustomer)
+        {
+            return await EditCustomer(anonCustomer);
+        }
     }
 }

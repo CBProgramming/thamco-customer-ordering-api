@@ -68,6 +68,9 @@ namespace OrderData
                     new BasketItem { CustomerId = 1, ProductId = 2, Quantity = 3 }
                     );
 
+            builder.Entity<Order>()
+                .HasData(new Order { CustomerId = 1, OrderDate = new DateTime(2020, 1, 1), OrderId = 1, Total = 10.99 });
+
         }
     }
 }

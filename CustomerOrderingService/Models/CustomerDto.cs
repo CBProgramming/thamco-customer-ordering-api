@@ -31,5 +31,6 @@ namespace CustomerOrderingService.Models
 
         public bool CanPurchase { get; set; }
 
+        public bool Active { get; set; }
     }
 }

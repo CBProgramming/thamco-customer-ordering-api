@@ -34,7 +34,7 @@ namespace CustomerOrderingService.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get (int customerId, [FromQuery] int? orderId)
+        public async Task<IActionResult> Get (int customerId, int? orderId)
         {
             if (await _orderRepository.CustomerExists(customerId))
             {

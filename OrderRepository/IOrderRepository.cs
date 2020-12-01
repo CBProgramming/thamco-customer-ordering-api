@@ -50,5 +50,11 @@ namespace Order.Repository
         public Task<bool> CanCustomerPurchase(int customerId);
 
         public Task<bool> IsItemInBasket(int customerId, int productId);
+
+        public Task<bool> NewCustomer(CustomerEFModel customer);
+
+        public Task<bool> EditCustomer(CustomerEFModel customer);
+
+        public Task<bool> AnonymiseCustomer(CustomerEFModel customer);
     }
 }

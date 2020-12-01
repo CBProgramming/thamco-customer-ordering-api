@@ -28,8 +28,6 @@ namespace Order.Repository.Models
 
         public string TelephoneNumber { get; set; }
 
-        public bool RequestedDelection  { get; set; }
-
         public bool CanPurchase { get; set; }
 
         public bool Active { get; set; }

@@ -30,7 +30,6 @@ namespace CustomerOrderingService
                     context.Database.EnsureCreated();
                 }
             }
-
             host.Run();
         }
 
