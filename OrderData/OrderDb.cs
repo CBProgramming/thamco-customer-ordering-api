@@ -39,6 +39,7 @@ namespace OrderData
 
             builder.Entity<Customer>()
                 .Property(c => c.CustomerId)
+                // key is always provided
                 .ValueGeneratedNever();
 
             builder.Entity<Product>()
@@ -47,15 +48,37 @@ namespace OrderData
 
             builder.Entity<Customer>()
                 .HasData(
-                    new Customer { CustomerId = 1, GivenName = "Chris", FamilyName = "Burrell", AddressOne = "85 Clifton Road", 
-                        Town = "Downtown", State = "Durham", AreaCode = "DL1 5RT", EmailAddress = "t7145969@live.tees.ac.uk", 
-                        TelephoneNumber = "09876543210", Active = true, CanPurchase = true },
-                    new Customer { CustomerId = 2, GivenName = "Fakie", FamilyName = "McFakeFace", AddressOne = "20 Fake Road",
-                        Town = "FakeTown", State = "FakeState", AreaCode = "DLF AKE", EmailAddress = "fake@live.tees.ac.uk",
-                        TelephoneNumber = "01010101010", Active = true, CanPurchase = true}
+                    new Customer
+                    {
+                        CustomerId = 1,
+                        GivenName = "Chris",
+                        FamilyName = "Burrell",
+                        AddressOne = "85 Clifton Road",
+                        Town = "Downtown",
+                        State = "Durham",
+                        AreaCode = "DL1 5RT",
+                        EmailAddress = "t7145969@live.tees.ac.uk",
+                        TelephoneNumber = "09876543210",
+                        Active = true,
+                        CanPurchase = true
+                    },
+                    new Customer
+                    {
+                        CustomerId = 2,
+                        GivenName = "Fakie",
+                        FamilyName = "McFakeFace",
+                        AddressOne = "20 Fake Road",
+                        Town = "FakeTown",
+                        State = "FakeState",
+                        AreaCode = "DLF AKE",
+                        EmailAddress = "fake@live.tees.ac.uk",
+                        TelephoneNumber = "01010101010",
+                        Active = true,
+                        CanPurchase = true
+                    }
                 );
 
-            builder.Entity<Product>()
+/*            builder.Entity<Product>()
                 .HasData(
                     new Product { ProductId = 1, Name = "Fake Product 1", Price = 1.00 },
                     new Product { ProductId = 2, Name = "Fake Product 2", Price = 2.00 },
@@ -69,7 +92,7 @@ namespace OrderData
                     );
 
             builder.Entity<Order>()
-                .HasData(new Order { CustomerId = 1, OrderDate = new DateTime(2020, 1, 1), OrderId = 1, Total = 10.99 });
+                .HasData(new Order { CustomerId = 1, OrderDate = new DateTime(2020, 1, 1), OrderId = 1, Total = 10.99 });*/
 
         }
     }

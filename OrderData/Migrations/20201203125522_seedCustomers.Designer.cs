@@ -10,8 +10,8 @@ using OrderData;
 namespace OrderData.Migrations
 {
     [DbContext(typeof(OrderDb))]
-    [Migration("20201130135804_InitialSeed")]
-    partial class InitialSeed
+    [Migration("20201203125522_seedCustomers")]
+    partial class seedCustomers
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,20 +37,6 @@ namespace OrderData.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("BasketItems");
-
-                    b.HasData(
-                        new
-                        {
-                            CustomerId = 1,
-                            ProductId = 1,
-                            Quantity = 5
-                        },
-                        new
-                        {
-                            CustomerId = 1,
-                            ProductId = 2,
-                            Quantity = 3
-                        });
                 });
 
             modelBuilder.Entity("OrderData.Customer", b =>
@@ -190,26 +176,6 @@ namespace OrderData.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            Name = "Fake Product 1",
-                            Price = 1.0
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            Name = "Fake Product 2",
-                            Price = 2.0
-                        },
-                        new
-                        {
-                            ProductId = 3,
-                            Name = "Fake Product 3",
-                            Price = 3.0
-                        });
                 });
 
             modelBuilder.Entity("OrderData.BasketItem", b =>

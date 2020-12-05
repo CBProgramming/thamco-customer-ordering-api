@@ -17,6 +17,10 @@ using AutoMapper;
 using StaffProduct.Facade;
 using Polly;
 using System.Net.Http;
+using Microsoft.AspNetCore.Identity;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
 
 namespace CustomerOrderingService
 {
@@ -32,10 +36,19 @@ namespace CustomerOrderingService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "https://localhost:43389";
+                    options.Audience = "orders_api";
+                });
+            IdentityModelEventSource.ShowPII = true;
+
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<OrderDb>(options => options.UseSqlServer(
-                 Configuration.GetConnectionString("OrderConnection"), optionsBuilder =>
+                 Configuration.GetConnectionString("CustomerOrdering"), optionsBuilder =>
                  {
                      optionsBuilder.EnableRetryOnFailure(10, TimeSpan.FromSeconds(10), null);
                  }
@@ -66,12 +79,17 @@ namespace CustomerOrderingService
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
+
+            
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

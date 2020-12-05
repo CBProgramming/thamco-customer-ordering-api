@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CustomerOrderingService.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Order.Repository;
@@ -14,7 +15,8 @@ using Order.Repository.Models;
 namespace CustomerOrderingService.Controllers
 {
     [Route("api/[controller]")]
-    public class CustomerController : Controller
+    [ApiController]
+    public class CustomerController : ControllerBase
     {
         private readonly ILogger<OrderController> _logger;
         private readonly IOrderRepository _orderRepository;
@@ -28,9 +30,13 @@ namespace CustomerOrderingService.Controllers
         }
 
         // GET: api/<controller>
-        [HttpGet]
-        public async Task<IActionResult> Get(int customerId)
+        [HttpGet("{customerId}")]
+        [Authorize]
+        public async Task<IActionResult> Get([FromRoute]int customerId)
         {
+            //reaqd from access token
+            //var userId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+
             if (await _orderRepository.CustomerExists(customerId))
             {
                 var customer = _mapper.Map<CustomerDto>(await _orderRepository.GetCustomer(customerId));
@@ -39,19 +45,31 @@ namespace CustomerOrderingService.Controllers
                     return Ok(customer);
                 }
             }
+            /*            var customer = _mapper.Map<CustomerDto>(await _orderRepository.GetCustomer(customerId));
+                        if (customer != null)
+                        {
+                            return Ok(customer);
+                        }*/
             return NotFound();
+
+            //return Ok();
         }
 
         // POST api/<controller>
         [HttpPost]
-        public async Task<IActionResult> Post(CustomerDto customer)
+        public async Task<IActionResult> Post([FromBody]CustomerDto customer)
         {
-            return await NewOrEditedCustomer(customer);
+            if (await _orderRepository.NewCustomer(_mapper.Map<CustomerEFModel>(customer)))
+            {
+                return Ok();
+            }
+            return NotFound();
+            //return await NewOrEditedCustomer(customer);
         }
 
         // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(CustomerDto customer)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody]CustomerDto customer)
         {
             return await NewOrEditedCustomer(customer);
         }
@@ -76,7 +94,8 @@ namespace CustomerOrderingService.Controllers
         }
 
         // DELETE api/<controller>/5
-        public async Task<IActionResult> Delete(int customerId)
+        [HttpDelete("{customerId}")]
+        public async Task<IActionResult> Delete([FromRoute]int customerId)
         {
             if (await AnonymiseCustomer(customerId))
             {
@@ -98,8 +117,8 @@ namespace CustomerOrderingService.Controllers
                 State = "Anonymised",
                 AreaCode = "Anonymised",
                 Country = "Anonymised",
-                EmailAddress = "Anonymised",
-                TelephoneNumber = "Anonymised",
+                EmailAddress = "anon@anon.com",
+                TelephoneNumber = "00000000000",
                 CanPurchase = false,
                 Active = false
             };
