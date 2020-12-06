@@ -35,7 +35,7 @@ namespace CustomerOrderingService.Controllers
         public async Task<IActionResult> Get([FromRoute]int customerId)
         {
             //reaqd from access token
-            //var userId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
 
             if (await _orderRepository.CustomerExists(customerId))
             {

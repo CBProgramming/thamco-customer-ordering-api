@@ -26,24 +26,38 @@ namespace CustomerOrderingService
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             Configuration = configuration;
+            Env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private Microsoft.AspNetCore.Hosting.IHostingEnvironment Env { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            services.AddAuthentication("Bearer")
+            if (Env.IsDevelopment())
+            {
+                services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = "https://localhost:43389";
-                    options.Audience = "orders_api";
+                    options.Audience = "customer_ordering_api";
                 });
-            IdentityModelEventSource.ShowPII = true;
+                IdentityModelEventSource.ShowPII = true;
+            }
+            else
+            {
+                services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "https://thamcocustomerauth.azurewebsites.net/";
+                    options.Audience = "customer_ordering_api";
+                });
+            }
 
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));

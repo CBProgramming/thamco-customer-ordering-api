@@ -31,6 +31,8 @@ namespace OrderData
         {
             base.OnModelCreating(builder);
 
+            builder.HasDefaultSchema("customeraccount");
+
             builder.Entity<BasketItem>()
                    .HasKey(b => new { b.CustomerId, b.ProductId });
 

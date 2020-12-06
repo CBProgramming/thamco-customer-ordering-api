@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StaffProduct.Facade.Models;
 using System.Net.Http;
+using IdentityModel.Client;
 
 namespace StaffProduct.Facade
 {
@@ -19,6 +20,9 @@ namespace StaffProduct.Facade
         public async Task<bool> UpdateStock(List<StockReductionDto> stockReductions)
         {
             var httpClient = _httpClientFactory.CreateClient("StaffProductAPI");
+            httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+            });
             string uri = "/api/Products/";
             if((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(uri,stockReductions)).IsSuccessStatusCode)
             {
