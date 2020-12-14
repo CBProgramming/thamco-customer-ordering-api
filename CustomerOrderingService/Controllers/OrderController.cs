@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CustomerOrderingService.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace CustomerOrderingService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "CustomerOnly")]
     public class OrderController : ControllerBase
     {
         private readonly ILogger<OrderController> _logger;
@@ -74,12 +76,12 @@ namespace CustomerOrderingService.Controllers
             {
                 //check if customer and products exist
                 if (await _orderRepository.CustomerExists(order.CustomerId)
-                && await _orderRepository.ProductsExist(_mapper.Map<List<ProductEFModel>>(order.OrderedItems)))
+                && await _orderRepository.ProductsExist(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
                 {
                     if (await _orderRepository.CanCustomerPurchase(order.CustomerId)
                         && await _orderRepository.IsCustomerActive(order.CustomerId))
                     {
-                        if (await _orderRepository.ProductsInStock(_mapper.Map<List<ProductEFModel>>(order.OrderedItems)))
+                        if (await _orderRepository.ProductsInStock(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
                         {
                             //reduce stock before creating order (it's worse customer service to allow a customer to order something out of stock
                             //than for the company to innacurately display stock levels as lower than they are if an order fails
@@ -87,7 +89,7 @@ namespace CustomerOrderingService.Controllers
                             if (await _staffProductFacade.UpdateStock(stockReductionList))
                             {
                                 order.OrderDate = ValidateDate(order.OrderDate);
-                                if (await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderEFModel>(order)))
+                                if (await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderRepoModel>(order)))
                                 {
                                     await _orderRepository.ClearBasket(order.CustomerId);
                                     //return ok regardless of if the basket successfully clears because the order is complete

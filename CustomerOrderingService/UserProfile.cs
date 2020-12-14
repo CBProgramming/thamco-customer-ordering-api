@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CustomerAccount.Facade.Models;
 using CustomerOrderingService.Models;
 using Order.Repository.Data;
 using Order.Repository.Models;
@@ -15,36 +16,38 @@ namespace CustomerOrderingService
     {
         public UserProfile()
         {
-            CreateMap<BasketItemDto, BasketItemEFModel>();
-            CreateMap<BasketItemEFModel, BasketItemDto>();
-            CreateMap<BasketItemDto, BasketProductsEFModel>();
-            CreateMap<BasketProductsEFModel, BasketItemDto>();
-            CreateMap<BasketItemEFModel, BasketItem>();
-            CreateMap<BasketItem, BasketItemEFModel>();
-            CreateMap<BasketItemEFModel, ProductEFModel>();
-            CreateMap<ProductEFModel, BasketItemEFModel>();
-            CreateMap<ProductEFModel, Product>();
-            CreateMap<OrderedItemDto, ProductEFModel>();
-            CreateMap<ProductEFModel, OrderedItemDto>();
-            CreateMap<Product, BasketItemEFModel>();
-            CreateMap<CustomerDto, CustomerEFModel>();
-            CreateMap<CustomerEFModel, CustomerDto>();
-            CreateMap<CustomerEFModel, Customer>();
-            CreateMap<Customer, CustomerEFModel>();
-            CreateMap<OrderData.Order, OrderEFModel>();
-            CreateMap<OrderEFModel, OrderData.Order>();
-            CreateMap<OrderEFModel, OrderDto>();
-            CreateMap<OrderDto, OrderEFModel>();
-            CreateMap<OrderedItem, OrderedItemEFModel>();
-            CreateMap<OrderedItemEFModel, OrderedItem>();
-            CreateMap<OrderedItemDto, OrderedItemEFModel>();
-            CreateMap<OrderedItemEFModel, OrderedItemDto>();
+            CreateMap<BasketItemDto, BasketItemRepoModel>();
+            CreateMap<BasketItemRepoModel, BasketItemDto>();
+            CreateMap<BasketItemDto, BasketProductsRepoModel>();
+            CreateMap<BasketProductsRepoModel, BasketItemDto>();
+            CreateMap<BasketItemRepoModel, BasketItem>();
+            CreateMap<BasketItem, BasketItemRepoModel>();
+            CreateMap<BasketItemRepoModel, ProductRepoModel>();
+            CreateMap<ProductRepoModel, BasketItemRepoModel>();
+            CreateMap<ProductRepoModel, Product>();
+            CreateMap<OrderedItemDto, ProductRepoModel>();
+            CreateMap<ProductRepoModel, OrderedItemDto>();
+            CreateMap<Product, BasketItemRepoModel>();
+            CreateMap<CustomerDto, CustomerRepoModel>();
+            CreateMap<CustomerRepoModel, CustomerDto>();
+            CreateMap<CustomerRepoModel, Customer>();
+            CreateMap<Customer, CustomerRepoModel>();
+            CreateMap<OrderData.Order, OrderRepoModel>();
+            CreateMap<OrderRepoModel, OrderData.Order>();
+            CreateMap<OrderRepoModel, OrderDto>();
+            CreateMap<OrderDto, OrderRepoModel>();
+            CreateMap<OrderedItem, OrderedItemRepoModel>();
+            CreateMap<OrderedItemRepoModel, OrderedItem>();
+            CreateMap<OrderedItemDto, OrderedItemRepoModel>();
+            CreateMap<OrderedItemRepoModel, OrderedItemDto>();
             CreateMap<StockReductionDto, OrderedItemDto>();
             CreateMap<OrderedItemDto, StockReductionDto>();
-            CreateMap<FinalisedOrderDto, FinalisedOrderEFModel>();
-            CreateMap<FinalisedOrderEFModel, FinalisedOrderDto>();
-            CreateMap<OrderEFModel, OrderHistoryDto>();
-            CreateMap<OrderHistoryDto, OrderEFModel>();
+            CreateMap<FinalisedOrderDto, FinalisedOrderRepoModel>();
+            CreateMap<FinalisedOrderRepoModel, FinalisedOrderDto>();
+            CreateMap<OrderRepoModel, OrderHistoryDto>();
+            CreateMap<OrderHistoryDto, OrderRepoModel>();
+            CreateMap<CustomerDto, CustomerFacadeDto>();
+            CreateMap<CustomerFacadeDto, CustomerDto>();
         }
     }
 }

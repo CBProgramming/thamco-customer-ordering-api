@@ -21,11 +21,11 @@ namespace Order.Repository
             _mapper = mapper;
         }
 
-        public async Task<bool> AddBasketItem(BasketItemEFModel newItem)
+        public async Task<bool> AddBasketItem(BasketItemRepoModel newItem)
         {
-            if (await ProductDetailsCheck(_mapper.Map<ProductEFModel>(newItem)))
+            if (await ProductDetailsCheck(_mapper.Map<ProductRepoModel>(newItem)))
             {
-                return await AddToBasket(_mapper.Map<BasketItemEFModel>(newItem));
+                return await AddToBasket(_mapper.Map<BasketItemRepoModel>(newItem));
             }
             else
             {
@@ -33,7 +33,7 @@ namespace Order.Repository
             }
         }
 
-        private async Task<bool> AddToBasket(BasketItemEFModel basketItem)
+        private async Task<bool> AddToBasket(BasketItemRepoModel basketItem)
         {
             if (await IsItemInBasket(basketItem.CustomerId, basketItem.ProductId))
             {
@@ -54,11 +54,11 @@ namespace Order.Repository
             }
         }
 
-        public async Task<bool> EditBasketItem(BasketItemEFModel editedItem)
+        public async Task<bool> EditBasketItem(BasketItemRepoModel editedItem)
         {
-            if (await ProductDetailsCheck(_mapper.Map<ProductEFModel>(editedItem)))
+            if (await ProductDetailsCheck(_mapper.Map<ProductRepoModel>(editedItem)))
             {
-                return await EditItemInBasket(_mapper.Map<BasketItemEFModel>(editedItem));
+                return await EditItemInBasket(_mapper.Map<BasketItemRepoModel>(editedItem));
             }
             else
             {
@@ -85,12 +85,12 @@ namespace Order.Repository
             }
         }
 
-        public async Task<IList<BasketProductsEFModel>> GetBasket(int customerId)
+        public async Task<IList<BasketProductsRepoModel>> GetBasket(int customerId)
         {
             var basketItems = _context.BasketItems
                 .Where(b => b.CustomerId == customerId)
                 .Join(_context.Products,b => b.ProductId, p => p.ProductId,
-                (basketItem, product) => new BasketProductsEFModel
+                (basketItem, product) => new BasketProductsRepoModel
                 {
                     ProductId = product.ProductId,
                     ProductName = product.Name,
@@ -105,16 +105,16 @@ namespace Order.Repository
             throw new NotImplementedException();
         }
 
-        private async Task<bool> ProductDetailsCheck(ProductEFModel product)
+        private async Task<bool> ProductDetailsCheck(ProductRepoModel product)
         {
             var productExists = await ProductExists(product.ProductId);
             if (productExists)
             {
-                return await CreateProduct(_mapper.Map<ProductEFModel>(product));
+                return await CreateProduct(_mapper.Map<ProductRepoModel>(product));
             }
             else
             {
-                return await EditProduct(_mapper.Map<ProductEFModel>(product));
+                return await EditProduct(_mapper.Map<ProductRepoModel>(product));
             }
         }
 
@@ -123,7 +123,7 @@ namespace Order.Repository
             return _context.Products.Any(p => p.ProductId == id);
         }
 
-        private async Task<bool> CreateProduct(ProductEFModel product)
+        private async Task<bool> CreateProduct(ProductRepoModel product)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace Order.Repository
             }
         }
 
-        private async Task<bool> EditProduct(ProductEFModel product)
+        private async Task<bool> EditProduct(ProductRepoModel product)
         {
             try
             {
@@ -151,7 +151,7 @@ namespace Order.Repository
             }
         }
 
-        private async Task<bool> EditItemInBasket(BasketItemEFModel basketItemModel)
+        private async Task<bool> EditItemInBasket(BasketItemRepoModel basketItemModel)
         {
             try
             {
@@ -171,36 +171,36 @@ namespace Order.Repository
                 b => b.CustomerId == customerId && b.ProductId == productId) != null;
         }
 
-        public async Task<CustomerEFModel> GetCustomer(int customerId)
+        public async Task<CustomerRepoModel> GetCustomer(int customerId)
         {
-            return _mapper.Map<CustomerEFModel>(_context
+            return _mapper.Map<CustomerRepoModel>(_context
                 .Customers
                 .Where(c => c.Active == true)
                 .FirstOrDefault(c => c.CustomerId == customerId));
         }
 
-        public async Task<IList<OrderEFModel>> GetCustomerOrders(int customerId)
+        public async Task<IList<OrderRepoModel>> GetCustomerOrders(int customerId)
         {
-            return _mapper.Map<List<OrderEFModel>>(_context.Orders.Where(o => o.CustomerId == customerId));
+            return _mapper.Map<List<OrderRepoModel>>(_context.Orders.Where(o => o.CustomerId == customerId));
         }
 
-        public async Task<OrderEFModel> GetCustomerOrder(int? orderId)
+        public async Task<OrderRepoModel> GetCustomerOrder(int? orderId)
         {
-            return _mapper.Map<OrderEFModel>(_context.Orders.Where(o => o.OrderId == orderId));
+            return _mapper.Map<OrderRepoModel>(_context.Orders.Where(o => o.OrderId == orderId));
         }
 
-        public async Task<IList<OrderedItemEFModel>> GetOrderItems(int? orderId)
+        public async Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId)
         {
-            return _mapper.Map<List<OrderedItemEFModel>>(_context.OrderedItems.Where(o => o.OrderId == orderId));
+            return _mapper.Map<List<OrderedItemRepoModel>>(_context.OrderedItems.Where(o => o.OrderId == orderId));
         }
 
-        public async Task<bool> CreateOrder(FinalisedOrderEFModel finalisedOrder)
+        public async Task<bool> CreateOrder(FinalisedOrderRepoModel finalisedOrder)
         {
             try
             {
                 var order = _mapper.Map<OrderData.Order>(finalisedOrder);
                 _context.Add(order);
-                foreach (OrderedItemEFModel orderedItem in finalisedOrder.OrderedItems)
+                foreach (OrderedItemRepoModel orderedItem in finalisedOrder.OrderedItems)
                 {
                     var item = new OrderedItem
                     {
@@ -253,9 +253,9 @@ namespace Order.Repository
             return _context.Customers.FirstOrDefault(c => c.CustomerId == customerId).CanPurchase;
         }
 
-        public async Task<bool> ProductsExist(List<ProductEFModel> products)
+        public async Task<bool> ProductsExist(List<ProductRepoModel> products)
         {
-            foreach (ProductEFModel product in products)
+            foreach (ProductRepoModel product in products)
             {
                 if (! await ProductExists(product))
                 {
@@ -265,14 +265,14 @@ namespace Order.Repository
             return true;
         }
 
-        public async Task<bool> ProductExists(ProductEFModel product)
+        public async Task<bool> ProductExists(ProductRepoModel product)
         {
             return _context.Products.Any(p => p.ProductId == product.ProductId);
         }
 
-        public async Task<bool> ProductsInStock(List<ProductEFModel> products)
+        public async Task<bool> ProductsInStock(List<ProductRepoModel> products)
         {
-            foreach (ProductEFModel product in products)
+            foreach (ProductRepoModel product in products)
             {
                 if (! await ProductInStock(product))
                 {
@@ -282,9 +282,9 @@ namespace Order.Repository
             return true;
         }
 
-        public async Task<bool> ProductInStock(ProductEFModel product)
+        public async Task<bool> ProductInStock(ProductRepoModel product)
         {
-            return product.Quantity <= _mapper.Map<ProductEFModel>(_context.Products.Any(p => p.ProductId == product.ProductId)).Quantity;
+            return product.Quantity <= _mapper.Map<ProductRepoModel>(_context.Products.Any(p => p.ProductId == product.ProductId)).Quantity;
         }
 
         public async Task<bool> OrderExists(int? orderId)
@@ -292,7 +292,7 @@ namespace Order.Repository
             return _context.Orders.Any(o => o.OrderId == orderId);
         }
 
-        public async Task<bool> NewCustomer(CustomerEFModel newCustomer)
+        public async Task<bool> NewCustomer(CustomerRepoModel newCustomer)
         {
             if (newCustomer != null)
             {
@@ -311,7 +311,7 @@ namespace Order.Repository
             return false;
         }
 
-        public async Task<bool> EditCustomer(CustomerEFModel editedCustomer)
+        public async Task<bool> EditCustomer(CustomerRepoModel editedCustomer)
         {
             if (editedCustomer != null)
             {
@@ -341,7 +341,7 @@ namespace Order.Repository
             return false;
         }
 
-        public async Task<bool> AnonymiseCustomer(CustomerEFModel anonCustomer)
+        public async Task<bool> AnonymiseCustomer(CustomerRepoModel anonCustomer)
         {
             return await EditCustomer(anonCustomer);
         }

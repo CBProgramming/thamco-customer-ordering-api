@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Order.Repository.Models
 {
-    public class OrderEFModel
+    public class OrderRepoModel
     {
         public int OrderId { get; set; }
 

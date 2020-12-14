@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,16 +7,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Logging;
+using Polly;
+using System.Runtime.Serialization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using IdentityModel.Client;
 using OrderData;
 using Order.Repository;
-using AutoMapper;
 using StaffProduct.Facade;
-using Polly;
-using System.Net.Http;
-using Microsoft.AspNetCore.Identity;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Logging;
 
 namespace CustomerOrderingService
 {
@@ -39,26 +40,32 @@ namespace CustomerOrderingService
         public void ConfigureServices(IServiceCollection services)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            if (Env.IsDevelopment())
-            {
-                services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            services.AddAuthentication()
+                .AddJwtBearer("CustomerAuth", options =>
                 {
-                    options.Authority = "https://localhost:43389";
+                    options.Authority = Configuration.GetValue<string>("CustomerAuthServerUrl");
                     options.Audience = "customer_ordering_api";
                 });
-                IdentityModelEventSource.ShowPII = true;
-            }
-            else
-            {
-                services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
-                {
-                    options.Authority = "https://thamcocustomerauth.azurewebsites.net/";
-                    options.Audience = "customer_ordering_api";
-                });
-            }
 
+            services.AddAuthorization(OptionsBuilderConfigurationExtensions =>
+            {
+                OptionsBuilderConfigurationExtensions.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes("CustomerAuth")
+                .Build();
+
+                OptionsBuilderConfigurationExtensions.AddPolicy("CustomerOrAccountAPI", policy =>
+                policy.AddAuthenticationSchemes("CustomerAuth")
+                .RequireAssertion(context =>
+                context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer")
+                || context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_account_api")));
+
+                OptionsBuilderConfigurationExtensions.AddPolicy("Customeronly", policy =>
+                    policy.AddAuthenticationSchemes("CustomerAuth")
+                    .RequireAssertion(context =>
+                    context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer")));
+            });
+            
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<OrderDb>(options => options.UseSqlServer(
@@ -78,6 +85,30 @@ namespace CustomerOrderingService
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IStaffProductFacade, StaffProductFacade>();
 
+            services.AddHttpClient("CustomerAccountAPI", client =>
+            {
+                client.BaseAddress = new Uri(Configuration.GetValue<string>("CustomerAccountUrl"));
+            })
+                    .AddTransientHttpErrorPolicy(p => p.OrResult(
+                        msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+            services.AddHttpClient("InvoiceAPI", client =>
+            {
+                client.BaseAddress = new Uri(Configuration.GetValue<string>("InvoiceUrl"));
+            })
+                    .AddTransientHttpErrorPolicy(p => p.OrResult(
+                        msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+            services.AddHttpClient("StaffProductAPI", client =>
+            {
+                client.BaseAddress = new Uri(Configuration.GetValue<string>("StaffProductUrl"));
+            })
+                    .AddTransientHttpErrorPolicy(p => p.OrResult(
+                        msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
 
         }
 

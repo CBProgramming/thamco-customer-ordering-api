@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Order.Repository.Models
+namespace CustomerAccount.Facade.Models
 {
-    public class CustomerEFModel
+    public class CustomerFacadeDto
     {
         public int CustomerId { get; set; }
 

@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CustomerAccount.Facade\CustomerAccount.Facade.csproj" />
     <ProjectReference Include="..\OrderData\OrderData.csproj" />
     <ProjectReference Include="..\OrderRepository\Order.Repository.csproj" />
     <ProjectReference Include="..\StaffProductFacade\StaffProduct.Facade.csproj" />

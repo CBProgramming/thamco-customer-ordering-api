@@ -15,9 +15,9 @@ namespace CustomerOrderingService.UnitTests
 {
     public class RepositoryTests
     {
-        public BasketItemEFModel setupStandardBasketItemModel()
+        public BasketItemRepoModel setupStandardBasketItemModel()
         {
-            return new BasketItemEFModel
+            return new BasketItemRepoModel
             {
                 CustomerId = 1,
                 ProductId = 1,

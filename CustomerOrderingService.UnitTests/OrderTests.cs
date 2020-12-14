@@ -18,18 +18,18 @@ namespace CustomerOrderingService.UnitTests
 {
     public class OrderTests
     {
-        private List<OrderEFModel> SetupStandardOrderEFModels()
+        private List<OrderRepoModel> SetupStandardOrderEFModels()
         {
-            return new List<OrderEFModel>()
+            return new List<OrderRepoModel>()
             {
-                new OrderEFModel {OrderId = 1, OrderDate = new DateTime(2020,11,01), Total = 10.99 },
-                new OrderEFModel {OrderId = 2, OrderDate = new DateTime(2020,11,02), Total = 20.99 }
+                new OrderRepoModel {OrderId = 1, OrderDate = new DateTime(2020,11,01), Total = 10.99 },
+                new OrderRepoModel {OrderId = 2, OrderDate = new DateTime(2020,11,02), Total = 20.99 }
             };
         }
 
-        private CustomerEFModel SetupStandardCustomer()
+        private CustomerRepoModel SetupStandardCustomer()
         {
-            return new CustomerEFModel
+            return new CustomerRepoModel
             {
                 CustomerId = 1,
                 GivenName = "Fake",
@@ -45,17 +45,17 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private List<OrderedItemEFModel> SetupStandardOrderedItemEFModels()
+        private List<OrderedItemRepoModel> SetupStandardOrderedItemEFModels()
         {
-            return new List<OrderedItemEFModel>()
+            return new List<OrderedItemRepoModel>()
             {
-                new OrderedItemEFModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
-                new OrderedItemEFModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 2.99, Quantity = 3},
-                new OrderedItemEFModel{OrderId = 1, ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
+                new OrderedItemRepoModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 1.99, Quantity = 2},
+                new OrderedItemRepoModel{OrderId = 1, ProductId = 1, Name = "Product 1", Price = 2.99, Quantity = 3},
+                new OrderedItemRepoModel{OrderId = 1, ProductId = 2, Name = "Product 2", Price = 3.99, Quantity = 5}
             };
         }
 
-        private FakeOrderRepository SetupFakeRepo(CustomerEFModel customer, List<OrderEFModel> orders, List<OrderedItemEFModel> orderedItems)
+        private FakeOrderRepository SetupFakeRepo(CustomerRepoModel customer, List<OrderRepoModel> orders, List<OrderedItemRepoModel> orderedItems)
         {
             return new FakeOrderRepository
             {
@@ -91,13 +91,13 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private List<ProductEFModel> SetupStandardProductsInStock()
+        private List<ProductRepoModel> SetupStandardProductsInStock()
         {
-            return new List<ProductEFModel>()
+            return new List<ProductRepoModel>()
             {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
+                new ProductRepoModel{ ProductId = 1, Name = "Fake", Quantity = 10},
+                new ProductRepoModel{ ProductId = 2, Name = "Fake", Quantity = 10},
+                new ProductRepoModel{ ProductId = 3, Name = "Fake", Quantity = 10}
             };
         }
 
@@ -112,7 +112,7 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private FakeOrderRepository SetupFakeRepo(CustomerEFModel customer, List<ProductEFModel> productsInStock)
+        private FakeOrderRepository SetupFakeRepo(CustomerRepoModel customer, List<ProductRepoModel> productsInStock)
         {
             return new FakeOrderRepository
             {
@@ -574,11 +574,11 @@ namespace CustomerOrderingService.UnitTests
             //Arrange
             var customer = SetupStandardCustomer();
             var orderedItems = SetupStandardOrderedItemDtos();
-            var productsInStock = new List<ProductEFModel>()
+            var productsInStock = new List<ProductRepoModel>()
             {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 0},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10}
+                new ProductRepoModel{ ProductId = 1, Name = "Fake", Quantity = 10},
+                new ProductRepoModel{ ProductId = 2, Name = "Fake", Quantity = 0},
+                new ProductRepoModel{ ProductId = 3, Name = "Fake", Quantity = 10}
             };
             var finalisedOrder = SetupStandardFinalisedOrderDto(orderedItems);
             var fakeRepo = SetupFakeRepo(customer, productsInStock);

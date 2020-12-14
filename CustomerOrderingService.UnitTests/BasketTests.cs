@@ -18,9 +18,9 @@ namespace CustomerOrderingService.UnitTests
 {
     public class BasketTests
     {
-        private CustomerEFModel SetupStandardCustomer()
+        private CustomerRepoModel SetupStandardCustomer()
         {
-            return new CustomerEFModel
+            return new CustomerRepoModel
             {
                 CustomerId = 1,
                 GivenName = "Fake",
@@ -60,8 +60,8 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private FakeOrderRepository SetupFakeRepo(CustomerEFModel customer, List<BasketProductsEFModel>? currentBasket,
-            List<ProductEFModel> products)
+        private FakeOrderRepository SetupFakeRepo(CustomerRepoModel customer, List<BasketProductsRepoModel>? currentBasket,
+            List<ProductRepoModel> products)
         {
             return new FakeOrderRepository
             {
@@ -88,26 +88,26 @@ namespace CustomerOrderingService.UnitTests
                 .CreateLogger<BasketController>();
         }
 
-        private List<BasketProductsEFModel> SetupProductsInBasket()
+        private List<BasketProductsRepoModel> SetupProductsInBasket()
         {
-            return new List<BasketProductsEFModel>()
+            return new List<BasketProductsRepoModel>()
             {
-                new BasketProductsEFModel{ ProductId = 1, ProductName = "Product1", Price = 1.99, Quantity = 2},
-                new BasketProductsEFModel{ ProductId = 2, ProductName = "Product2", Price = 2.00, Quantity = 3},
-                new BasketProductsEFModel{ ProductId = 3, ProductName = "Product3", Price = 3.00, Quantity = 4},
-                new BasketProductsEFModel{ ProductId = 4, ProductName = "Product4", Price = 4.00, Quantity = 10}
+                new BasketProductsRepoModel{ ProductId = 1, ProductName = "Product1", Price = 1.99, Quantity = 2},
+                new BasketProductsRepoModel{ ProductId = 2, ProductName = "Product2", Price = 2.00, Quantity = 3},
+                new BasketProductsRepoModel{ ProductId = 3, ProductName = "Product3", Price = 3.00, Quantity = 4},
+                new BasketProductsRepoModel{ ProductId = 4, ProductName = "Product4", Price = 4.00, Quantity = 10}
             };
         }
 
-        private List<ProductEFModel> SetupStandardProductsInStock()
+        private List<ProductRepoModel> SetupStandardProductsInStock()
         {
-            return new List<ProductEFModel>()
+            return new List<ProductRepoModel>()
             {
-                new ProductEFModel{ ProductId = 1, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 2, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 3, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 4, Name = "Fake", Quantity = 10},
-                new ProductEFModel{ ProductId = 5, Name = "Fake", Quantity = 10}
+                new ProductRepoModel{ ProductId = 1, Name = "Fake", Quantity = 10},
+                new ProductRepoModel{ ProductId = 2, Name = "Fake", Quantity = 10},
+                new ProductRepoModel{ ProductId = 3, Name = "Fake", Quantity = 10},
+                new ProductRepoModel{ ProductId = 4, Name = "Fake", Quantity = 10},
+                new ProductRepoModel{ ProductId = 5, Name = "Fake", Quantity = 10}
             };
         }
 

@@ -13,22 +13,23 @@ namespace Order.Repository
         public bool CompletesOrders = true;
         public bool AcceptsBasketItems = true;
         public bool AcceptsDeletions = true;
-        public CustomerEFModel Customer { get; set; }
+        public bool AutoFails = false;
+        public CustomerRepoModel Customer { get; set; }
 
-        public List<OrderEFModel> Orders { get; set; }
+        public List<OrderRepoModel> Orders { get; set; }
 
-        public List<OrderedItemEFModel> OrderedItems { get; set; }
+        public List<OrderedItemRepoModel> OrderedItems { get; set; }
 
-        public List<ProductEFModel> Products { get; set; }
+        public List<ProductRepoModel> Products { get; set; }
 
-        public List<BasketProductsEFModel> CurrentBasket { get; set; }
+        public List<BasketProductsRepoModel> CurrentBasket { get; set; }
 
         public async Task<bool> ClearBasket(int customerId)
         {
             return await CustomerExists(customerId);
         }
 
-        public async Task<bool> CreateOrder(FinalisedOrderEFModel order)
+        public async Task<bool> CreateOrder(FinalisedOrderRepoModel order)
         {
             if (await CustomerExists(order.CustomerId) 
                 && order.OrderedItems.Count > 0
@@ -41,109 +42,161 @@ namespace Order.Repository
 
         public async Task<bool> CustomerExists(int customerId)
         {
-            return customerId == Customer.CustomerId;
+            if (!AutoFails)
+            {
+                return (Customer != null && customerId == Customer.CustomerId);
+            }
+            return AutoFails;
         }
 
-        public async Task<CustomerEFModel> GetCustomer(int customerId)
+        public async Task<CustomerRepoModel> GetCustomer(int customerId)
         {
-            if (await CustomerExists(customerId))
+            if (!AutoFails && await CustomerExists(customerId))
             {
                 return Customer;
             }
             return null;
         }
 
-        public async Task<IList<OrderEFModel>> GetCustomerOrders(int customerId)
+        public async Task<IList<OrderRepoModel>> GetCustomerOrders(int customerId)
         {
-            return Orders;
-        }
-
-        public async Task<IList<OrderedItemEFModel>> GetOrderItems(int orderId)
-        {
-            return OrderedItems;
-        }
-
-        public async Task<bool> ProductsExist(List<ProductEFModel> products)
-        {
-            foreach (ProductEFModel product in products)
+            if (!AutoFails)
             {
-                if (! await ProductExists(product))
-                {
-                    return false;
-                }
+                return Orders;
             }
-            return true;
+            return null;
         }
 
-        public async Task<bool> ProductExists(ProductEFModel product)
+        public async Task<IList<OrderedItemRepoModel>> GetOrderItems(int orderId)
         {
-            foreach (ProductEFModel productInStock in Products)
+            if (!AutoFails)
             {
-                if (productInStock.ProductId == product.ProductId)
-                {
-                    return true;
-                }
+                return OrderedItems;
             }
-            return false;
+            return null;
         }
 
-        public async Task<bool> ProductsInStock(List<ProductEFModel> products)
+        public async Task<bool> ProductsExist(List<ProductRepoModel> products)
         {
-            foreach (ProductEFModel product in products)
+            if (!AutoFails)
             {
-                if (! await ProductInStock(product))
+                foreach (ProductRepoModel product in products)
                 {
-                    return false;
+                    if (!await ProductExists(product))
+                    {
+                        return false;
+                    }
                 }
-            }
-            return true;
-        }
-
-        public async Task<bool> ProductInStock(ProductEFModel product)
-        {
-            foreach (ProductEFModel productInStock in Products)
-            {
-                if (productInStock.ProductId == product.ProductId)
-                {
-                    return productInStock.Quantity >= product.Quantity;
-                }
+                return true;
             }
             return false;
         }
 
-        public async Task<bool> AddBasketItem(BasketItemEFModel newItem)
+        public async Task<bool> ProductExists(ProductRepoModel product)
         {
-            return AcceptsBasketItems;
+            if (!AutoFails)
+            {
+                foreach (ProductRepoModel productInStock in Products)
+                {
+                    if (productInStock.ProductId == product.ProductId)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
         }
 
-        public async Task<bool> EditBasketItem(BasketItemEFModel editedItem)
+        public async Task<bool> ProductsInStock(List<ProductRepoModel> products)
         {
-            return AcceptsBasketItems;
+            if (!AutoFails)
+            {
+                foreach (ProductRepoModel product in products)
+                {
+                    if (!await ProductInStock(product))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> ProductInStock(ProductRepoModel product)
+        {
+            if (!AutoFails)
+            {
+                foreach (ProductRepoModel productInStock in Products)
+                {
+                    if (productInStock.ProductId == product.ProductId)
+                    {
+                        return productInStock.Quantity >= product.Quantity;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
+
+        public async Task<bool> AddBasketItem(BasketItemRepoModel newItem)
+        {
+            if (!AutoFails)
+            {
+                return AcceptsBasketItems;
+            }
+            return false;
+        }
+
+        public async Task<bool> EditBasketItem(BasketItemRepoModel editedItem)
+        {
+            if (!AutoFails)
+            {
+                return AcceptsBasketItems;
+            }
+            return false;
         }
 
         public async Task<bool> DeleteBasketItem(int customerId, int productId)
         {
-            return AcceptsBasketItems;
+            if (!AutoFails)
+            {
+                return AcceptsBasketItems;
+            }
+            return false;
         }
 
-        public async Task<IList<BasketProductsEFModel>> GetBasket(int customerId)
+        public async Task<IList<BasketProductsRepoModel>> GetBasket(int customerId)
         {
-            return CurrentBasket;
+            if (!AutoFails)
+            {
+                return CurrentBasket;
+            }
+            return null;
         }
 
-        public Task<bool> FinaliseOrder(int customerId)
+        public async Task<bool> FinaliseOrder(int customerId)
         {
-            throw new NotImplementedException();
+            if (!AutoFails)
+            {
+                return false;
+            }
+            return false;
         }
 
-        public async Task<IList<OrderedItemEFModel>> GetOrderItems(int? orderId)
+        public async Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId)
         {
-            return OrderedItems;
+            if (!AutoFails)
+            {
+                return OrderedItems;
+            }
+            return null;
         }
 
-        public async Task<OrderEFModel> GetCustomerOrder(int? orderId)
+        public async Task<OrderRepoModel> GetCustomerOrder(int? orderId)
         {
-            if (orderId != null)
+            if (!AutoFails && orderId != null)
             {
                 return Orders[orderId ?? default];
             }
@@ -152,27 +205,47 @@ namespace Order.Repository
 
         public async Task<bool> OrderExists(int orderId)
         {
-            return Orders.Any(o => o.OrderId == orderId);
+            if (!AutoFails)
+            {
+                return Orders.Any(o => o.OrderId == orderId);
+            }
+            return false;
         }
 
         public async Task<bool> IsCustomerActive(int customerId)
         {
-            return Customer.Active;
+            if (!AutoFails)
+            {
+                return Customer.Active;
+            }
+            return false;
         }
 
         public async Task<bool> CanCustomerPurchase(int customerId)
         {
-            return Customer.CanPurchase;
+            if (!AutoFails)
+            {
+                return Customer.CanPurchase;
+            }
+            return false;
         }
 
         public async Task<bool> OrderExists(int? orderId)
         {
-            return Orders.Any(o => o.OrderId == orderId);
+            if (!AutoFails)
+            {
+                return Orders.Any(o => o.OrderId == orderId);
+            }
+            return false;
         }
 
         public async Task<bool> ProductExists(int productId)
         {
-            return Products.Any(p => p.ProductId == productId);
+            if (!AutoFails)
+            {
+                return Products.Any(p => p.ProductId == productId);
+            }
+            return false;
         }
 
         public async Task<bool> IsItemInBasket(int customerId, int productId)
@@ -180,19 +253,40 @@ namespace Order.Repository
             return CurrentBasket.Any(b => b.ProductId == productId);
         }
 
-        public Task<bool> NewCustomer(CustomerEFModel customer)
+        public async Task<bool> NewCustomer(CustomerRepoModel customer)
         {
-            throw new NotImplementedException();
+            if (!AutoFails)
+            {
+                Customer = customer;
+                return true;
+            }
+            return false;
         }
 
-        public Task<bool> EditCustomer(CustomerEFModel customer)
+        public async Task<bool> EditCustomer(CustomerRepoModel customer)
         {
-            throw new NotImplementedException();
+            if (!AutoFails)
+            {
+                if (Customer != null && await CustomerExists(customer.CustomerId))
+                {
+                    Customer = customer;
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public Task<bool> AnonymiseCustomer(CustomerEFModel customer)
+        public async Task<bool> AnonymiseCustomer(CustomerRepoModel customer)
         {
-            throw new NotImplementedException();
+            if (!AutoFails)
+            {
+                if (Customer != null &&  await CustomerExists(customer.CustomerId))
+                {
+                    Customer = customer;
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

@@ -4,16 +4,16 @@ using System.Text;
 
 namespace Order.Repository.Models
 {
-    public class OrderedItemEFModel
+    public class BasketItemRepoModel
     {
-        public int OrderId { get; set; }
+        public int CustomerId { get; set; }
 
         public int ProductId { get; set; }
 
-        public int Quantity { get; set; }
+        public string ProductName { get; set; }
 
         public double Price { get; set; }
 
-        public string Name { get; set; }
+        public int Quantity { get; set; }
     }
 }

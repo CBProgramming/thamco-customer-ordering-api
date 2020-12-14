@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CustomerOrderingService.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Order.Repository;
@@ -13,6 +14,7 @@ namespace CustomerOrderingService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Policy = "CustomerOnly")]
     public class BasketController : ControllerBase
     {
         private readonly ILogger<BasketController> _logger;
@@ -73,14 +75,14 @@ namespace CustomerOrderingService.Controllers
                         {
                             if (itemIsInBasket)
                             {
-                                if (await _orderRepository.EditBasketItem(_mapper.Map<BasketItemEFModel>(basketItem)))
+                                if (await _orderRepository.EditBasketItem(_mapper.Map<BasketItemRepoModel>(basketItem)))
                                 {
                                     return Ok();
                                 }
                             }
                             else
                             {
-                                if (await _orderRepository.AddBasketItem(_mapper.Map<BasketItemEFModel>(basketItem)))
+                                if (await _orderRepository.AddBasketItem(_mapper.Map<BasketItemRepoModel>(basketItem)))
                                 {
                                     return Ok();
                                 }
