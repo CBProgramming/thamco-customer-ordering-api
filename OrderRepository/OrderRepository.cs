@@ -21,49 +21,156 @@ namespace Order.Repository
             _mapper = mapper;
         }
 
-        public async Task<bool> AddBasketItem(BasketItemRepoModel newItem)
+        public async Task<CustomerRepoModel> GetCustomer(int customerId)
         {
-            if (await ProductDetailsCheck(_mapper.Map<ProductRepoModel>(newItem)))
-            {
-                return await AddToBasket(_mapper.Map<BasketItemRepoModel>(newItem));
-            }
-            else
-            {
-                return false;
-            }
+            return _mapper.Map<CustomerRepoModel>(_context
+                .Customers
+                .Where(c => c.Active == true)
+                .FirstOrDefault(c => c.CustomerId == customerId));
         }
 
-        private async Task<bool> AddToBasket(BasketItemRepoModel basketItem)
+        public async Task<bool> NewCustomer(CustomerRepoModel newCustomer)
         {
-            if (await IsItemInBasket(basketItem.CustomerId, basketItem.ProductId))
-            {
-                return await EditBasketItem(basketItem);
-            }
-            else
+            if (newCustomer != null)
             {
                 try
                 {
-                    _context.Add(_mapper.Map<BasketItem>(basketItem));
+                    var customer = _mapper.Map<Customer>(newCustomer);
+                    _context.Add(customer);
                     await _context.SaveChangesAsync();
                     return true;
                 }
-                catch (Exception e)
+                catch (DbUpdateConcurrencyException)
                 {
-                    return false;
+
                 }
             }
+            return false;
         }
 
-        public async Task<bool> EditBasketItem(BasketItemRepoModel editedItem)
+        public async Task<bool> EditCustomer(CustomerRepoModel editedCustomer)
         {
-            if (await ProductDetailsCheck(_mapper.Map<ProductRepoModel>(editedItem)))
+            if (editedCustomer != null)
             {
-                return await EditItemInBasket(_mapper.Map<BasketItemRepoModel>(editedItem));
+                var customer = _context.Customers.FirstOrDefault(c => c.CustomerId == editedCustomer.CustomerId);
+                if (customer != null)
+                {
+                    try
+                    {
+                        customer.GivenName = editedCustomer.GivenName;
+                        customer.FamilyName = editedCustomer.FamilyName;
+                        customer.AddressOne = editedCustomer.AddressOne;
+                        customer.AddressTwo = editedCustomer.AddressTwo;
+                        customer.Town = editedCustomer.Town;
+                        customer.State = editedCustomer.State;
+                        customer.AreaCode = editedCustomer.AreaCode;
+                        customer.Country = editedCustomer.Country;
+                        customer.EmailAddress = editedCustomer.EmailAddress;
+                        customer.TelephoneNumber = editedCustomer.TelephoneNumber;
+                        customer.CanPurchase = editedCustomer.CanPurchase;
+                        customer.Active = editedCustomer.Active;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+
+                    }
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> AnonymiseCustomer(CustomerRepoModel anonCustomer)
+        {
+            return await EditCustomer(anonCustomer);
+        }
+
+        public async Task<IList<BasketProductsRepoModel>> GetBasket(int customerId)
+        {
+            var result = _context.BasketItems
+                .Where(b => b.CustomerId == customerId)
+                .Join(_context.Products,
+                b => b.ProductId,
+                p => p.ProductId,
+                (basketItem, product) => new BasketProductsRepoModel
+                {
+                    CustomerId = customerId,
+                    ProductId = product.ProductId,
+                    ProductName = product.Name,
+                    Price = product.Price,
+                    Quantity = basketItem.Quantity
+                });
+            var listresult = result.ToList();
+            return listresult;
+        }
+
+        public async Task<bool> AddBasketItem(BasketItemRepoModel basketItem)
+        {
+            if (basketItem != null 
+                && await ProductExists(basketItem.ProductId)
+                && await CustomerExists(basketItem.CustomerId))
+            {
+                if (await IsItemInBasket(basketItem.CustomerId, basketItem.ProductId))
+                {
+                    return await EditBasketItem(basketItem);
+                }
+                else
+                {
+                    try
+                    {
+                        _context.Add(_mapper.Map<BasketItem>(basketItem));
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        
+                    }
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> EditBasketItem(BasketItemRepoModel basketItem)
+        {
+            if (! await IsItemInBasket(basketItem.CustomerId, basketItem.ProductId))
+            {
+                return await AddBasketItem(basketItem);
             }
             else
             {
-                return false;
+                var item = GetBasketItem(basketItem.CustomerId, basketItem.ProductId);
+                if (item != null)
+                {
+                    try
+                    {
+                        item.Quantity = basketItem.Quantity;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        
+                    }
+                }
             }
+            return false;
+        }
+
+        public async Task<bool> IsItemInBasket(int customerId, int productId)
+        {
+            var basketItem = GetBasketItem(customerId, productId);
+            if (basketItem != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private BasketItem GetBasketItem(int customerId, int productId)
+        {
+            return _context.BasketItems.Where(b => b.CustomerId == customerId && b.ProductId == productId).FirstOrDefault();
         }
 
         public async Task<bool> DeleteBasketItem(int customerId, int productId)
@@ -85,37 +192,11 @@ namespace Order.Repository
             }
         }
 
-        public async Task<IList<BasketProductsRepoModel>> GetBasket(int customerId)
-        {
-            var basketItems = _context.BasketItems
-                .Where(b => b.CustomerId == customerId)
-                .Join(_context.Products,b => b.ProductId, p => p.ProductId,
-                (basketItem, product) => new BasketProductsRepoModel
-                {
-                    ProductId = product.ProductId,
-                    ProductName = product.Name,
-                    Price = product.Price,
-                    Quantity = basketItem.Quantity
-                });
-            return basketItems?.ToList();
-        }
+
 
         public async Task<bool> FinaliseOrder(int customerId)
         {
             throw new NotImplementedException();
-        }
-
-        private async Task<bool> ProductDetailsCheck(ProductRepoModel product)
-        {
-            var productExists = await ProductExists(product.ProductId);
-            if (productExists)
-            {
-                return await CreateProduct(_mapper.Map<ProductRepoModel>(product));
-            }
-            else
-            {
-                return await EditProduct(_mapper.Map<ProductRepoModel>(product));
-            }
         }
 
         public async Task<bool> ProductExists(int id)
@@ -151,33 +232,9 @@ namespace Order.Repository
             }
         }
 
-        private async Task<bool> EditItemInBasket(BasketItemRepoModel basketItemModel)
-        {
-            try
-            {
-                _context.Update(_mapper.Map<BasketItem>(basketItemModel));
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return false;
-            }
-        }
 
-        public async Task<bool> IsItemInBasket(int customerId, int productId)
-        {
-            return _context.BasketItems.SingleOrDefault(
-                b => b.CustomerId == customerId && b.ProductId == productId) != null;
-        }
 
-        public async Task<CustomerRepoModel> GetCustomer(int customerId)
-        {
-            return _mapper.Map<CustomerRepoModel>(_context
-                .Customers
-                .Where(c => c.Active == true)
-                .FirstOrDefault(c => c.CustomerId == customerId));
-        }
+
 
         public async Task<IList<OrderRepoModel>> GetCustomerOrders(int customerId)
         {
@@ -245,7 +302,12 @@ namespace Order.Repository
 
         public async Task<bool> IsCustomerActive(int customerId)
         {
-            return _context.Customers.FirstOrDefault(c => c.CustomerId == customerId).Active;
+            var customer = _context.Customers.FirstOrDefault(c => c.CustomerId == customerId);
+            if (customer != null)
+            {
+                return customer.Active;
+            }
+            return false;
         }
 
         public async Task<bool> CanCustomerPurchase(int customerId)
@@ -292,58 +354,6 @@ namespace Order.Repository
             return _context.Orders.Any(o => o.OrderId == orderId);
         }
 
-        public async Task<bool> NewCustomer(CustomerRepoModel newCustomer)
-        {
-            if (newCustomer != null)
-            {
-                try
-                {
-                    var customer = _mapper.Map<Customer>(newCustomer);
-                    _context.Add(customer);
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    
-                }
-            }
-            return false;
-        }
 
-        public async Task<bool> EditCustomer(CustomerRepoModel editedCustomer)
-        {
-            if (editedCustomer != null)
-            {
-                var customer = await _context.Customers.FindAsync(editedCustomer.CustomerId);
-                try
-                {
-                    customer.GivenName = editedCustomer.GivenName;
-                    customer.FamilyName = editedCustomer.FamilyName;
-                    customer.AddressOne = editedCustomer.AddressOne;
-                    customer.AddressTwo = editedCustomer.AddressTwo;
-                    customer.Town = editedCustomer.Town;
-                    customer.State = editedCustomer.State;
-                    customer.AreaCode = editedCustomer.AreaCode;
-                    customer.Country = editedCustomer.Country;
-                    customer.EmailAddress = editedCustomer.EmailAddress;
-                    customer.TelephoneNumber = editedCustomer.TelephoneNumber;
-                    customer.CanPurchase = editedCustomer.CanPurchase;
-                    customer.Active = editedCustomer.Active;
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-
-                }
-            }
-            return false;
-        }
-
-        public async Task<bool> AnonymiseCustomer(CustomerRepoModel anonCustomer)
-        {
-            return await EditCustomer(anonCustomer);
-        }
     }
 }

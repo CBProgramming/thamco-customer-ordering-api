@@ -684,7 +684,7 @@ namespace CustomerOrderingService.UnitTests
             var controller = new BasketController(logger, fakeRepo, mapper);
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -707,7 +707,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.CustomerId = 2;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -730,7 +730,7 @@ namespace CustomerOrderingService.UnitTests
             customer.Active = false;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -753,7 +753,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.ProductId = 99;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -776,7 +776,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.ProductName = null;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -799,7 +799,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Price = 0;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -822,7 +822,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Price = -0.01;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -845,7 +845,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Quantity = 0;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -868,7 +868,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Quantity = -1;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -891,7 +891,7 @@ namespace CustomerOrderingService.UnitTests
             fakeRepo.AcceptsBasketItems = false;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -913,7 +913,7 @@ namespace CustomerOrderingService.UnitTests
             var controller = new BasketController(logger, fakeRepo, mapper);
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -936,7 +936,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.CustomerId = 2;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -959,7 +959,7 @@ namespace CustomerOrderingService.UnitTests
             customer.Active = false;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -982,7 +982,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.ProductId = 99;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -1005,7 +1005,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.ProductName = null;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -1028,7 +1028,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Price = 0;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -1051,7 +1051,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Price = -0.01;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -1074,7 +1074,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Quantity = 0;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -1097,7 +1097,7 @@ namespace CustomerOrderingService.UnitTests
             basketItem.Quantity = -1;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);
@@ -1120,7 +1120,7 @@ namespace CustomerOrderingService.UnitTests
             fakeRepo.AcceptsBasketItems = false;
 
             //Act
-            var result = await controller.Edit(basketItem);
+            var result = await controller.Edit(customer.CustomerId, basketItem);
 
             //Assert
             Assert.NotNull(result);

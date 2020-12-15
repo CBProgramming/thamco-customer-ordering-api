@@ -80,14 +80,14 @@ namespace OrderData
                     }
                 );
 
-/*            builder.Entity<Product>()
+            builder.Entity<Product>()
                 .HasData(
-                    new Product { ProductId = 1, Name = "Fake Product 1", Price = 1.00 },
-                    new Product { ProductId = 2, Name = "Fake Product 2", Price = 2.00 },
-                    new Product { ProductId = 3, Name = "Fake Product 3", Price = 3.00 }
+                    new Product { ProductId = 1, Name = "Fake Product 1", Price = 1.99 },
+                    new Product { ProductId = 2, Name = "Fake Product 2", Price = 2.98 },
+                    new Product { ProductId = 3, Name = "Fake Product 3", Price = 3.97 }
                 );
 
-            builder.Entity<BasketItem>()
+/*            builder.Entity<BasketItem>()
                 .HasData(
                     new BasketItem { CustomerId = 1, ProductId = 1, Quantity = 5 },
                     new BasketItem { CustomerId = 1, ProductId = 2, Quantity = 3 }

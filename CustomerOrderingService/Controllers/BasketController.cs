@@ -13,7 +13,7 @@ using Order.Repository.Models;
 namespace CustomerOrderingService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [Authorize(Policy = "CustomerOnly")]
     public class BasketController : ControllerBase
     {
@@ -29,8 +29,8 @@ namespace CustomerOrderingService.Controllers
         }
 
         //Get basket
-        [HttpGet]
-        public async Task<IActionResult> Get(int customerId)
+        [HttpGet("{customerId}")]
+        public async Task<IActionResult> Get([FromRoute] int customerId)
         {
             if (await _orderRepository.CustomerExists(customerId))
             {
@@ -46,14 +46,14 @@ namespace CustomerOrderingService.Controllers
 
         //Add item to basket
         [HttpPost]
-        public async Task<IActionResult> Create(BasketItemDto newItem)
+        public async Task<IActionResult> Create([FromBody] BasketItemDto newItem)
         {
             return await CreateOrEditBasketItem(newItem);
         }
 
         //Edit product in basket
         [HttpPut]
-        public async Task<IActionResult> Edit(BasketItemDto editedItem)
+        public async Task<IActionResult> Edit([FromRoute] int customerId, [FromBody] BasketItemDto editedItem)
         {
             return await CreateOrEditBasketItem(editedItem);
         }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderData;
 
 namespace OrderData.Migrations
 {
     [DbContext(typeof(OrderDb))]
-    partial class OrderDbModelSnapshot : ModelSnapshot
+    [Migration("20201214181237_ProductsSeeded")]
+    partial class ProductsSeeded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -181,19 +183,19 @@ namespace OrderData.Migrations
                         {
                             ProductId = 1,
                             Name = "Fake Product 1",
-                            Price = 1.99
+                            Price = 1.0
                         },
                         new
                         {
                             ProductId = 2,
                             Name = "Fake Product 2",
-                            Price = 2.98
+                            Price = 2.0
                         },
                         new
                         {
                             ProductId = 3,
                             Name = "Fake Product 3",
-                            Price = 3.9700000000000002
+                            Price = 3.0
                         });
                 });
 

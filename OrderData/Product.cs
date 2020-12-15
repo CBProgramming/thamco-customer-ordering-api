@@ -11,6 +11,8 @@ namespace OrderData
 
         public double Price { get; set; }
 
+        public int Stock { get; set; }
+
         public virtual IList<BasketItem> BasketItems { get; set; }
 
         public virtual IList<OrderedItem> OrderedItems { get; set; }

@@ -32,13 +32,16 @@ namespace CustomerAccount.Facade
 
         public async Task<bool> EditCustomer(CustomerFacadeDto customer)
         {
-            HttpClient httpClient = await GetClientWithAccessToken();
             if (customer != null)
             {
-                string uri = "/api/Customer/" + customer.CustomerId;
-                if ((await httpClient.PutAsJsonAsync<CustomerFacadeDto>(uri, customer)).IsSuccessStatusCode)
+                HttpClient httpClient = await GetClientWithAccessToken();
+                if (customer != null)
                 {
-                    return true;
+                    string uri = "/api/Customer/" + customer.CustomerId;
+                    if ((await httpClient.PutAsJsonAsync<CustomerFacadeDto>(uri, customer)).IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;

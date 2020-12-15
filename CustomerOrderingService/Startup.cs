@@ -22,6 +22,7 @@ using IdentityModel.Client;
 using OrderData;
 using Order.Repository;
 using StaffProduct.Facade;
+using CustomerAccount.Facade;
 
 namespace CustomerOrderingService
 {
@@ -83,7 +84,19 @@ namespace CustomerOrderingService
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
             services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IStaffProductFacade, StaffProductFacade>();
+
+            if (Env.IsDevelopment())
+            {
+                services.AddScoped<IStaffProductFacade, FakeStaffProductFacade>();
+                services.AddScoped<ICustomerAccountFacade, FakeCustomerFacade>();
+            }
+            else
+            {
+                services.AddScoped<IStaffProductFacade, StaffProductFacade>();
+                services.AddScoped<ICustomerAccountFacade, CustomerFacade>();
+            }
+
+            
 
             services.AddHttpClient("CustomerAccountAPI", client =>
             {

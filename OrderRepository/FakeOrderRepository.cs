@@ -14,6 +14,8 @@ namespace Order.Repository
         public bool AcceptsBasketItems = true;
         public bool AcceptsDeletions = true;
         public bool AutoFails = false;
+        public bool autoSucceeds = false;
+
         public CustomerRepoModel Customer { get; set; }
 
         public List<OrderRepoModel> Orders { get; set; }
