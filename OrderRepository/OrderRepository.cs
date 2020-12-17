@@ -201,7 +201,7 @@ namespace Order.Repository
             return _context.Products.Any(p => p.ProductId == id);
         }
 
-        private async Task<bool> CreateProduct(ProductRepoModel product)
+        public async Task<bool> CreateProduct(ProductRepoModel product)
         {
             try
             {
@@ -215,7 +215,7 @@ namespace Order.Repository
             }
         }
 
-        private async Task<bool> EditProduct(ProductRepoModel product)
+        public async Task<bool> EditProduct(ProductRepoModel product)
         {
             try
             {
@@ -227,6 +227,11 @@ namespace Order.Repository
             {
                 return false;
             }
+        }
+
+        public Task<bool> DeleteProduct(int productId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> FinaliseOrder(int customerId)
@@ -351,7 +356,5 @@ namespace Order.Repository
         {
             return _context.Orders.Any(o => o.OrderId == orderId);
         }
-
-
     }
 }

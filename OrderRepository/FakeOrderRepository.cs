@@ -18,6 +18,8 @@ namespace Order.Repository
 
         public CustomerRepoModel Customer { get; set; }
 
+        public ProductRepoModel Product { get; set; }
+
         public List<OrderRepoModel> Orders { get; set; }
 
         public List<OrderedItemRepoModel> OrderedItems { get; set; }
@@ -285,6 +287,55 @@ namespace Order.Repository
                 if (Customer != null &&  await CustomerExists(customer.CustomerId))
                 {
                     Customer = customer;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> CreateProduct(ProductRepoModel product)
+        {
+            if (!AutoFails)
+            {
+                if (await ProductExists(product))
+                {
+                    Product = product;
+                    return true;
+                }
+                else
+                {
+                    return await EditProduct(product);
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> EditProduct(ProductRepoModel product)
+        {
+            if (!AutoFails)
+            {
+                if (await ProductExists(product))
+                {
+                    return await CreateProduct(product);
+                }
+                else
+                {
+                    Product.Name = product.Name;
+                    Product.Price = product.Price;
+                    Product.Quantity = Product.Quantity + product.Quantity;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> DeleteProduct(int productId)
+        {
+            if (!AutoFails && Product != null)
+            {
+                if (await ProductExists(productId))
+                {
+                    Product = null;
                     return true;
                 }
             }

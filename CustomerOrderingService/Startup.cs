@@ -65,6 +65,10 @@ namespace CustomerOrderingService
                     policy.AddAuthenticationSchemes("CustomerAuth")
                     .RequireAssertion(context =>
                     context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer")));
+                OptionsBuilderConfigurationExtensions.AddPolicy("CustomerProductAPI", policy =>
+                    policy.AddAuthenticationSchemes("CustomerAuth")
+                    .RequireAssertion(context =>
+                    context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_product_api")));
             });
             
             services.AddControllers();

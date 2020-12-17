@@ -48,6 +48,8 @@ namespace CustomerOrderingService
             CreateMap<OrderHistoryDto, OrderRepoModel>();
             CreateMap<CustomerDto, CustomerFacadeDto>();
             CreateMap<CustomerFacadeDto, CustomerDto>();
+            CreateMap<ProductDto, ProductRepoModel>();
+            CreateMap<ProductRepoModel, ProductDto>();
         }
     }
 }

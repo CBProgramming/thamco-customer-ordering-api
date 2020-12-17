@@ -56,5 +56,12 @@ namespace Order.Repository
         public Task<bool> EditCustomer(CustomerRepoModel customer);
 
         public Task<bool> AnonymiseCustomer(CustomerRepoModel customer);
+
+        public Task<bool> CreateProduct(ProductRepoModel product);
+
+        public Task<bool> EditProduct(ProductRepoModel product);
+
+        public Task<bool> DeleteProduct(int productId);
+
     }
 }
