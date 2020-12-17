@@ -16,7 +16,7 @@ using Order.Repository.Data;
 
 namespace CustomerOrderingService.UnitTests
 {
-    public class OrderTests
+    public class OrderControllerTests
     {
         private List<OrderRepoModel> SetupStandardOrderEFModels()
         {

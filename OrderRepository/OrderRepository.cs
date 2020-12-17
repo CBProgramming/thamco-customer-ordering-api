@@ -134,24 +134,27 @@ namespace Order.Repository
 
         public async Task<bool> EditBasketItem(BasketItemRepoModel basketItem)
         {
-            if (! await IsItemInBasket(basketItem.CustomerId, basketItem.ProductId))
+            if (basketItem != null)
             {
-                return await AddBasketItem(basketItem);
-            }
-            else
-            {
-                var item = GetBasketItem(basketItem.CustomerId, basketItem.ProductId);
-                if (item != null)
+                if (!await IsItemInBasket(basketItem.CustomerId, basketItem.ProductId))
                 {
-                    try
+                    return await AddBasketItem(basketItem);
+                }
+                else
+                {
+                    var item = GetBasketItem(basketItem.CustomerId, basketItem.ProductId);
+                    if (item != null)
                     {
-                        item.Quantity = basketItem.Quantity;
-                        await _context.SaveChangesAsync();
-                        return true;
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        
+                        try
+                        {
+                            item.Quantity = basketItem.Quantity;
+                            await _context.SaveChangesAsync();
+                            return true;
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+
+                        }
                     }
                 }
             }
@@ -183,20 +186,14 @@ namespace Order.Repository
                 {
                     _context.BasketItems.Remove(item);
                     await _context.SaveChangesAsync();
+                    return true;
                 }
-                return true;
             }
             catch (DbUpdateConcurrencyException)
             {
-                return false;
+                
             }
-        }
-
-
-
-        public async Task<bool> FinaliseOrder(int customerId)
-        {
-            throw new NotImplementedException();
+            return false;
         }
 
         public async Task<bool> ProductExists(int id)
@@ -232,9 +229,10 @@ namespace Order.Repository
             }
         }
 
-
-
-
+        public async Task<bool> FinaliseOrder(int customerId)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<IList<OrderRepoModel>> GetCustomerOrders(int customerId)
         {
