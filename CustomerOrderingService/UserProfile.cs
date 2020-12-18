@@ -18,8 +18,8 @@ namespace CustomerOrderingService
         {
             CreateMap<BasketItemDto, BasketItemRepoModel>();
             CreateMap<BasketItemRepoModel, BasketItemDto>();
-            CreateMap<BasketItemDto, BasketProductsRepoModel>();
-            CreateMap<BasketProductsRepoModel, BasketItemDto>();
+            CreateMap<BasketItemDto, BasketItemRepoModel>();
+            CreateMap<BasketItemRepoModel, BasketItemDto>();
             CreateMap<BasketItemRepoModel, BasketItem>();
             CreateMap<BasketItem, BasketItemRepoModel>();
             CreateMap<BasketItemRepoModel, ProductRepoModel>();

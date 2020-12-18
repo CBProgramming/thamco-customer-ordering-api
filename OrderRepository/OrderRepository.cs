@@ -86,14 +86,14 @@ namespace Order.Repository
             return await EditCustomer(anonCustomer);
         }
 
-        public async Task<IList<BasketProductsRepoModel>> GetBasket(int customerId)
+        public async Task<IList<BasketItemRepoModel>> GetBasket(int customerId)
         {
             var result = _context.BasketItems
                 .Where(b => b.CustomerId == customerId)
                 .Join(_context.Products,
                 b => b.ProductId,
                 p => p.ProductId,
-                (basketItem, product) => new BasketProductsRepoModel
+                (basketItem, product) => new BasketItemRepoModel
                 {
                     CustomerId = customerId,
                     ProductId = product.ProductId,
@@ -203,35 +203,64 @@ namespace Order.Repository
 
         public async Task<bool> CreateProduct(ProductRepoModel product)
         {
-            try
+            if (product != null)
             {
-                _context.Add(_mapper.Map<Product>(product));
-                await _context.SaveChangesAsync();
-                return true;
+                try
+                {
+                    var customer = _mapper.Map<Product>(product);
+                    _context.Add(customer);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                }
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                return false;
-            }
+            return false;
         }
 
-        public async Task<bool> EditProduct(ProductRepoModel product)
+        public async Task<bool> EditProduct(ProductRepoModel productModel)
+        {
+            if (productModel != null)
+            {
+                var product = _context.Products.FirstOrDefault(p => p.ProductId == productModel.ProductId);
+                if (product != null)
+                {
+                    try
+                    {
+                        product.Name = productModel.Name;
+                        product.Price = productModel.Price;
+                        product.Quantity = product.Quantity + productModel.Quantity;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+
+                    }
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> DeleteProduct(int productId)
         {
             try
             {
-                _context.Update(_mapper.Map<Product>(product));
-                await _context.SaveChangesAsync();
-                return true;
+                var item = _context.Products.SingleOrDefault(p => p.ProductId == productId);
+                if (item != null)
+                {
+                    _context.Products.Remove(item);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
-                return false;
-            }
-        }
 
-        public Task<bool> DeleteProduct(int productId)
-        {
-            throw new NotImplementedException();
+            }
+            return false;
         }
 
         public async Task<bool> FinaliseOrder(int customerId)

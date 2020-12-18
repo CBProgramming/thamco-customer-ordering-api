@@ -60,7 +60,7 @@ namespace CustomerOrderingService.UnitTests
             };
         }
 
-        private FakeOrderRepository SetupFakeRepo(CustomerRepoModel customer, List<BasketProductsRepoModel>? currentBasket,
+        private FakeOrderRepository SetupFakeRepo(CustomerRepoModel customer, List<BasketItemRepoModel>? currentBasket,
             List<ProductRepoModel> products)
         {
             return new FakeOrderRepository
@@ -88,14 +88,14 @@ namespace CustomerOrderingService.UnitTests
                 .CreateLogger<BasketController>();
         }
 
-        private List<BasketProductsRepoModel> SetupProductsInBasket()
+        private List<BasketItemRepoModel> SetupProductsInBasket()
         {
-            return new List<BasketProductsRepoModel>()
+            return new List<BasketItemRepoModel>()
             {
-                new BasketProductsRepoModel{ ProductId = 1, ProductName = "Product1", Price = 1.99, Quantity = 2},
-                new BasketProductsRepoModel{ ProductId = 2, ProductName = "Product2", Price = 2.00, Quantity = 3},
-                new BasketProductsRepoModel{ ProductId = 3, ProductName = "Product3", Price = 3.00, Quantity = 4},
-                new BasketProductsRepoModel{ ProductId = 4, ProductName = "Product4", Price = 4.00, Quantity = 10}
+                new BasketItemRepoModel{ ProductId = 1, ProductName = "Product1", Price = 1.99, Quantity = 2},
+                new BasketItemRepoModel{ ProductId = 2, ProductName = "Product2", Price = 2.00, Quantity = 3},
+                new BasketItemRepoModel{ ProductId = 3, ProductName = "Product3", Price = 3.00, Quantity = 4},
+                new BasketItemRepoModel{ ProductId = 4, ProductName = "Product4", Price = 4.00, Quantity = 10}
             };
         }
 

@@ -11,6 +11,7 @@ using System.Threading;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Order.Repository.Data;
 
 namespace CustomerOrderingService.UnitTests
 {
@@ -18,6 +19,7 @@ namespace CustomerOrderingService.UnitTests
     {
         public CustomerRepoModel customerRepoModel;
         public BasketItemRepoModel basketItemRepoModel;
+        public ProductRepoModel productRepoModel;
         public IMapper mapper;
         public IQueryable<Customer> dbCustomers;
         public IQueryable<Product> dbProducts;
@@ -106,25 +108,39 @@ namespace CustomerOrderingService.UnitTests
             mockCustomers.As<IQueryable<Customer>>().Setup(m => m.GetEnumerator()).Returns(dbCustomers.GetEnumerator());
         }
 
+        private void SetupProductRepoModel()
+        {
+            productRepoModel = new ProductRepoModel
+            {
+                ProductId = 1,
+                Name = "Fake Product 1",
+                Price = 1.99,
+                Quantity = 5
+            };
+        }
+
         private void SetupIndividualDbProducts()
         {
             dbProduct1 = new Product
             {
                 ProductId = 1,
                 Name = "Fake Product 1",
-                Price = 1.99
+                Price = 1.99,
+                Quantity = 3
             };
             dbProduct2 = new Product
             {
                 ProductId = 2,
                 Name = "Fake Product 2",
-                Price = 2.98
+                Price = 2.98,
+                Quantity = 4
             };
             dbProduct3 = new Product
             {
                 ProductId = 3,
                 Name = "Fake Product 3",
-                Price = 3.97
+                Price = 3.97,
+                Quantity = 5
             };
         }
 

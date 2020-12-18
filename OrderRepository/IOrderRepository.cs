@@ -15,7 +15,7 @@ namespace Order.Repository
 
         public Task<bool> DeleteBasketItem(int customerId, int productId);
 
-        public Task<IList<BasketProductsRepoModel>> GetBasket(int customerId);
+        public Task<IList<BasketItemRepoModel>> GetBasket(int customerId);
 
         public Task<bool> FinaliseOrder(int customerId);
 

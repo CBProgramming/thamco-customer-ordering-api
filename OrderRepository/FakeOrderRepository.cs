@@ -15,6 +15,7 @@ namespace Order.Repository
         public bool AcceptsDeletions = true;
         public bool AutoFails = false;
         public bool autoSucceeds = false;
+        public int FailureAmount = 0;
 
         public CustomerRepoModel Customer { get; set; }
 
@@ -26,7 +27,7 @@ namespace Order.Repository
 
         public List<ProductRepoModel> Products { get; set; }
 
-        public List<BasketProductsRepoModel> CurrentBasket { get; set; }
+        public List<BasketItemRepoModel> CurrentBasket { get; set; }
 
         public async Task<bool> ClearBasket(int customerId)
         {
@@ -171,7 +172,7 @@ namespace Order.Repository
             return false;
         }
 
-        public async Task<IList<BasketProductsRepoModel>> GetBasket(int customerId)
+        public async Task<IList<BasketItemRepoModel>> GetBasket(int customerId)
         {
             if (!AutoFails)
             {
@@ -297,14 +298,21 @@ namespace Order.Repository
         {
             if (!AutoFails)
             {
-                if (await ProductExists(product))
+                if (FailureAmount > 0)
                 {
-                    Product = product;
-                    return true;
+                    FailureAmount--;
                 }
                 else
                 {
-                    return await EditProduct(product);
+                    if (!await ProductExists(product))
+                    {
+                        Products.Add(product);
+                        return true;
+                    }
+                    else
+                    {
+                        return await EditProduct(product);
+                    }
                 }
             }
             return false;
@@ -314,16 +322,24 @@ namespace Order.Repository
         {
             if (!AutoFails)
             {
-                if (await ProductExists(product))
+                if (FailureAmount > 0)
                 {
-                    return await CreateProduct(product);
+                    FailureAmount--;
                 }
                 else
                 {
-                    Product.Name = product.Name;
-                    Product.Price = product.Price;
-                    Product.Quantity = Product.Quantity + product.Quantity;
-                    return true;
+                    if (!await ProductExists(product))
+                    {
+                        return await CreateProduct(product);
+                    }
+                    else
+                    {
+                        ProductRepoModel repoProduct = Products.Where(p => p.ProductId == product.ProductId).FirstOrDefault();
+                        repoProduct.Name = product.Name;
+                        repoProduct.Price = product.Price;
+                        repoProduct.Quantity = repoProduct.Quantity + product.Quantity;
+                        return true;
+                    }
                 }
             }
             return false;
@@ -335,7 +351,7 @@ namespace Order.Repository
             {
                 if (await ProductExists(productId))
                 {
-                    Product = null;
+                    Products.Remove(Products.Where(p => p.ProductId == productId).FirstOrDefault());
                     return true;
                 }
             }

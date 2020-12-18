@@ -31,37 +31,62 @@ namespace CustomerOrderingService.Controllers
 
         // PUT api/<controller>/5
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ProductDto product)
+        public async Task<IActionResult> Post([FromBody] List<ProductDto> products)
         {
-            return await CreateOrEditProduct(product);
+            return await CreateOrEditProduct(products);
         }
 
         // PUT api/<controller>/5
         [HttpPut("{customerId}")]
-        public async Task<IActionResult> Put([FromBody] ProductDto product)
+        public async Task<IActionResult> Put([FromBody] List<ProductDto> products)
         {
-            return await CreateOrEditProduct(product);
+            return await CreateOrEditProduct(products);
         }
 
-        private async Task<IActionResult> CreateOrEditProduct(ProductDto product)
+        private async Task<IActionResult> CreateOrEditProduct(List<ProductDto> products)
         {
-            if (product != null)
+            if (products !=null && products.Count != 0)
             {
-                if (await _orderRepository.ProductExists(product.ProductId))
+                foreach (ProductDto product in products)
                 {
-                    if (await _orderRepository.EditProduct(_mapper.Map<ProductRepoModel>(product)))
+                    if (product == null)
                     {
-                        return Ok();
+                        return UnprocessableEntity();
                     }
+                }
+                var productsToRetry = new List<ProductDto>();
+                foreach (ProductDto product in products)
+                {
+                    if (await _orderRepository.ProductExists(product.ProductId))
+                    {
+                        if (! await _orderRepository.EditProduct(_mapper.Map<ProductRepoModel>(product)))
+                        {
+                            productsToRetry.Add(product);
+                        }
+                    }
+                    else
+                    {
+                        if (!await _orderRepository.CreateProduct(_mapper.Map<ProductRepoModel>(product)))
+                        {
+                            productsToRetry.Add(product);
+                        }
+                    }
+                }
+                if (productsToRetry.Count == 0)
+                {
+                    return Ok();
+                }
+                else if (productsToRetry.Count == products.Count)
+                {
+                    return NotFound();
                 }
                 else
                 {
-                    if (await _orderRepository.CreateProduct(_mapper.Map<ProductRepoModel>(product)))
-                    {
-                        return Ok();
-                    }
+                    //as this only occurs if a partial number of products doesn't post
+                    //there is no risk of an infinite loop as the retry list is always smaller
+                    //this could still be very problematic if the connection is poor and the list is long
+                    return await CreateOrEditProduct(productsToRetry);
                 }
-                return NotFound();
             }
             return UnprocessableEntity();
         }
