@@ -113,8 +113,8 @@ namespace CustomerOrderingService.UnitTests
             productRepoModel = new ProductRepoModel
             {
                 ProductId = 1,
-                Name = "Fake Product 1",
-                Price = 1.99,
+                Name = "Fake Product 4",
+                Price = 3.99,
                 Quantity = 5
             };
         }
@@ -251,6 +251,7 @@ namespace CustomerOrderingService.UnitTests
             SetupCustomerRepoModel();
             SetupDbCustomers();
             SetupMockCustomers();
+            SetupProductRepoModel();
             SetupDbProducts();
             SetupMockProducts();
             SetupBasketItemRepoModel();
@@ -989,6 +990,229 @@ namespace CustomerOrderingService.UnitTests
             mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
             mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
             mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task CreateProduct_ShouldTrue()
+        {
+            //Arrange
+            DefaultSetup();
+            productRepoModel.ProductId = 4;
+
+            //Act
+            var result = await repo.CreateProduct(productRepoModel);
+
+            //Assert
+            Assert.True(true == result);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Once());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task CreateProduct_AlreadyExists_ShouldFalse()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.CreateProduct(productRepoModel);
+
+            //Assert
+            Assert.True(true == result);
+            Assert.Equal(productRepoModel.ProductId, dbProduct1.ProductId);
+            Assert.NotEqual(productRepoModel.Name, dbProduct1.Name);
+            Assert.NotEqual(productRepoModel.Quantity, dbProduct1.Quantity);
+            Assert.NotEqual(productRepoModel.Price, dbProduct1.Price);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Once());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task CreateNullProduct_ShouldFalse()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.CreateProduct(null);
+
+            //Assert
+            Assert.True(false == result);
+            Assert.Equal(productRepoModel.ProductId, dbProduct1.ProductId);
+            Assert.NotEqual(productRepoModel.Name, dbProduct1.Name);
+            Assert.NotEqual(productRepoModel.Quantity, dbProduct1.Quantity);
+            Assert.NotEqual(productRepoModel.Price, dbProduct1.Price);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task EditProduct_ShouldTrue()
+        {
+            //Arrange
+            DefaultSetup();
+            int oldStock = dbProduct1.Quantity;
+
+            //Act
+            var result = await repo.EditProduct(productRepoModel);
+
+            //Assert
+            Assert.True(true == result);
+            Assert.Equal(productRepoModel.ProductId, dbProduct1.ProductId);
+            Assert.Equal(productRepoModel.Name, dbProduct1.Name);
+            Assert.Equal(productRepoModel.Quantity + oldStock, dbProduct1.Quantity);
+            Assert.Equal(productRepoModel.Price, dbProduct1.Price);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task EditProduct_DoesntExist_ShouldFalse()
+        {
+            //Arrange
+            DefaultSetup();
+            productRepoModel.ProductId = 4;
+
+            //Act
+            var result = await repo.EditProduct(productRepoModel);
+
+            //Assert
+            Assert.True(false == result);
+            Assert.NotEqual(productRepoModel.ProductId, dbProduct1.ProductId);
+            Assert.NotEqual(productRepoModel.Name, dbProduct1.Name);
+            Assert.NotEqual(productRepoModel.Quantity, dbProduct1.Quantity);
+            Assert.NotEqual(productRepoModel.Price, dbProduct1.Price);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task EditProduct_Null_ShouldFalse()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.EditProduct(null);
+
+            //Assert
+            Assert.True(false == result);
+            Assert.Equal(productRepoModel.ProductId, dbProduct1.ProductId);
+            Assert.NotEqual(productRepoModel.Name, dbProduct1.Name);
+            Assert.NotEqual(productRepoModel.Quantity, dbProduct1.Quantity);
+            Assert.NotEqual(productRepoModel.Price, dbProduct1.Price);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task DeleteProduct_ShouldTrue()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.DeleteProduct(1);
+
+            //Assert
+            Assert.True(true == result);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Once());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task DeleteProduct_DoesntExist_ShouldTrue()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.DeleteProduct(4);
+
+            //Assert
+            Assert.True(false == result);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task ProductExists_ShouldTrue()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.ProductExists(1);
+
+            //Assert
+            Assert.True(true == result);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
+            mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task ProductExists_DoesntExist_ShouldFalse()
+        {
+            //Arrange
+            DefaultSetup();
+
+            //Act
+            var result = await repo.ProductExists(4);
+
+            //Assert
+            Assert.True(false == result);
+            mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
+            mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<BasketItem>()), Times.Never());
+            mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
+            mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
+            mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
         }
     }
