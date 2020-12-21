@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CustomerOrderingService.Models;
+using Invoicing.Facade;
+using Invoicing.Facade.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,16 +20,18 @@ namespace CustomerOrderingService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "CustomerOnly")]
     public class OrderController : ControllerBase
     {
         private readonly ILogger<OrderController> _logger;
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
         private readonly IStaffProductFacade _staffProductFacade;
+        private readonly IInvoiceFacade _invoiceFacade;
+        private string authId, role;
         
 
-        public OrderController(ILogger<OrderController> logger, IOrderRepository orderRepository, IMapper mapper, IStaffProductFacade staffProductFacade)
+        public OrderController(ILogger<OrderController> logger, IOrderRepository orderRepository, IMapper mapper, 
+            IStaffProductFacade staffProductFacade, IInvoiceFacade invoiceFacade)
         {
             _logger = logger;
             _orderRepository = orderRepository;
@@ -35,43 +39,60 @@ namespace CustomerOrderingService.Controllers
             _staffProductFacade = staffProductFacade;
         }
 
+        private void getTokenDetails()
+        {
+            authId = User
+                .Claims
+                .FirstOrDefault(c => c.Type == "sub")?.Value;
+            role = User
+                .Claims
+                .FirstOrDefault(c => c.Type == "role")?.Value;
+        }
+
         [HttpGet]
+        [Authorize(Policy = "CustomerOrStaffWebApp")]
         public async Task<IActionResult> Get (int customerId, int? orderId)
         {
-            if (await _orderRepository.CustomerExists(customerId))
+            getTokenDetails();
+            var customer = _mapper.Map <CustomerDto>(await _orderRepository.GetCustomer(customerId));
+            if (customer == null || !customer.Active)
             {
-                if (await _orderRepository.IsCustomerActive(customerId))
-                {
-                    //get list of orders
-                    if (orderId == null)
-                    {
-                        List<OrderHistoryDto> orders = _mapper.Map<List<OrderHistoryDto>>(await _orderRepository.GetCustomerOrders(customerId));
-                        orders.ForEach(o => o.CustomerId = customerId);
-                        return Ok(orders);
-                    }
-                    //get specific order
-                    else
-                    {
-                        if (await _orderRepository.OrderExists(orderId))
-                        {
-                            OrderDto order = _mapper.Map<OrderDto>(await _orderRepository.GetCustomerOrder(orderId));
-                            order.Products = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(orderId));
-                            order.Products.ForEach(p => p.OrderId = orderId ?? default);
-                            return Ok(order);
-                        }
-                        return NotFound();
-                    }
-                }
+                return NotFound();
+            }
+            if (role == "Customer" && customer.CustomerAuthId != authId)
+            {
                 return Forbid();
+            }
+            //get list of orders
+            if (orderId == null)
+            {
+                List<OrderHistoryDto> orders = _mapper.Map<List<OrderHistoryDto>>(await _orderRepository.GetCustomerOrders(customerId));
+                orders.ForEach(o => o.CustomerId = customerId);
+                return Ok(orders);
+            }
+            //get specific order
+            else
+            {
+                OrderDto order = _mapper.Map<OrderDto>(await _orderRepository.GetCustomerOrder(orderId));
+                if (order != null)
+                {
+                    order.Products = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(orderId));
+                    order.Products.ForEach(p => p.OrderId = orderId ?? default);
+                    return Ok(order);
+                }
             }
             return NotFound();
         }
 
+        
+
         [HttpPost]
+        [Authorize(Policy = "CustomerOnly")]
         public async Task<IActionResult> Create(FinalisedOrderDto order)
         {
             //how is stock reduced in customer product service
             //need to send the order to invoice service
+
             if(ModelState.IsValid && ValidateOrder(order))
             {
                 //check if customer and products exist
@@ -91,6 +112,10 @@ namespace CustomerOrderingService.Controllers
                                 order.OrderDate = ValidateDate(order.OrderDate);
                                 if (await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderRepoModel>(order)))
                                 {
+                                    if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
+                                    {
+                                        //record to local db to attempt resend later
+                                    }
                                     await _orderRepository.ClearBasket(order.CustomerId);
                                     //return ok regardless of if the basket successfully clears because the order is complete
                                     //better customer service than clearing basket only to have order fail and customer needs to re-add everything to basket

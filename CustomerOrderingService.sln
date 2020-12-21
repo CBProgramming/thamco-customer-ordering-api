@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StaffProduct.Facade", "Staf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerOrderingService.UnitTests", "CustomerOrderingService.UnitTests\CustomerOrderingService.UnitTests.csproj", "{271A8924-1706-4594-B5F7-F74817D89032}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerAccount.Facade", "CustomerAccount.Facade\CustomerAccount.Facade.csproj", "{EA56379F-D5AC-4D8A-8F69-256DABE5C3D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerAccount.Facade", "CustomerAccount.Facade\CustomerAccount.Facade.csproj", "{EA56379F-D5AC-4D8A-8F69-256DABE5C3D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicing.Facade", "Invoicing.Facade\Invoicing.Facade.csproj", "{88521F7F-C401-4A8A-8234-75854208FCAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{EA56379F-D5AC-4D8A-8F69-256DABE5C3D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA56379F-D5AC-4D8A-8F69-256DABE5C3D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA56379F-D5AC-4D8A-8F69-256DABE5C3D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88521F7F-C401-4A8A-8234-75854208FCAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88521F7F-C401-4A8A-8234-75854208FCAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88521F7F-C401-4A8A-8234-75854208FCAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88521F7F-C401-4A8A-8234-75854208FCAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,6 +23,7 @@ using OrderData;
 using Order.Repository;
 using StaffProduct.Facade;
 using CustomerAccount.Facade;
+using Invoicing.Facade;
 
 namespace CustomerOrderingService
 {
@@ -46,6 +47,11 @@ namespace CustomerOrderingService
                 {
                     options.Authority = Configuration.GetValue<string>("CustomerAuthServerUrl");
                     options.Audience = "customer_ordering_api";
+                })
+                .AddJwtBearer("StaffAuth", options =>
+                {
+                    options.Authority = Configuration.GetValue<string>("StaffAuthServerUrl");
+                    options.Audience = "customer_ordering_api";
                 });
 
             services.AddAuthorization(OptionsBuilderConfigurationExtensions =>
@@ -59,17 +65,28 @@ namespace CustomerOrderingService
                 policy.AddAuthenticationSchemes("CustomerAuth")
                 .RequireAssertion(context =>
                 context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer")
-                || context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_account_api")));
+                || context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_account_api"))
+                .Build());
 
-                OptionsBuilderConfigurationExtensions.AddPolicy("Customeronly", policy =>
+                OptionsBuilderConfigurationExtensions.AddPolicy("CustomerOrStaffWebApp", policy =>
+                policy.AddAuthenticationSchemes("CustomerAuth","StaffAuth")
+                .RequireAssertion(context =>
+                context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer")
+                || context.User.HasClaim(c => c.Type == "role" && c.Value == "ManageCustomerAccounts"))
+                .Build());
+
+                OptionsBuilderConfigurationExtensions.AddPolicy("CustomerOnly", policy =>
                     policy.AddAuthenticationSchemes("CustomerAuth")
                     .RequireAssertion(context =>
-                    context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer")));
+                    context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer"))
+                .Build());
+
                 OptionsBuilderConfigurationExtensions.AddPolicy("CustomerProductAPI", policy =>
                     policy.AddAuthenticationSchemes("CustomerAuth")
                     .RequireAssertion(context =>
-                    context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_product_api")));
-            });
+                    context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_product_api"))
+                .Build());
+        });
             
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
@@ -93,11 +110,13 @@ namespace CustomerOrderingService
             {
                 services.AddScoped<IStaffProductFacade, FakeStaffProductFacade>();
                 services.AddScoped<ICustomerAccountFacade, FakeCustomerFacade>();
+                services.AddScoped<IInvoiceFacade, FakeInvoiceFacade>();
             }
             else
             {
                 services.AddScoped<IStaffProductFacade, StaffProductFacade>();
                 services.AddScoped<ICustomerAccountFacade, CustomerFacade>();
+                services.AddScoped<IInvoiceFacade, InvoiceFacade>();
             }
 
             

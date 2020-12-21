@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CustomerOrderingService\CustomerOrderingService.csproj" />
+    <ProjectReference Include="..\Invoicing.Facade\Invoicing.Facade.csproj" />
     <ProjectReference Include="..\OrderRepository\Order.Repository.csproj" />
   </ItemGroup>
 

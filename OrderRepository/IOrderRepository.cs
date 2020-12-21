@@ -63,5 +63,6 @@ namespace Order.Repository
 
         public Task<bool> DeleteProduct(int productId);
 
+        public Task<bool> ContactDetailsSufficient(int customerId);
     }
 }

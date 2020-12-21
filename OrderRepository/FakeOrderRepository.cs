@@ -357,5 +357,10 @@ namespace Order.Repository
             }
             return false;
         }
+
+        public Task<bool> ContactDetailsSufficient(int customerId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

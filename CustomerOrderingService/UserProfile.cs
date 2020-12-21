@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CustomerAccount.Facade.Models;
 using CustomerOrderingService.Models;
+using Invoicing.Facade.Models;
 using Order.Repository.Data;
 using Order.Repository.Models;
 using OrderData;
@@ -50,6 +51,10 @@ namespace CustomerOrderingService
             CreateMap<CustomerFacadeDto, CustomerDto>();
             CreateMap<ProductDto, ProductRepoModel>();
             CreateMap<ProductRepoModel, ProductDto>();
+            CreateMap<OrderInvoiceDto, OrderDto>();
+            CreateMap<OrderDto, OrderInvoiceDto>();
+            CreateMap<OrderedItemDto, InvoiceItemDto>();
+            CreateMap<InvoiceItemDto, OrderedItemDto>();
         }
     }
 }

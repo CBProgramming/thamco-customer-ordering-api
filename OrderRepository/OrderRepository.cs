@@ -385,5 +385,10 @@ namespace Order.Repository
         {
             return _context.Orders.Any(o => o.OrderId == orderId);
         }
+
+        public Task<bool> ContactDetailsSufficient(int customerId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
