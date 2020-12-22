@@ -114,11 +114,11 @@ namespace CustomerOrderingService.Controllers
             }
             if (!await _orderRepository.ProductsExist(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
             {
-                return Conflict();
+                return NotFound();
             }
             if (!await _orderRepository.ProductsInStock(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
             {
-                return NotFound();
+                return Conflict();
             }
             //reduce stock before creating order (it's worse customer service to allow a customer to order something out of stock
             //than for the company to innacurately display stock levels as lower than they are if an order fails

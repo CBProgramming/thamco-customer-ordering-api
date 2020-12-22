@@ -29,6 +29,8 @@ namespace Order.Repository
 
         public List<BasketItemRepoModel> CurrentBasket { get; set; }
 
+        public FinalisedOrderRepoModel FinalisedOrder { get; set; }
+
         public async Task<bool> ClearBasket(int customerId)
         {
             return await CustomerExists(customerId);
@@ -40,6 +42,7 @@ namespace Order.Repository
                 && order.OrderedItems.Count > 0
                 && CompletesOrders)
             {
+                FinalisedOrder = order;
                 return order.OrderId==0? 1 : order.OrderId;
             }
             return 0;

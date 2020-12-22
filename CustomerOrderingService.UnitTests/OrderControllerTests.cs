@@ -663,7 +663,7 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async Task GetOrder_NoOrderedItems_ShouldOkObject()
+        public async Task AsCustomer_GetOrder_NoOrderedItems_ShouldOkObject()
         {
             //Arrange
             DefaultSetup();
@@ -686,10 +686,393 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async Task GetOrder_NoOrderedItems_CheckMocks()
+        public async Task AsCustomer_GetOrder_NoOrderedItems_CheckMocks()
         {
             //Arrange
             DefaultSetup(true);
+            var customerId = 1;
+            int orderRequested = 1;
+
+            //Act
+            var result = await controller.Get(customerId, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var orderResult = objResult.Value as OrderDto;
+            Assert.NotNull(orderResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrder(orderRequested), Times.Once);
+            mockRepo.Verify(repo => repo.GetOrderItems(orderRequested), Times.Once);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_ShouldOkObject()
+        {
+            //Arrange
+            DefaultSetup(setupStaff: true);
+            var customerId = 1;
+
+            //Act
+            var result = await controller.Get(customerId, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var historyResult = objResult.Value as List<OrderHistoryDto>;
+            Assert.NotNull(historyResult);
+            Assert.True(fakeRepo.Orders.Count == historyResult.Count);
+            for (int i = 0; i < fakeRepo.Orders.Count; i++)
+            {
+                Assert.Equal(customerId, historyResult[i].CustomerId);
+                Assert.Equal(fakeRepo.Orders[i].OrderId, historyResult[i].OrderId);
+                Assert.Equal(fakeRepo.Orders[i].OrderDate, historyResult[i].OrderDate);
+                Assert.Equal(fakeRepo.Orders[i].Total, historyResult[i].Total);
+            }
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_CheckMocks()
+        {
+            //Arrange
+            DefaultSetup(withMocks: true, setupStaff: true);
+            var customerId = 1;
+
+            //Act
+            var result = await controller.Get(customerId, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_InvalidCustomerId_ShouldNotFound()
+        {
+            //Arrange
+            DefaultSetup(setupStaff: true);
+
+            //Act
+            var result = await controller.Get(2, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var notResult = result as NotFoundResult;
+            Assert.NotNull(notResult);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_InvalidCustomerId_CheckMocks()
+        {
+            //Arrange
+            customerExists = false;
+            DefaultSetup(withMocks: true, setupStaff: true);
+            var customerId = 2;
+
+            //Act
+            var result = await controller.Get(customerId, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_InactiveCustomerId_ShouldNotFound()
+        {
+            //Arrange
+            DefaultSetup(setupStaff: true);
+            customerRepoModel.Active = false;
+
+            //Act
+            var result = await controller.Get(1, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var notResult = result as NotFoundResult;
+            Assert.NotNull(notResult);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_InactiveCustomerId_CheckMocks()
+        {
+            //Arrange
+            customerActive = false;
+            DefaultSetup(withMocks: true, setupStaff: true);
+            var customerId = 2;
+            customerRepoModel.Active = false;
+
+            //Act
+            var result = await controller.Get(customerId, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_NoOrders()
+        {
+            //Arrange
+            DefaultSetup(setupStaff: true);
+            fakeRepo.Orders = new List<OrderRepoModel>();
+
+            //Act
+            var result = await controller.Get(1, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var historyResult = objResult.Value as List<OrderHistoryDto>;
+            Assert.NotNull(historyResult);
+            Assert.True(0 == historyResult.Count);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrderHistory_NoOrders_CheckMocks()
+        {
+            //Arrange
+            ordersExist = false;
+            DefaultSetup(withMocks: true, setupStaff: true);
+            var customerId = 1;
+
+            //Act
+            var result = await controller.Get(customerId, null);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_ShouldOkObject()
+        {
+            //Arrange
+
+            DefaultSetup(setupStaff: true);
+            int orderRequested = 1;
+
+            //Act
+            var result = await controller.Get(1, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var orderResult = objResult.Value as OrderDto;
+            Assert.NotNull(orderResult);
+            Assert.True(fakeRepo.Orders[orderRequested].OrderId == orderResult.OrderId);
+            Assert.True(fakeRepo.Orders[orderRequested].OrderDate == orderResult.OrderDate);
+            Assert.True(fakeRepo.Orders[orderRequested].Total == orderResult.Total);
+            Assert.True(orderedItemsRepoModels.Count == orderResult.OrderedItems.Count);
+            for (int i = 0; i < orderResult.OrderedItems.Count; i++)
+            {
+                Assert.True(orderedItemsRepoModels[i].OrderId == orderResult.OrderedItems[i].OrderId);
+                Assert.True(orderedItemsRepoModels[i].Name == orderResult.OrderedItems[i].Name);
+                Assert.True(orderedItemsRepoModels[i].ProductId == orderResult.OrderedItems[i].ProductId);
+                Assert.True(orderedItemsRepoModels[i].Price == orderResult.OrderedItems[i].Price);
+                Assert.True(orderedItemsRepoModels[i].Quantity == orderResult.OrderedItems[i].Quantity);
+            }
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_CheckMocks()
+        {
+            //Arrange
+            DefaultSetup(withMocks: true, setupStaff: true);
+            var customerId = 1;
+            int orderRequested = 1;
+
+            //Act
+            var result = await controller.Get(customerId, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrder(orderRequested), Times.Once);
+            mockRepo.Verify(repo => repo.GetOrderItems(orderRequested), Times.Once);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_InvalidId_ShouldNotFound()
+        {
+            //Arrange
+            DefaultSetup(setupStaff: true);
+            int orderRequested = 99;
+
+            //Act
+            var result = await controller.Get(1, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_InvalidId_CheckMocks()
+        {
+            //Arrange
+            ordersExist = false;
+            DefaultSetup(withMocks: true, setupStaff: true);
+            var customerId = 1;
+            int orderRequested = 99;
+
+            //Act
+            var result = await controller.Get(customerId, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrder(orderRequested), Times.Once);
+            mockRepo.Verify(repo => repo.GetOrderItems(orderRequested), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_InactiveId_ShoulForbid()
+        {
+            //Arrange
+            DefaultSetup(setupStaff: true);
+            customerRepoModel.Active = false;
+            int orderRequested = 1;
+
+            //Act
+            var result = await controller.Get(1, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_InactiveId_CheckMocks()
+        {
+            //Arrange
+            customerActive = false;
+            DefaultSetup(withMocks: true, setupStaff: true);
+            var customerId = 1;
+            int orderRequested = 1;
+
+            //Act
+            var result = await controller.Get(customerId, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as NotFoundResult;
+            Assert.NotNull(objResult);
+            mockRepo.Verify(repo => repo.GetCustomer(customerId), Times.Once);
+            mockRepo.Verify(repo => repo.CustomerExists(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.IsCustomerActive(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Never);
+            mockRepo.Verify(repo => repo.GetCustomerOrder(orderRequested), Times.Never);
+            mockRepo.Verify(repo => repo.GetOrderItems(orderRequested), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsExist(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockRepo.Verify(repo => repo.ProductsInStock(It.IsAny<List<ProductRepoModel>>()), Times.Never);
+            mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
+            mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
+            mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_NoOrderedItems_ShouldOkObject()
+        {
+            //Arrange
+            DefaultSetup(setupStaff: true);
+            int orderRequested = 1;
+            fakeRepo.OrderedItems = new List<OrderedItemRepoModel>();
+
+            //Act
+            var result = await controller.Get(1, orderRequested);
+
+            //Assert
+            Assert.NotNull(result);
+            var objResult = result as OkObjectResult;
+            Assert.NotNull(objResult);
+            var orderResult = objResult.Value as OrderDto;
+            Assert.NotNull(orderResult);
+            Assert.True(fakeRepo.Orders[orderRequested].OrderId == orderResult.OrderId);
+            Assert.True(fakeRepo.Orders[orderRequested].OrderDate == orderResult.OrderDate);
+            Assert.True(fakeRepo.Orders[orderRequested].Total == orderResult.Total);
+            Assert.True(0 == orderResult.OrderedItems.Count);
+        }
+
+        [Fact]
+        public async Task AsStaff_GetOrder_NoOrderedItems_CheckMocks()
+        {
+            //Arrange
+            DefaultSetup(withMocks: true, setupStaff: true);
             var customerId = 1;
             int orderRequested = 1;
 
@@ -728,6 +1111,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -772,6 +1168,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -804,7 +1201,7 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async Task CreateOrder_ZeroItemPrice_ShouldOky()
+        public async Task CreateOrder_ZeroItemPrice_ShouldOk()
         {
             //Arrange
             DefaultSetup();
@@ -817,6 +1214,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -862,6 +1272,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -894,7 +1305,7 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async Task CreateOrder_ZeroTotalPrice_ShouldUnprocessableEntity()
+        public async Task CreateOrder_ZeroTotalPrice_ShouldOk()
         {
             //Arrange
             DefaultSetup();
@@ -907,6 +1318,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -952,6 +1376,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -997,6 +1422,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1041,6 +1467,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1072,7 +1499,7 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async Task CreateOrder_InvalidAuthId_ShouldNotFound()
+        public async Task CreateOrder_InvalidAuthId_ShouldForbid()
         {
             DefaultSetup();
             fakeRepo.Customer.CustomerAuthId = "WrongId";
@@ -1084,6 +1511,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1126,8 +1554,9 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.NotNull(result);
-            var objResult = result as ConflictResult;
+            var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1141,7 +1570,7 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.NotNull(result);
-            var objResult = result as ConflictResult;
+            var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
             mockRepo.Verify(repo => repo.GetCustomer(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.CustomerExists(finalisedOrder.CustomerId), Times.Never);
@@ -1172,6 +1601,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1217,6 +1647,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1249,7 +1680,7 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async Task CreateOrder_OutOfStock_ShouldNotFound()
+        public async Task CreateOrder_OutOfStock_ShouldConflict()
         {
             //Arrange
             DefaultSetup();
@@ -1260,8 +1691,9 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.NotNull(result);
-            var objResult = result as NotFoundResult;
+            var objResult = result as ConflictResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1276,7 +1708,7 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.NotNull(result);
-            var objResult = result as NotFoundResult;
+            var objResult = result as ConflictResult;
             Assert.NotNull(objResult);
             mockRepo.Verify(repo => repo.GetCustomer(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.CustomerExists(finalisedOrder.CustomerId), Times.Never);
@@ -1305,8 +1737,9 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.NotNull(result);
-            var objResult = result as NotFoundResult;
+            var objResult = result as ConflictResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
 
@@ -1322,7 +1755,7 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.NotNull(result);
-            var objResult = result as NotFoundResult;
+            var objResult = result as ConflictResult;
             Assert.NotNull(objResult);
             mockRepo.Verify(repo => repo.GetCustomer(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.CustomerExists(finalisedOrder.CustomerId), Times.Never);
@@ -1340,7 +1773,7 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async Task CreateOrder_NegativeQuantity_ShouldConflict()
+        public async Task CreateOrder_NegativeQuantity_ShouldUnprocessableEntity()
         {
             //Arrange
             DefaultSetup();
@@ -1353,6 +1786,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1406,6 +1840,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -1468,6 +1915,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -1542,6 +2002,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -1607,6 +2080,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1652,6 +2126,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1697,6 +2172,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -1742,6 +2230,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1787,6 +2276,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -1832,6 +2322,20 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -1877,6 +2381,20 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -1924,6 +2442,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -1971,6 +2502,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -2016,6 +2560,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -2061,6 +2618,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -2108,6 +2678,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -2155,6 +2738,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -2200,6 +2796,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -2245,6 +2854,19 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
+            Assert.Equal(finalisedOrder.OrderDate, fakeRepo.FinalisedOrder.OrderDate);
+            Assert.Equal(finalisedOrder.CustomerId, fakeRepo.FinalisedOrder.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeRepo.FinalisedOrder.Total);
+            Assert.Equal(0, fakeRepo.FinalisedOrder.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeRepo.FinalisedOrder.OrderedItems.Count);
+            for (int i = 0; i < fakeRepo.FinalisedOrder.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeRepo.FinalisedOrder.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeRepo.FinalisedOrder.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
         }
 
         [Fact]
@@ -2290,6 +2912,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -2335,6 +2958,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -2380,6 +3004,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -2425,6 +3050,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -2470,6 +3096,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -2515,6 +3142,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -2560,6 +3188,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
@@ -2605,6 +3234,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.True(fakeRepo.FinalisedOrder == null);
         }
 
         [Fact]
