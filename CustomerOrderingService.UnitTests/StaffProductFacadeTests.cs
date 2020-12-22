@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Configuration;
+using Moq;
 using Moq.Protected;
 using StaffProduct.Facade;
 using StaffProduct.Facade.Models;
@@ -15,59 +16,101 @@ namespace CustomerOrderingService.UnitTests
 {
     public class StaffProductFacadeTests
     {
-        private Mock<HttpMessageHandler> MockMessageHandler(HttpResponseMessage expected)
+        public HttpClient client;
+        public Mock<IHttpClientFactory> mockFactory;
+        public Mock<HttpClient> mockClient;
+        public Mock<HttpMessageHandler> mockHandler;
+        public IStaffProductFacade facade;
+        private IConfiguration config;
+        private List<StockReductionDto> stockReductions;
+
+        private void SetupStockReductions()
         {
-            var mock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            mock.Protected()
+            stockReductions = new List<StockReductionDto>
+            {
+                new StockReductionDto { ProductId = 1, Quantity = 2},
+                new StockReductionDto { ProductId = 2, Quantity = 4}
+            };
+        }
+
+        private void SetupConfig()
+        {
+            var myConfiguration = new Dictionary<string, string>
+                {{"ConnectionStrings:ClientId", "clientId"},
+                {"ConnectionStrings:ClientSecret", "clientSecret"},
+                {"ConnectionStrings:CustomerAuthServerUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:StaffAuthServerUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:CustomerAccountUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:InvoiceUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:StaffProductUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:StaffProductUri", "/fake/Uri"},
+                {"ConnectionStrings:ReviewUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:ReviewProductUri", "fake/Uri"}};
+
+            config = new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
+        }
+
+        private void SetMockMessageHandler(HttpResponseMessage expected)
+        {
+            mockHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            mockHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(expected)
                 .Verifiable();
-            return mock;
         }
 
-        private HttpClient SetupHttpClient(HttpResponseMessage expected)
+        private void SetupRealHttpClient(HttpResponseMessage expected)
         {
-            var client = new HttpClient(MockMessageHandler(expected).Object);
+            client = new HttpClient(mockHandler.Object);
             client.BaseAddress = new Uri("http://test");
-            return client;
-        }
-        private Mock<IHttpClientFactory> CreateHttpFactoryMock(HttpClient client)
-        {
-            var factoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
-            factoryMock.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(client).Verifiable();
-            return factoryMock;
+
         }
 
-        private IStaffProductFacade mockFacade(IHttpClientFactory mockFactory)
+        private void SetupHttpFactoryMock(HttpClient client)
         {
-            return new StaffProductFacade(mockFactory);
+            mockFactory = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+            mockFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(client).Verifiable();
+        }
+
+        private void DefaultSetupRealHttpClient(HttpStatusCode statusCode)
+        {
+            SetupStockReductions();
+            var expectedResult = new HttpResponseMessage
+            {
+                StatusCode = statusCode
+            };
+            SetMockMessageHandler(expectedResult);
+            SetupRealHttpClient(expectedResult);
+            SetupHttpFactoryMock(client);
+            SetupConfig();
+            facade = new StaffProductFacade(mockFactory.Object, config);
+            SetupConfig();
         }
 
         [Fact]
         public async Task UpdateStock_ShouldReturnTrue()
         {
             //Arrange
-            var expectedResult = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK
-            };
-            List<StockReductionDto> stockReductions = new List<StockReductionDto>
-            {
-                new StockReductionDto { ProductId = 1, Quantity = 2},
-                new StockReductionDto { ProductId = 2, Quantity = 4}
-            };
-            var client = SetupHttpClient(expectedResult);
-            var factory = CreateHttpFactoryMock(client);
-            var facade = new StaffProductFacade(factory.Object);
+            DefaultSetupRealHttpClient(HttpStatusCode.OK);
+            var expectedUri = new Uri("http://test/fake/Uri");
 
             //Act
             var result = await facade.UpdateStock(stockReductions);
 
             //Assert
             Assert.True(true == result);
+            mockHandler.Protected().Verify("SendAsync",
+                Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post
+                    && req.RequestUri == expectedUri),
+                ItExpr.IsAny<CancellationToken>());
+            mockFactory.Verify(factory => factory.CreateClient(It.IsAny<string>()), Times.Once);
         }
     }
 }
