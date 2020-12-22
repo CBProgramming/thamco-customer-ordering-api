@@ -14,6 +14,6 @@ namespace Invoicing.Facade.Models
 
         public double Total { get; set; }
 
-        public List<InvoiceItemDto> Products { get; set; }
+        public List<InvoiceItemDto> OrderedItems { get; set; }
     }
 }

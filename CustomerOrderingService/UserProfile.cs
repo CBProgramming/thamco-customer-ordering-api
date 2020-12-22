@@ -5,6 +5,7 @@ using Invoicing.Facade.Models;
 using Order.Repository.Data;
 using Order.Repository.Models;
 using OrderData;
+using Review.Facade.Models;
 using StaffProduct.Facade.Models;
 using System;
 using System.Collections.Generic;
@@ -49,12 +50,19 @@ namespace CustomerOrderingService
             CreateMap<OrderHistoryDto, OrderRepoModel>();
             CreateMap<CustomerDto, CustomerFacadeDto>();
             CreateMap<CustomerFacadeDto, CustomerDto>();
-            CreateMap<ProductDto, ProductRepoModel>();
-            CreateMap<ProductRepoModel, ProductDto>();
+            CreateMap<CustomerOrderingService.Models.ProductDto, ProductRepoModel>();
+            CreateMap<ProductRepoModel, CustomerOrderingService.Models.ProductDto>();
             CreateMap<OrderInvoiceDto, OrderDto>();
             CreateMap<OrderDto, OrderInvoiceDto>();
             CreateMap<OrderedItemDto, InvoiceItemDto>();
             CreateMap<InvoiceItemDto, OrderedItemDto>();
+            CreateMap<FinalisedOrderDto, PurchaseDto>();
+            CreateMap<PurchaseDto, FinalisedOrderDto>();
+            CreateMap<Review.Facade.Models.ProductDto, OrderedItemDto>();
+            CreateMap<OrderedItemDto, Review.Facade.Models.ProductDto > ();
+            CreateMap<FinalisedOrderDto, OrderInvoiceDto>();
+            CreateMap<OrderInvoiceDto, FinalisedOrderDto>();
+
         }
     }
 }

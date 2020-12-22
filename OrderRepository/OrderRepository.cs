@@ -29,23 +29,24 @@ namespace Order.Repository
                 .FirstOrDefault(c => c.CustomerId == customerId));
         }
 
-        public async Task<bool> NewCustomer(CustomerRepoModel newCustomer)
+        public async Task<int> NewCustomer(CustomerRepoModel newCustomer)
         {
             if (newCustomer != null)
             {
                 try
                 {
+                    newCustomer.CustomerId = 0;
                     var customer = _mapper.Map<Customer>(newCustomer);
                     _context.Add(customer);
                     await _context.SaveChangesAsync();
-                    return true;
+                    return customer.CustomerId;
                 }
                 catch (DbUpdateConcurrencyException)
                 {
 
                 }
             }
-            return false;
+            return 0;
         }
 
         public async Task<bool> EditCustomer(CustomerRepoModel editedCustomer)
@@ -283,10 +284,11 @@ namespace Order.Repository
             return _mapper.Map<List<OrderedItemRepoModel>>(_context.OrderedItems.Where(o => o.OrderId == orderId));
         }
 
-        public async Task<bool> CreateOrder(FinalisedOrderRepoModel finalisedOrder)
+        public async Task<int> CreateOrder(FinalisedOrderRepoModel finalisedOrder)
         {
             try
             {
+                finalisedOrder.OrderId = 0;
                 var order = _mapper.Map<OrderData.Order>(finalisedOrder);
                 _context.Add(order);
                 foreach (OrderedItemRepoModel orderedItem in finalisedOrder.OrderedItems)
@@ -302,11 +304,11 @@ namespace Order.Repository
                     _context.Add(item);
                 }
                 await _context.SaveChangesAsync();
-                return true;
+                return finalisedOrder.OrderId;
             }
             catch (DbUpdateConcurrencyException)
             {
-                return false;
+                return 0;
             }
         }
 

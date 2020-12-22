@@ -25,7 +25,7 @@ namespace Order.Repository
 
         public Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId);
 
-        public Task<bool> CreateOrder(FinalisedOrderRepoModel order);
+        public Task<int> CreateOrder(FinalisedOrderRepoModel order);
 
         public Task<bool> ClearBasket(int customerId);
 
@@ -51,7 +51,7 @@ namespace Order.Repository
 
         public Task<bool> IsItemInBasket(int customerId, int productId);
 
-        public Task<bool> NewCustomer(CustomerRepoModel customer);
+        public Task<int> NewCustomer(CustomerRepoModel customer);
 
         public Task<bool> EditCustomer(CustomerRepoModel customer);
 

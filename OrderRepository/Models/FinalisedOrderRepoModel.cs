@@ -15,5 +15,7 @@ namespace Order.Repository.Models
 
         [Range(0,double.MaxValue)]
         public double Total { get; set; }
+
+        public int OrderId { get; set; }
     }
 }

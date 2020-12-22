@@ -15,6 +15,6 @@ namespace CustomerOrderingService.Models
 
         public double Total { get; set; }
 
-        public List<OrderedItemDto> Products { get; set; }
+        public List<OrderedItemDto> OrderedItems { get; set; }
     }
 }

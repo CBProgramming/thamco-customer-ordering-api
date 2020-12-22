@@ -1,16 +1,16 @@
-﻿using Invoicing.Facade.Models;
+﻿using Review.Facade.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Invoicing.Facade
+namespace Review.Facade
 {
-    public class FakeInvoiceFacade : IInvoiceFacade
+    public class FakeReviewFacade : IReviewFacade
     {
         public bool Succeeds = true;
 
-        public async Task<bool> NewOrder(OrderInvoiceDto order)
+        public async Task<bool> NewPurchases(PurchaseDto purchases)
         {
             return Succeeds;
         }

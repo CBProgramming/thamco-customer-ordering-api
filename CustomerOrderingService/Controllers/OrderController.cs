@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Order.Repository;
 using Order.Repository.Data;
 using Order.Repository.Models;
+using Review.Facade;
+using Review.Facade.Models;
 using StaffProduct.Facade;
 using StaffProduct.Facade.Models;
 
@@ -27,16 +29,19 @@ namespace CustomerOrderingService.Controllers
         private readonly IMapper _mapper;
         private readonly IStaffProductFacade _staffProductFacade;
         private readonly IInvoiceFacade _invoiceFacade;
+        private readonly IReviewFacade _reviewFacade;
         private string authId, role;
         
 
         public OrderController(ILogger<OrderController> logger, IOrderRepository orderRepository, IMapper mapper, 
-            IStaffProductFacade staffProductFacade, IInvoiceFacade invoiceFacade)
+            IStaffProductFacade staffProductFacade, IInvoiceFacade invoiceFacade, IReviewFacade reviewFacade)
         {
             _logger = logger;
             _orderRepository = orderRepository;
             _mapper = mapper;
             _staffProductFacade = staffProductFacade;
+            _invoiceFacade = invoiceFacade;
+            _reviewFacade = reviewFacade;
         }
 
         private void getTokenDetails()
@@ -76,63 +81,85 @@ namespace CustomerOrderingService.Controllers
                 OrderDto order = _mapper.Map<OrderDto>(await _orderRepository.GetCustomerOrder(orderId));
                 if (order != null)
                 {
-                    order.Products = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(orderId));
-                    order.Products.ForEach(p => p.OrderId = orderId ?? default);
+                    order.OrderedItems = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(orderId));
+                    order.OrderedItems.ForEach(p => p.OrderId = orderId ?? default);
                     return Ok(order);
                 }
             }
             return NotFound();
         }
 
-        
-
         [HttpPost]
         [Authorize(Policy = "CustomerOnly")]
         public async Task<IActionResult> Create(FinalisedOrderDto order)
         {
+            getTokenDetails();
             //how is stock reduced in customer product service
             //need to send the order to invoice service
 
-            if(ModelState.IsValid && ValidateOrder(order))
+            if (!ModelState.IsValid || !ValidateOrder(order))
             {
-                //check if customer and products exist
-                if (await _orderRepository.CustomerExists(order.CustomerId)
-                && await _orderRepository.ProductsExist(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
-                {
-                    if (await _orderRepository.CanCustomerPurchase(order.CustomerId)
-                        && await _orderRepository.IsCustomerActive(order.CustomerId))
-                    {
-                        if (await _orderRepository.ProductsInStock(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
-                        {
-                            //reduce stock before creating order (it's worse customer service to allow a customer to order something out of stock
-                            //than for the company to innacurately display stock levels as lower than they are if an order fails
-                            var stockReductionList = GenerateStockReductions(order);
-                            if (await _staffProductFacade.UpdateStock(stockReductionList))
-                            {
-                                order.OrderDate = ValidateDate(order.OrderDate);
-                                if (await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderRepoModel>(order)))
-                                {
-                                    if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
-                                    {
-                                        //record to local db to attempt resend later
-                                    }
-                                    await _orderRepository.ClearBasket(order.CustomerId);
-                                    //return ok regardless of if the basket successfully clears because the order is complete
-                                    //better customer service than clearing basket only to have order fail and customer needs to re-add everything to basket
-                                    return Ok();
-                                }
-                                return NotFound();
-                            }
-                            return NotFound();
-                        }
-                        //if the item is no longer in stock between placing the order and it going through (ie someone else ordered the last product at the same time)
-                        return Conflict();
-                    }
-                    return Forbid();
-                }
+                return UnprocessableEntity();
+            }
+            var customer = _mapper.Map<CustomerDto>(await _orderRepository.GetCustomer(order.CustomerId));
+            if (customer == null || !customer.Active)
+            {
                 return NotFound();
             }
-            return UnprocessableEntity();
+            if ((role == "Customer" && customer.CustomerAuthId != authId) 
+                || !ValidContactDetails(customer) 
+                || !customer.CanPurchase)
+            {
+                return Forbid();
+            }
+            if (!await _orderRepository.ProductsExist(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
+            {
+                return Conflict();
+            }
+            if (!await _orderRepository.ProductsInStock(_mapper.Map<List<ProductRepoModel>>(order.OrderedItems)))
+            {
+                return NotFound();
+            }
+            //reduce stock before creating order (it's worse customer service to allow a customer to order something out of stock
+            //than for the company to innacurately display stock levels as lower than they are if an order fails
+            var stockReductionList = GenerateStockReductions(order);
+            if (!await _staffProductFacade.UpdateStock(stockReductionList))
+            {
+                return NotFound();
+            }
+            order.OrderDate = ValidateDate(order.OrderDate);
+            order.OrderId = await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderRepoModel>(order));
+            if (order.OrderId == 0)
+            {
+                return NotFound();
+            }
+            {
+            if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
+            {
+                //record to local db to attempt resend later
+            }
+            PurchaseDto purchases = _mapper.Map<PurchaseDto>(order);
+            purchases.CustomerAuthId = authId;
+            if (!await _reviewFacade.NewPurchases(purchases))
+            {
+                //record to local db to attempt resend later
+            }
+            await _orderRepository.ClearBasket(order.CustomerId);
+            //return ok regardless of if the basket successfully clears because the order is complete
+            //better customer service than clearing basket only to have order fail and customer needs to re-add everything to basket
+            return Ok();
+            }
+            
+        }
+                                
+
+
+        private bool ValidContactDetails(CustomerDto customer)
+        {
+            return !String.IsNullOrEmpty(customer.AddressOne)
+                && !String.IsNullOrEmpty(customer.AreaCode)
+                && !String.IsNullOrEmpty(customer.Country)
+                && !String.IsNullOrEmpty(customer.TelephoneNumber);
         }
 
         private bool ValidateOrder(FinalisedOrderDto order)

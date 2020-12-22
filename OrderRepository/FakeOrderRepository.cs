@@ -34,15 +34,15 @@ namespace Order.Repository
             return await CustomerExists(customerId);
         }
 
-        public async Task<bool> CreateOrder(FinalisedOrderRepoModel order)
+        public async Task<int> CreateOrder(FinalisedOrderRepoModel order)
         {
             if (await CustomerExists(order.CustomerId) 
                 && order.OrderedItems.Count > 0
                 && CompletesOrders)
             {
-                return true;
+                return order.OrderId==0? 1 : order.OrderId;
             }
-            return false;
+            return 0;
         }
 
         public async Task<bool> CustomerExists(int customerId)
@@ -201,7 +201,7 @@ namespace Order.Repository
 
         public async Task<OrderRepoModel> GetCustomerOrder(int? orderId)
         {
-            if (!AutoFails && orderId != null)
+            if (!AutoFails && orderId != null && orderId <= Orders.Count -1 && orderId > -1)
             {
                 return Orders[orderId ?? default];
             }
@@ -258,14 +258,14 @@ namespace Order.Repository
             return CurrentBasket.Any(b => b.ProductId == productId);
         }
 
-        public async Task<bool> NewCustomer(CustomerRepoModel customer)
+        public async Task<int> NewCustomer(CustomerRepoModel customer)
         {
             if (!AutoFails)
             {
                 Customer = customer;
-                return true;
+                return customer.CustomerId;
             }
-            return false;
+            return 0;
         }
 
         public async Task<bool> EditCustomer(CustomerRepoModel customer)

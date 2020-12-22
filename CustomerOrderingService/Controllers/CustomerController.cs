@@ -67,7 +67,8 @@ namespace CustomerOrderingService.Controllers
                 && ! await _orderRepository.CustomerExists(customer.CustomerId))
             {
                 customer.Active = true;
-                if (await _orderRepository.NewCustomer(_mapper.Map<CustomerRepoModel>(customer)))
+                customer.CustomerId = await _orderRepository.NewCustomer(_mapper.Map<CustomerRepoModel>(customer));
+                if(customer.CustomerId != 0)
                 {
                     return Ok();
                 }

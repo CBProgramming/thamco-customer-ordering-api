@@ -24,6 +24,7 @@ using Order.Repository;
 using StaffProduct.Facade;
 using CustomerAccount.Facade;
 using Invoicing.Facade;
+using Review.Facade;
 
 namespace CustomerOrderingService
 {
@@ -111,12 +112,14 @@ namespace CustomerOrderingService
                 services.AddScoped<IStaffProductFacade, FakeStaffProductFacade>();
                 services.AddScoped<ICustomerAccountFacade, FakeCustomerFacade>();
                 services.AddScoped<IInvoiceFacade, FakeInvoiceFacade>();
+                services.AddScoped<IReviewFacade, FakeReviewFacade>();
             }
             else
             {
                 services.AddScoped<IStaffProductFacade, StaffProductFacade>();
                 services.AddScoped<ICustomerAccountFacade, CustomerFacade>();
                 services.AddScoped<IInvoiceFacade, InvoiceFacade>();
+                services.AddScoped<IReviewFacade, ReviewFacade>();
             }
 
             

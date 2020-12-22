@@ -271,7 +271,7 @@ namespace CustomerOrderingService.UnitTests
             var result = await repo.NewCustomer(customerRepoModel);
 
             //Assert
-            Assert.True(true == result);
+            Assert.True(customerRepoModel.CustomerId == result);
 
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
             mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Once());
@@ -287,7 +287,7 @@ namespace CustomerOrderingService.UnitTests
             var result = await repo.NewCustomer(null);
 
             //Assert
-            Assert.True(false == result);
+            Assert.True(0 == result);
             mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
         }
