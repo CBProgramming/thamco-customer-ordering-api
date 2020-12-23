@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
-using StaffProduct.Facade;
-using StaffProduct.Facade.Models;
+using Review.Facade;
+using Review.Facade.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -14,22 +14,28 @@ using Xunit;
 
 namespace CustomerOrderingService.UnitTests
 {
-    public class StaffProductFacadeTests
+    public class ReviewFacadeTests
     {
         public HttpClient client;
         public Mock<IHttpClientFactory> mockFactory;
         public Mock<HttpClient> mockClient;
         public Mock<HttpMessageHandler> mockHandler;
-        public IStaffProductFacade facade;
+        public IReviewFacade facade;
         private IConfiguration config;
-        private List<StockReductionDto> stockReductions;
+        private PurchaseDto purchases;
 
-        private void SetupStockReductions()
+        private void SetupOrder()
         {
-            stockReductions = new List<StockReductionDto>
+            purchases = new PurchaseDto
             {
-                new StockReductionDto { ProductId = 1, Quantity = 2},
-                new StockReductionDto { ProductId = 2, Quantity = 4}
+                CustomerAuthId = "fakeAuthId",
+                CustomerId = 1,
+                OrderedItems = new List<ProductDto>
+                {
+                    new ProductDto{ ProductId = 1},
+                    new ProductDto{ ProductId = 2},
+                    new ProductDto{ ProductId = 3}
+                }
             };
         }
 
@@ -42,6 +48,7 @@ namespace CustomerOrderingService.UnitTests
                 {"ConnectionStrings:StaffAuthServerUrl", "https://fakeurl.com"},
                 {"ConnectionStrings:CustomerAccountUrl", "https://fakeurl.com"},
                 {"ConnectionStrings:InvoiceUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:InvoiceUri", "fake/Uri"},
                 {"ConnectionStrings:StaffProductUrl", "https://fakeurl.com"},
                 {"ConnectionStrings:StaffProductUri", "/fake/Uri"},
                 {"ConnectionStrings:ReviewUrl", "https://fakeurl.com"},
@@ -79,7 +86,7 @@ namespace CustomerOrderingService.UnitTests
 
         private void DefaultSetupRealHttpClient(HttpStatusCode statusCode)
         {
-            SetupStockReductions();
+            SetupOrder();
             var expectedResult = new HttpResponseMessage
             {
                 StatusCode = statusCode
@@ -88,7 +95,7 @@ namespace CustomerOrderingService.UnitTests
             SetupRealHttpClient(expectedResult);
             SetupHttpFactoryMock(client);
             SetupConfig();
-            facade = new StaffProductFacade(mockFactory.Object, config);
+            facade = new ReviewFacade(mockFactory.Object, config);
             SetupConfig();
         }
 
@@ -100,7 +107,7 @@ namespace CustomerOrderingService.UnitTests
             var expectedUri = new Uri("http://test/fake/Uri");
 
             //Act
-            var result = await facade.UpdateStock(stockReductions);
+            var result = await facade.NewPurchases(purchases);
 
             //Assert
             Assert.True(true == result);
@@ -121,7 +128,7 @@ namespace CustomerOrderingService.UnitTests
             var expectedUri = new Uri("http://test/fake/Uri");
 
             //Act
-            var result = await facade.UpdateStock(stockReductions);
+            var result = await facade.NewPurchases(purchases);
 
             //Assert
             Assert.True(false == result);
@@ -142,7 +149,7 @@ namespace CustomerOrderingService.UnitTests
             var expectedUri = new Uri("http://test/fake/Uri");
 
             //Act
-            var result = await facade.UpdateStock(null);
+            var result = await facade.NewPurchases(null);
 
             //Assert
             Assert.True(false == result);
@@ -161,9 +168,10 @@ namespace CustomerOrderingService.UnitTests
             //Arrange
             DefaultSetupRealHttpClient(HttpStatusCode.OK);
             var expectedUri = new Uri("http://test/fake/Uri");
+            purchases.OrderedItems = new List<ProductDto>();
 
             //Act
-            var result = await facade.UpdateStock(new List<StockReductionDto>());
+            var result = await facade.NewPurchases(purchases);
 
             //Assert
             Assert.True(false == result);

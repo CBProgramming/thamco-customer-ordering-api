@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Invoicing.Facade;
+using Invoicing.Facade.Models;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
-using StaffProduct.Facade;
-using StaffProduct.Facade.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -14,22 +14,29 @@ using Xunit;
 
 namespace CustomerOrderingService.UnitTests
 {
-    public class StaffProductFacadeTests
+    public class InvoiceFacadeTests
     {
         public HttpClient client;
         public Mock<IHttpClientFactory> mockFactory;
         public Mock<HttpClient> mockClient;
         public Mock<HttpMessageHandler> mockHandler;
-        public IStaffProductFacade facade;
+        public IInvoiceFacade facade;
         private IConfiguration config;
-        private List<StockReductionDto> stockReductions;
+        private OrderInvoiceDto order;
 
-        private void SetupStockReductions()
+        private void SetupOrder()
         {
-            stockReductions = new List<StockReductionDto>
+            order = new OrderInvoiceDto
             {
-                new StockReductionDto { ProductId = 1, Quantity = 2},
-                new StockReductionDto { ProductId = 2, Quantity = 4}
+                CustomerId = 1,
+                OrderId = 1,
+                OrderDate = new DateTime(),
+                Total = 9.99,
+                OrderedItems = new List<InvoiceItemDto>
+                {
+                    new InvoiceItemDto{ OrderId = 1, ProductId = 1, Quantity = 1, Price = 1, Name = "Product Name"},
+                    new InvoiceItemDto{ OrderId = 2, ProductId = 2, Quantity = 2, Price = 2, Name = "Another Product Name"}
+                }
             };
         }
 
@@ -42,6 +49,7 @@ namespace CustomerOrderingService.UnitTests
                 {"ConnectionStrings:StaffAuthServerUrl", "https://fakeurl.com"},
                 {"ConnectionStrings:CustomerAccountUrl", "https://fakeurl.com"},
                 {"ConnectionStrings:InvoiceUrl", "https://fakeurl.com"},
+                {"ConnectionStrings:InvoiceUri", "fake/Uri"},
                 {"ConnectionStrings:StaffProductUrl", "https://fakeurl.com"},
                 {"ConnectionStrings:StaffProductUri", "/fake/Uri"},
                 {"ConnectionStrings:ReviewUrl", "https://fakeurl.com"},
@@ -79,7 +87,7 @@ namespace CustomerOrderingService.UnitTests
 
         private void DefaultSetupRealHttpClient(HttpStatusCode statusCode)
         {
-            SetupStockReductions();
+            SetupOrder();
             var expectedResult = new HttpResponseMessage
             {
                 StatusCode = statusCode
@@ -88,7 +96,7 @@ namespace CustomerOrderingService.UnitTests
             SetupRealHttpClient(expectedResult);
             SetupHttpFactoryMock(client);
             SetupConfig();
-            facade = new StaffProductFacade(mockFactory.Object, config);
+            facade = new InvoiceFacade(mockFactory.Object, config);
             SetupConfig();
         }
 
@@ -100,7 +108,7 @@ namespace CustomerOrderingService.UnitTests
             var expectedUri = new Uri("http://test/fake/Uri");
 
             //Act
-            var result = await facade.UpdateStock(stockReductions);
+            var result = await facade.NewOrder(order);
 
             //Assert
             Assert.True(true == result);
@@ -121,7 +129,7 @@ namespace CustomerOrderingService.UnitTests
             var expectedUri = new Uri("http://test/fake/Uri");
 
             //Act
-            var result = await facade.UpdateStock(stockReductions);
+            var result = await facade.NewOrder(order);
 
             //Assert
             Assert.True(false == result);
@@ -142,7 +150,7 @@ namespace CustomerOrderingService.UnitTests
             var expectedUri = new Uri("http://test/fake/Uri");
 
             //Act
-            var result = await facade.UpdateStock(null);
+            var result = await facade.NewOrder(null);
 
             //Assert
             Assert.True(false == result);
@@ -161,9 +169,10 @@ namespace CustomerOrderingService.UnitTests
             //Arrange
             DefaultSetupRealHttpClient(HttpStatusCode.OK);
             var expectedUri = new Uri("http://test/fake/Uri");
+            order.OrderedItems = new List<InvoiceItemDto>();
 
             //Act
-            var result = await facade.UpdateStock(new List<StockReductionDto>());
+            var result = await facade.NewOrder(order);
 
             //Assert
             Assert.True(false == result);
