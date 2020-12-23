@@ -46,6 +46,8 @@ namespace CustomerOrderingService
             CreateMap<OrderedItemDto, StockReductionDto>();
             CreateMap<FinalisedOrderDto, FinalisedOrderRepoModel>();
             CreateMap<FinalisedOrderRepoModel, FinalisedOrderDto>();
+            CreateMap<OrderData.Order, FinalisedOrderRepoModel>();
+            CreateMap<FinalisedOrderRepoModel, OrderData.Order>();
             CreateMap<OrderRepoModel, OrderHistoryDto>();
             CreateMap<OrderHistoryDto, OrderRepoModel>();
             CreateMap<CustomerDto, CustomerFacadeDto>();

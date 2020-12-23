@@ -81,7 +81,7 @@ namespace CustomerOrderingService.Controllers
                 OrderDto order = _mapper.Map<OrderDto>(await _orderRepository.GetCustomerOrder(orderId));
                 if (order != null)
                 {
-                    order.OrderedItems = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(orderId));
+                    //order.OrderedItems = _mapper.Map<List<OrderedItemDto>>(await _orderRepository.GetOrderItems(orderId));
                     order.OrderedItems.ForEach(p => p.OrderId = orderId ?? default);
                     return Ok(order);
                 }

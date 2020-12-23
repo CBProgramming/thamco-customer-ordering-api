@@ -206,7 +206,9 @@ namespace Order.Repository
         {
             if (!AutoFails && orderId != null && orderId <= Orders.Count -1 && orderId > -1)
             {
-                return Orders[orderId ?? default];
+                var result = Orders[orderId ?? default];
+                result.OrderedItems = OrderedItems;
+                return result;
             }
             return null;
         }

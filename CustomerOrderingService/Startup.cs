@@ -69,6 +69,12 @@ namespace CustomerOrderingService
                 || context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_account_api"))
                 .Build());
 
+                OptionsBuilderConfigurationExtensions.AddPolicy("CustomerAccountAPIOnly", policy =>
+                policy.AddAuthenticationSchemes("CustomerAuth")
+                .RequireAssertion(context =>
+                context.User.HasClaim(c => c.Type == "client_id" && c.Value == "customer_account_api"))
+                .Build());
+
                 OptionsBuilderConfigurationExtensions.AddPolicy("CustomerOrStaffWebApp", policy =>
                 policy.AddAuthenticationSchemes("CustomerAuth","StaffAuth")
                 .RequireAssertion(context =>

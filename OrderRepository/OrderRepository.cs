@@ -35,7 +35,6 @@ namespace Order.Repository
             {
                 try
                 {
-                    newCustomer.CustomerId = 0;
                     var customer = _mapper.Map<Customer>(newCustomer);
                     _context.Add(customer);
                     await _context.SaveChangesAsync();
@@ -276,7 +275,17 @@ namespace Order.Repository
 
         public async Task<OrderRepoModel> GetCustomerOrder(int? orderId)
         {
-            return _mapper.Map<OrderRepoModel>(_context.Orders.Where(o => o.OrderId == orderId));
+
+            var order = _context.Orders.FirstOrDefault(o => o.OrderId == orderId);
+            var orderedItems = _context.OrderedItems.Where(o => o.OrderId == orderId).ToList();
+            if (order == null || orderedItems == null || orderedItems.Count<1)
+            {
+                return null;
+            }
+            order.OrderedItems = orderedItems;
+            var mappedOrder = _mapper.Map<OrderRepoModel>(order);
+            return mappedOrder;
+
         }
 
         public async Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId)
@@ -286,6 +295,10 @@ namespace Order.Repository
 
         public async Task<int> CreateOrder(FinalisedOrderRepoModel finalisedOrder)
         {
+            if (finalisedOrder == null || finalisedOrder.OrderedItems == null || finalisedOrder.OrderedItems.Count <1)
+            {
+                return 0;
+            }
             try
             {
                 finalisedOrder.OrderId = 0;
@@ -293,8 +306,13 @@ namespace Order.Repository
                 _context.Add(order);
                 foreach (OrderedItemRepoModel orderedItem in finalisedOrder.OrderedItems)
                 {
+                    if (orderedItem == null)
+                    {
+                        return 0;
+                    }
                     var item = new OrderedItem
                     {
+                        OrderId = order.OrderId,
                         Order = order,
                         ProductId = orderedItem.ProductId,
                         Quantity = orderedItem.Quantity,
@@ -302,9 +320,16 @@ namespace Order.Repository
                         Name = orderedItem.Name
                     };
                     _context.Add(item);
+                    var product = _context.Products.FirstOrDefault(product => product.ProductId == orderedItem.ProductId);
+                    if (product == null)
+                    {
+                        return 0;
+                    }
+                    int newStock = product.Quantity - orderedItem.Quantity;
+                    product.Quantity = newStock;
                 }
                 await _context.SaveChangesAsync();
-                return finalisedOrder.OrderId;
+                return order.OrderId;
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -351,9 +376,13 @@ namespace Order.Repository
 
         public async Task<bool> ProductsExist(List<ProductRepoModel> products)
         {
+            if (products == null || products.Count < 1)
+            {
+                return false;
+            }
             foreach (ProductRepoModel product in products)
             {
-                if (! await ProductExists(product))
+                if (product == null || ! await ProductExists(product))
                 {
                     return false;
                 }
@@ -368,9 +397,13 @@ namespace Order.Repository
 
         public async Task<bool> ProductsInStock(List<ProductRepoModel> products)
         {
+            if (products == null || products.Count < 1)
+            {
+                return false;
+            }
             foreach (ProductRepoModel product in products)
             {
-                if (! await ProductInStock(product))
+                if (product == null || ! await ProductInStock(product))
                 {
                     return false;
                 }
@@ -380,7 +413,7 @@ namespace Order.Repository
 
         public async Task<bool> ProductInStock(ProductRepoModel product)
         {
-            return product.Quantity <= _mapper.Map<ProductRepoModel>(_context.Products.Any(p => p.ProductId == product.ProductId)).Quantity;
+            return product.Quantity <= _context.Products.FirstOrDefault(p => p.ProductId == product.ProductId).Quantity;
         }
 
         public async Task<bool> OrderExists(int? orderId)

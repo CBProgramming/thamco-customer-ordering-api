@@ -18,7 +18,6 @@ namespace CustomerOrderingService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "CustomerOrAccountAPI")]
     public class CustomerController : ControllerBase
     {
         private readonly ILogger<CustomerController> _logger;
@@ -38,7 +37,7 @@ namespace CustomerOrderingService.Controllers
 
         // GET: api/<controller>
         [HttpGet("{customerId}")]
-        //[Authorize]
+        [Authorize(Policy = "CustomerOrAccountAPI")]
         public async Task<IActionResult> Get([FromRoute] int customerId)
         {
             if (await _orderRepository.CustomerExists(customerId)
@@ -59,6 +58,7 @@ namespace CustomerOrderingService.Controllers
 
         // PUT api/<controller>/5
         [HttpPost]
+        [Authorize(Policy = "CustomerAccountAPIOnly")]
         public async Task<IActionResult> Post([FromBody] CustomerDto customer)
         {
             getTokenDetails();
@@ -78,6 +78,7 @@ namespace CustomerOrderingService.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("{customerId}")]
+        [Authorize(Policy = "CustomerOrAccountAPI")]
         public async Task<IActionResult> Put([FromRoute] int customerId, [FromBody] CustomerDto customer)
         {
             if (customer != null)
@@ -107,6 +108,7 @@ namespace CustomerOrderingService.Controllers
 
         // DELETE api/<controller>/5
         [HttpDelete("{customerId}")]
+        [Authorize(Policy = "CustomerOrAccountAPI")]
         public async Task<IActionResult> Delete([FromRoute] int customerId)
         {
             if (await _orderRepository.CustomerExists(customerId)

@@ -11,5 +11,7 @@ namespace Order.Repository.Models
         public DateTime OrderDate { get; set; }
 
         public double Total { get; set; }
+
+        public List<OrderedItemRepoModel> OrderedItems { get; set; }
     }
 }
