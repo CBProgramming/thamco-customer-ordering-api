@@ -84,7 +84,7 @@ namespace CustomerOrderingService.UnitTests
             mockProductFacade.Setup(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>())).ReturnsAsync(productFacadeSucceeds);
         }
 
-        private void setupMockReviewFacade()
+        private void SetupMockReviewFacade()
         {
             mockReviewFacade = new Mock<IReviewFacade>(MockBehavior.Strict);
             mockReviewFacade.Setup(facade => facade.NewPurchases(It.IsAny<PurchaseDto>())).ReturnsAsync(reviewFacadeSucceeds);
@@ -197,8 +197,10 @@ namespace CustomerOrderingService.UnitTests
                                         new Claim("client_id", app),
                                         new Claim("role",setupStaff?"ManageCustomerAccounts":"Customer")
                                    }, "TestAuth"));
-            controller.ControllerContext = new ControllerContext();
-            controller.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
         }
 
         private void ResetVars()
@@ -227,7 +229,7 @@ namespace CustomerOrderingService.UnitTests
                 SetMockProductRepo();
                 SetMockInvoiceFacade();
                 SetMockProductFacade();
-                setupMockReviewFacade();
+                SetupMockReviewFacade();
                 controller = new OrderController(logger, mockRepo.Object, mapper, mockProductFacade.Object, mockInvoiceFacade.Object, mockReviewFacade.Object);
             }
             else

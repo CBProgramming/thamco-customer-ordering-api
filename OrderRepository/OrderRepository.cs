@@ -123,7 +123,7 @@ namespace Order.Repository
                         await _context.SaveChangesAsync();
                         return true;
                     }
-                    catch (Exception e)
+                    catch (DbUpdateConcurrencyException)
                     {
                         
                     }
@@ -231,7 +231,7 @@ namespace Order.Repository
                     {
                         product.Name = productModel.Name;
                         product.Price = productModel.Price;
-                        product.Quantity = product.Quantity + productModel.Quantity;
+                        product.Quantity += productModel.Quantity;
                         await _context.SaveChangesAsync();
                         return true;
                     }
@@ -344,8 +344,8 @@ namespace Order.Repository
                 foreach (BasketItem item in _context.BasketItems.Where(b => b.CustomerId == customerId))
                 {
                     _context.BasketItems.Remove(item);
-                    await _context.SaveChangesAsync();
                 }
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch (DbUpdateConcurrencyException)
@@ -367,11 +367,6 @@ namespace Order.Repository
                 return customer.Active;
             }
             return false;
-        }
-
-        public async Task<bool> CanCustomerPurchase(int customerId)
-        {
-            return _context.Customers.FirstOrDefault(c => c.CustomerId == customerId).CanPurchase;
         }
 
         public async Task<bool> ProductsExist(List<ProductRepoModel> products)

@@ -231,15 +231,6 @@ namespace Order.Repository
             return false;
         }
 
-        public async Task<bool> CanCustomerPurchase(int customerId)
-        {
-            if (!AutoFails)
-            {
-                return Customer.CanPurchase;
-            }
-            return false;
-        }
-
         public async Task<bool> OrderExists(int? orderId)
         {
             if (!AutoFails)
@@ -342,7 +333,7 @@ namespace Order.Repository
                         ProductRepoModel repoProduct = Products.Where(p => p.ProductId == product.ProductId).FirstOrDefault();
                         repoProduct.Name = product.Name;
                         repoProduct.Price = product.Price;
-                        repoProduct.Quantity = repoProduct.Quantity + product.Quantity;
+                        repoProduct.Quantity += product.Quantity;
                         return true;
                     }
                 }

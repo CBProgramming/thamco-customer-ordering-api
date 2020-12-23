@@ -44,7 +44,7 @@ namespace CustomerOrderingService.Controllers
             _reviewFacade = reviewFacade;
         }
 
-        private void getTokenDetails()
+        private void GetTokenDetails()
         {
             authId = User
                 .Claims
@@ -58,7 +58,7 @@ namespace CustomerOrderingService.Controllers
         [Authorize(Policy = "CustomerOrStaffWebApp")]
         public async Task<IActionResult> Get (int customerId, int? orderId)
         {
-            getTokenDetails();
+            GetTokenDetails();
             var customer = _mapper.Map <CustomerDto>(await _orderRepository.GetCustomer(customerId));
             if (customer == null || !customer.Active)
             {
@@ -93,7 +93,7 @@ namespace CustomerOrderingService.Controllers
         [Authorize(Policy = "CustomerOnly")]
         public async Task<IActionResult> Create(FinalisedOrderDto order)
         {
-            getTokenDetails();
+            GetTokenDetails();
             //how is stock reduced in customer product service
             //need to send the order to invoice service
 

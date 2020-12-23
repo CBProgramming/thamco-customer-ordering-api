@@ -61,7 +61,7 @@ namespace CustomerOrderingService.Controllers
         [Authorize(Policy = "CustomerAccountAPIOnly")]
         public async Task<IActionResult> Post([FromBody] CustomerDto customer)
         {
-            getTokenDetails();
+            GetTokenDetails();
             if (customer != null 
                 && clientId == "customer_account_api" 
                 && ! await _orderRepository.CustomerExists(customer.CustomerId))
@@ -89,7 +89,7 @@ namespace CustomerOrderingService.Controllers
                 {
                     if (await _orderRepository.EditCustomer(_mapper.Map<CustomerRepoModel>(customer)))
                     {
-                        getTokenDetails();
+                        GetTokenDetails();
                         if (clientId != "customer_account_api")
                         {
                             if (!await _customerFacade.EditCustomer(_mapper.Map<CustomerFacadeDto>(customer))) ;
@@ -114,7 +114,7 @@ namespace CustomerOrderingService.Controllers
             if (await _orderRepository.CustomerExists(customerId)
                     && await AnonymiseCustomer(customerId))
             {
-                getTokenDetails();
+                GetTokenDetails();
                 if (clientId != "customer_account_api")
                 {
                     if (!await _customerFacade.DeleteCustomer(customerId))
@@ -148,7 +148,7 @@ namespace CustomerOrderingService.Controllers
             return await _orderRepository.AnonymiseCustomer(_mapper.Map<CustomerRepoModel>(customer));
         }
 
-        private void getTokenDetails()
+        private void GetTokenDetails()
         {
             clientId = User
                 .Claims
