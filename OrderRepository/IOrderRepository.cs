@@ -25,6 +25,8 @@ namespace Order.Repository
 
         public Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId);
 
+        public Task<IList<ProductRepoModel>> GetProducts();
+
         public Task<int> CreateOrder(FinalisedOrderRepoModel order);
 
         public Task<bool> ClearBasket(int customerId);
@@ -34,7 +36,7 @@ namespace Order.Repository
         public Task<bool> ProductsExist(List<ProductRepoModel> products);
 
         public Task<bool> ProductExists(ProductRepoModel product);
-
+       
         public Task<bool> ProductExists(int productId);
 
         public Task<bool> OrderExists(int? orderId);

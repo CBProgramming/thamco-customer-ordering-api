@@ -358,5 +358,10 @@ namespace Order.Repository
         {
             throw new NotImplementedException();
         }
+
+        public Task<IList<ProductRepoModel>> GetProducts()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

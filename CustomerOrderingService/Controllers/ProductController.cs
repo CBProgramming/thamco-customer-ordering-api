@@ -29,6 +29,12 @@ namespace CustomerOrderingService.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            return Ok(_mapper.Map<List<ProductDto>>(await _orderRepository.GetProducts()));
+        }
+
         // PUT api/<controller>/5
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] List<ProductDto> products)
