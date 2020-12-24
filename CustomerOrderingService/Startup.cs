@@ -152,10 +152,10 @@ namespace CustomerOrderingService
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("StaffProductUrl").Value);
             })
-                    .AddTransientHttpErrorPolicy(p => p.OrResult(
+                    /*.AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
-                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)))*/;
             
             services.AddHttpClient("ReviewAPI", client =>
             {
