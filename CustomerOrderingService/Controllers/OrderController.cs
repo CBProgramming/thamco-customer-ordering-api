@@ -123,6 +123,7 @@ namespace CustomerOrderingService.Controllers
             //reduce stock before creating order (it's worse customer service to allow a customer to order something out of stock
             //than for the company to innacurately display stock levels as lower than they are if an order fails
             var stockReductionList = GenerateStockReductions(order);
+            _logger.LogError("Attempting to update stock facade");
             if (!await _staffProductFacade.UpdateStock(stockReductionList))
             {
                 //return NotFound();
