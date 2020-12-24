@@ -22,7 +22,6 @@ namespace StaffProduct.Facade
 
         private async Task<HttpClient> GetClientWithAccessToken()
         {
-            var client = _httpClientFactory.CreateClient("StaffProductAPI");
             string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
@@ -30,6 +29,7 @@ namespace StaffProduct.Facade
             {
                 return null;
             }
+            var client = _httpClientFactory.CreateClient("StaffProductAPI");
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
