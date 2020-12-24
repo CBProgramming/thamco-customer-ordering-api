@@ -103,7 +103,9 @@ namespace CustomerOrderingService
                      optionsBuilder.EnableRetryOnFailure(10, TimeSpan.FromSeconds(10), null);
                  }
                 ));
+            
 
+            services.AddScoped<IOrderRepository, OrderRepository>();
 
             if (Env.IsDevelopment())
             {
