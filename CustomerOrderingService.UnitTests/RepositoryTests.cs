@@ -1853,7 +1853,7 @@ namespace CustomerOrderingService.UnitTests
             mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
             mockDbContext.Verify(m => m.Add(It.IsAny<OrderData.Order>()), Times.Once());
             mockOrders.Verify(m => m.Remove(It.IsAny<OrderData.Order>()), Times.Never());
-            mockDbContext.Verify(m => m.Add(It.IsAny<OrderedItem>()), Times.Exactly(2));
+            mockDbContext.Verify(m => m.Add(It.IsAny<OrderedItem>()), Times.Never());
             mockOrderedItems.Verify(m => m.Remove(It.IsAny<OrderedItem>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
             Assert.Equal(product1OldStock - finalOrder.OrderedItems[0].Quantity, dbProduct1.Quantity);
@@ -1966,7 +1966,7 @@ namespace CustomerOrderingService.UnitTests
             mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
             mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
             mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
-            mockDbContext.Verify(m => m.Add(It.IsAny<OrderData.Order>()), Times.Once());
+            mockDbContext.Verify(m => m.Add(It.IsAny<OrderData.Order>()), Times.Never());
             mockOrders.Verify(m => m.Remove(It.IsAny<OrderData.Order>()), Times.Never());
             mockDbContext.Verify(m => m.Add(It.IsAny<OrderedItem>()), Times.Never());
             mockOrderedItems.Verify(m => m.Remove(It.IsAny<OrderedItem>()), Times.Never());
@@ -1995,12 +1995,12 @@ namespace CustomerOrderingService.UnitTests
             mockBasketItems.Verify(m => m.Remove(It.IsAny<BasketItem>()), Times.Never());
             mockDbContext.Verify(m => m.Add(It.IsAny<Product>()), Times.Never());
             mockProducts.Verify(m => m.Remove(It.IsAny<Product>()), Times.Never());
-            mockDbContext.Verify(m => m.Add(It.IsAny<OrderData.Order>()), Times.Once());
+            mockDbContext.Verify(m => m.Add(It.IsAny<OrderData.Order>()), Times.Never());
             mockOrders.Verify(m => m.Remove(It.IsAny<OrderData.Order>()), Times.Never());
-            mockDbContext.Verify(m => m.Add(It.IsAny<OrderedItem>()), Times.Once());
+            mockDbContext.Verify(m => m.Add(It.IsAny<OrderedItem>()), Times.Never());
             mockOrderedItems.Verify(m => m.Remove(It.IsAny<OrderedItem>()), Times.Never());
             mockDbContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never());
-            Assert.Equal(product1OldStock - finalOrder.OrderedItems[0].Quantity, dbProduct1.Quantity);
+            Assert.Equal(product1OldStock, dbProduct1.Quantity);
             Assert.Equal(product2OldStock, dbProduct2.Quantity);
         }
 

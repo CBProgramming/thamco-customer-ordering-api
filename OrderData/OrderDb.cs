@@ -53,10 +53,12 @@ namespace OrderData
                     new Customer
                     {
                         CustomerId = 1,
+                        CustomerAuthId = "f756701c-4336-47b1-8317-a16e84bd0059",
                         GivenName = "Chris",
                         FamilyName = "Burrell",
                         AddressOne = "85 Clifton Road",
                         Town = "Downtown",
+                        Country = "UK",
                         State = "Durham",
                         AreaCode = "DL1 5RT",
                         EmailAddress = "t7145969@live.tees.ac.uk",
@@ -82,9 +84,9 @@ namespace OrderData
 
             builder.Entity<Product>()
                 .HasData(
-                    new Product { ProductId = 1, Name = "Fake Product 1", Price = 1.99 },
-                    new Product { ProductId = 2, Name = "Fake Product 2", Price = 2.98 },
-                    new Product { ProductId = 3, Name = "Fake Product 3", Price = 3.97 }
+                    new Product { ProductId = 1, Name = "Fake Product 1", Price = 1.99, Quantity = 20 },
+                    new Product { ProductId = 2, Name = "Fake Product 2", Price = 2.98, Quantity = 20 },
+                    new Product { ProductId = 3, Name = "Fake Product 3", Price = 3.97, Quantity = 20 }
                 );
 
 /*            builder.Entity<BasketItem>()

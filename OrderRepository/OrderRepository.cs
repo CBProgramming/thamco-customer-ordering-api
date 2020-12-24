@@ -299,34 +299,26 @@ namespace Order.Repository
             {
                 return 0;
             }
+            foreach (OrderedItemRepoModel orderedItem in finalisedOrder.OrderedItems)
+            {
+                if (orderedItem == null)
+                {
+                    return 0;
+                }
+            }
             try
             {
                 finalisedOrder.OrderId = 0;
                 var order = _mapper.Map<OrderData.Order>(finalisedOrder);
                 _context.Add(order);
-                foreach (OrderedItemRepoModel orderedItem in finalisedOrder.OrderedItems)
+                foreach (OrderData.OrderedItem orderedItem in order.OrderedItems)
                 {
-                    if (orderedItem == null)
-                    {
-                        return 0;
-                    }
-                    var item = new OrderedItem
-                    {
-                        OrderId = order.OrderId,
-                        Order = order,
-                        ProductId = orderedItem.ProductId,
-                        Quantity = orderedItem.Quantity,
-                        Price = orderedItem.Price,
-                        Name = orderedItem.Name
-                    };
-                    _context.Add(item);
                     var product = _context.Products.FirstOrDefault(product => product.ProductId == orderedItem.ProductId);
-                    if (product == null)
+                    if (product != null)
                     {
-                        return 0;
+                        int newStock = product.Quantity - orderedItem.Quantity;
+                        product.Quantity = newStock;
                     }
-                    int newStock = product.Quantity - orderedItem.Quantity;
-                    product.Quantity = newStock;
                 }
                 await _context.SaveChangesAsync();
                 return order.OrderId;
