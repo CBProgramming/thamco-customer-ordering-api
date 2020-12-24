@@ -2264,7 +2264,7 @@ namespace CustomerOrderingService.UnitTests
             mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
         }
 
-        [Fact]
+/*        [Fact]
         public async Task CreateOrder_ProductFacadeFailure_ShouldNotFound()
         {
             //Arrange
@@ -2308,7 +2308,7 @@ namespace CustomerOrderingService.UnitTests
             mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
             mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Once);
             mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
-        }
+        }*/
 
         [Fact]
         public async Task CreateOrder_InvoiceFacadeFailure_ShouldOk()
