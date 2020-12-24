@@ -132,7 +132,7 @@ namespace CustomerOrderingService
 
             services.AddHttpClient("CustomerAccountAPI", client =>
             {
-                client.BaseAddress = new Uri(Configuration.GetValue<string>("CustomerAccountUrl"));
+                client.BaseAddress = new Uri(Configuration.GetSection("CustomerAccountUrl").Value);
             })
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -141,7 +141,7 @@ namespace CustomerOrderingService
             
             services.AddHttpClient("InvoiceAPI", client =>
             {
-                client.BaseAddress = new Uri(Configuration.GetValue<string>("InvoiceUrl"));
+                client.BaseAddress = new Uri(Configuration.GetSection("InvoiceUrl").Value);
             })
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -150,7 +150,7 @@ namespace CustomerOrderingService
             
             services.AddHttpClient("StaffProductAPI", client =>
             {
-                client.BaseAddress = new Uri(Configuration.GetValue<string>("StaffProductUrl"));
+                client.BaseAddress = new Uri(Configuration.GetSection("StaffProductUrl").Value);
             })
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -159,7 +159,7 @@ namespace CustomerOrderingService
             
             services.AddHttpClient("ReviewAPI", client =>
             {
-                client.BaseAddress = new Uri(Configuration.GetValue<string>("ReviewUrl"));
+                client.BaseAddress = new Uri(Configuration.GetSection("ReviewUrl").Value);
             })
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
