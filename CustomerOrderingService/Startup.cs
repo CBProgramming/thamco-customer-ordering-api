@@ -131,7 +131,7 @@ namespace CustomerOrderingService
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
-                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
             
             services.AddHttpClient("InvoiceAPI", client =>
             {
@@ -140,7 +140,7 @@ namespace CustomerOrderingService
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
-                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
             
             services.AddHttpClient("StaffProductAPI", client =>
             {
@@ -149,7 +149,7 @@ namespace CustomerOrderingService
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
-                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
             
             services.AddHttpClient("ReviewAPI", client =>
             {
@@ -158,7 +158,7 @@ namespace CustomerOrderingService
                     .AddTransientHttpErrorPolicy(p => p.OrResult(
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
-                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
 
         }
 
