@@ -44,7 +44,8 @@ namespace Review.Facade
             string authServerUrl = _config.GetSection("CustomerAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
-            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId))
+            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId)
+                || string.IsNullOrEmpty(client.BaseAddress.AbsolutePath))
             {
                 return null;
             }
