@@ -421,9 +421,5 @@ namespace Order.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<IList<ProductRepoModel>> GetProducts()
-        {
-            return _mapper.Map<List<ProductRepoModel>>(_context.Products.ToList());
-        }
     }
 }

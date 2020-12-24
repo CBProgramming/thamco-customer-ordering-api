@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrderData;
 
 namespace CustomerOrderingService.Controllers
 {
@@ -29,12 +30,6 @@ namespace CustomerOrderingService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            return Ok(_mapper.Map<List<ProductDto>>(await _orderRepository.GetProducts()));
-        }
-
         // PUT api/<controller>/5
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] List<ProductDto> products)
@@ -43,7 +38,7 @@ namespace CustomerOrderingService.Controllers
         }
 
         // PUT api/<controller>/5
-        [HttpPut("{customerId}")]
+        [HttpPut]
         public async Task<IActionResult> Put([FromBody] List<ProductDto> products)
         {
             return await CreateOrEditProduct(products);

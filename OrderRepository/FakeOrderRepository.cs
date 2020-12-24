@@ -1,5 +1,6 @@
 ﻿using Order.Repository.Data;
 using Order.Repository.Models;
+using OrderData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -355,11 +356,6 @@ namespace Order.Repository
         }
 
         public Task<bool> ContactDetailsSufficient(int customerId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IList<ProductRepoModel>> GetProducts()
         {
             throw new NotImplementedException();
         }

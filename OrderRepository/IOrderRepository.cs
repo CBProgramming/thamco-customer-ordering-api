@@ -1,5 +1,6 @@
 ﻿using Order.Repository.Data;
 using Order.Repository.Models;
+using OrderData;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,8 +25,6 @@ namespace Order.Repository
         public Task<IList<OrderRepoModel>> GetCustomerOrders(int customerId);
 
         public Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId);
-
-        public Task<IList<ProductRepoModel>> GetProducts();
 
         public Task<int> CreateOrder(FinalisedOrderRepoModel order);
 
