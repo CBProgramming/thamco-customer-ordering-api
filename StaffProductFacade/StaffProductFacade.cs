@@ -23,9 +23,9 @@ namespace StaffProduct.Facade
         private async Task<HttpClient> GetClientWithAccessToken()
         {
             var client = _httpClientFactory.CreateClient("StaffProductAPI");
-            string authServerUrl = _config.GetConnectionString("StaffAuthServerUrl");
-            string clientSecret = _config.GetConnectionString("ClientSecret");
-            string clientId = _config.GetConnectionString("ClientId");
+            string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
+            string clientSecret = _config.GetSection("ClientSecret").Value;
+            string clientId = _config.GetSection("ClientId").Value;
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -46,7 +46,7 @@ namespace StaffProduct.Facade
             }
 
             HttpClient httpClient = await GetClientWithAccessToken();
-            string uri = _config.GetConnectionString("StaffProductUri");
+            string uri = _config.GetSection("StaffProductUri").Value;
             if ((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(uri,stockReductions)).IsSuccessStatusCode)
             {
                 return true;

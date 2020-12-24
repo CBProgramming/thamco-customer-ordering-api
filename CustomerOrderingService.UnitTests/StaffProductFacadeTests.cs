@@ -36,16 +36,16 @@ namespace CustomerOrderingService.UnitTests
         private void SetupConfig()
         {
             var myConfiguration = new Dictionary<string, string>
-                {{"ConnectionStrings:ClientId", "clientId"},
-                {"ConnectionStrings:ClientSecret", "clientSecret"},
-                {"ConnectionStrings:CustomerAuthServerUrl", "https://fakeurl.com"},
-                {"ConnectionStrings:StaffAuthServerUrl", "https://fakeurl.com"},
-                {"ConnectionStrings:CustomerAccountUrl", "https://fakeurl.com"},
-                {"ConnectionStrings:InvoiceUrl", "https://fakeurl.com"},
-                {"ConnectionStrings:StaffProductUrl", "https://fakeurl.com"},
-                {"ConnectionStrings:StaffProductUri", "/fake/Uri"},
-                {"ConnectionStrings:ReviewUrl", "https://fakeurl.com"},
-                {"ConnectionStrings:ReviewProductUri", "fake/Uri"}};
+                {{"ClientId", "clientId"},
+                {"ClientSecret", "clientSecret"},
+                {"CustomerAuthServerUrl", "https://fakeurl.com"},
+                {"StaffAuthServerUrl", "https://fakeurl.com"},
+                {"CustomerAccountUrl", "https://fakeurl.com"},
+                {"InvoiceUrl", "https://fakeurl.com"},
+                {"StaffProductUrl", "https://fakeurl.com"},
+                {"StaffProductUri", "/fake/Uri"},
+                {"ReviewUrl", "https://fakeurl.com"},
+                {"ReviewProductUri", "fake/Uri"}};
 
             config = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)

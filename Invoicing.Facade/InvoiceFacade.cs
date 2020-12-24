@@ -23,9 +23,9 @@ namespace Invoicing.Facade
         private async Task<HttpClient> GetClientWithAccessToken()
         {
             var client = _httpClientFactory.CreateClient("InvoiceAPI");
-            string authServerUrl = _config.GetConnectionString("StaffAuthServerUrl");
-            string clientSecret = _config.GetConnectionString("ClientSecret");
-            string clientId = _config.GetConnectionString("ClientId");
+            string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
+            string clientSecret = _config.GetSection("ClientSecret").Value;
+            string clientId = _config.GetSection("ClientId").Value;
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -45,7 +45,7 @@ namespace Invoicing.Facade
                 return false;
             }
             HttpClient httpClient = await GetClientWithAccessToken();
-            string uri = _config.GetConnectionString("InvoiceUri");
+            string uri = _config.GetSection("InvoiceUri").Value;
             if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(uri, order)).IsSuccessStatusCode)
             {
                 return true;

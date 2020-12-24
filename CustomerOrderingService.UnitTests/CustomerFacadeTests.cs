@@ -80,9 +80,9 @@ namespace CustomerOrderingService.UnitTests
         {
             var myConfiguration = new Dictionary<string, string>
                         {
-                            {"ConnectionStrings:CustomerAuthServerUrl", "https://fakeurl.com"},
-                            {"ConnectionStrings:ClientId", "ClientId"},
-                            {"ConnectionStrings:ClientSecret", "ClientSecret"}};
+                            {"CustomerAuthServerUrl", "https://fakeurl.com"},
+                            {"ClientId", "ClientId"},
+                            {"ClientSecret", "ClientSecret"}};
 
             config = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
