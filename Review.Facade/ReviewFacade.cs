@@ -40,15 +40,18 @@ namespace Review.Facade
 
         private async Task<HttpClient> GetClientWithAccessToken()
         {
-            var client = _httpClientFactory.CreateClient("ReviewAPI");
+            string reviewUrl = _config.GetSection("ReviewUrl").Value;
             string authServerUrl = _config.GetSection("CustomerAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
-            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId)
-                || string.IsNullOrEmpty(client.BaseAddress.AbsolutePath))
+            if (string.IsNullOrEmpty(authServerUrl) 
+                || string.IsNullOrEmpty(clientSecret) 
+                || string.IsNullOrEmpty(clientId)
+                || string.IsNullOrEmpty(reviewUrl))
             {
                 return null;
             }
+            var client = _httpClientFactory.CreateClient("ReviewAPI");
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {

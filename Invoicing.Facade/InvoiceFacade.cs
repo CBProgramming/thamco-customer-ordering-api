@@ -22,14 +22,18 @@ namespace Invoicing.Facade
 
         private async Task<HttpClient> GetClientWithAccessToken()
         {
-            var client = _httpClientFactory.CreateClient("InvoiceAPI");
             string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
-            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId))
+            string invoiceUrl = _config.GetSection("InvoiceUrl").Value;
+            if (string.IsNullOrEmpty(authServerUrl) 
+                || string.IsNullOrEmpty(clientSecret) 
+                || string.IsNullOrEmpty(clientId)
+                || string.IsNullOrEmpty(invoiceUrl))
             {
                 return null;
             }
+            var client = _httpClientFactory.CreateClient("InvoiceAPI");
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {

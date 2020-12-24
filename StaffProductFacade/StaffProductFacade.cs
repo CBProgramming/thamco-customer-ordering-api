@@ -25,7 +25,11 @@ namespace StaffProduct.Facade
             string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
-            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId))
+            string productUrl = _config.GetSection("StaffProductUrl").Value;
+            if (string.IsNullOrEmpty(authServerUrl) 
+                || string.IsNullOrEmpty(clientSecret) 
+                || string.IsNullOrEmpty(clientId)
+                || string.IsNullOrEmpty(productUrl))
             {
                 return null;
             }
