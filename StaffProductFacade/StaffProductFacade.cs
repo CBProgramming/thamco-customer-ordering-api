@@ -26,6 +26,10 @@ namespace StaffProduct.Facade
             string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
+            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId))
+            {
+                return null;
+            }
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -46,10 +50,13 @@ namespace StaffProduct.Facade
             }
 
             HttpClient httpClient = await GetClientWithAccessToken();
-            string uri = _config.GetSection("StaffProductUri").Value;
-            if ((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(uri,stockReductions)).IsSuccessStatusCode)
+            if (httpClient != null)
             {
-                return true;
+                string uri = _config.GetSection("StaffProductUri").Value;
+                if ((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(uri, stockReductions)).IsSuccessStatusCode)
+                {
+                    return true;
+                }
             }
             return false;
         }

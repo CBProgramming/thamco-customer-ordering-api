@@ -27,10 +27,13 @@ namespace Review.Facade
                 return false;
             }
             HttpClient httpClient = await GetClientWithAccessToken();
-            string uri = _config.GetSection("ReviewProductUri").Value;
-            if ((await httpClient.PostAsJsonAsync<PurchaseDto>(uri, purchases)).IsSuccessStatusCode)
+            if (httpClient != null)
             {
-                return true;
+                string uri = _config.GetSection("ReviewProductUri").Value;
+                if ((await httpClient.PostAsJsonAsync<PurchaseDto>(uri, purchases)).IsSuccessStatusCode)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -41,6 +44,10 @@ namespace Review.Facade
             string authServerUrl = _config.GetSection("CustomerAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
+            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId))
+            {
+                return null;
+            }
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {

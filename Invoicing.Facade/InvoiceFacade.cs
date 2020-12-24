@@ -26,6 +26,10 @@ namespace Invoicing.Facade
             string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
             string clientSecret = _config.GetSection("ClientSecret").Value;
             string clientId = _config.GetSection("ClientId").Value;
+            if (string.IsNullOrEmpty(authServerUrl) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(clientId))
+            {
+                return null;
+            }
             var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -45,10 +49,13 @@ namespace Invoicing.Facade
                 return false;
             }
             HttpClient httpClient = await GetClientWithAccessToken();
-            string uri = _config.GetSection("InvoiceUri").Value;
-            if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(uri, order)).IsSuccessStatusCode)
+            if (httpClient != null)
             {
-                return true;
+                string uri = _config.GetSection("InvoiceUri").Value;
+                if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(uri, order)).IsSuccessStatusCode)
+                {
+                    return true;
+                }
             }
             return false;
         }
