@@ -122,11 +122,11 @@ namespace CustomerOrderingService.Controllers
             }
             //reduce stock before creating order (it's worse customer service to allow a customer to order something out of stock
             //than for the company to innacurately display stock levels as lower than they are if an order fails
-/*            var stockReductionList = GenerateStockReductions(order);
+            var stockReductionList = GenerateStockReductions(order);
             if (!await _staffProductFacade.UpdateStock(stockReductionList))
             {
                 return NotFound();
-            }*/
+            }
             order.OrderDate = ValidateDate(order.OrderDate);
             order.OrderId = await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderRepoModel>(order));
             if (order.OrderId == 0)
@@ -134,17 +134,17 @@ namespace CustomerOrderingService.Controllers
                 return NotFound();
             }
             {
-/*            if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
-            {
-                //record to local db to attempt resend later
-            }
-            PurchaseDto purchases = _mapper.Map<PurchaseDto>(order);
-            purchases.CustomerAuthId = authId;
-            if (!await _reviewFacade.NewPurchases(purchases))
-            {
-                //record to local db to attempt resend later
-            }*/
-            await _orderRepository.ClearBasket(order.CustomerId);
+                if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
+                {
+                    //record to local db to attempt resend later
+                }
+                PurchaseDto purchases = _mapper.Map<PurchaseDto>(order);
+                purchases.CustomerAuthId = authId;
+                if (!await _reviewFacade.NewPurchases(purchases))
+                {
+                    //record to local db to attempt resend later
+                }
+                await _orderRepository.ClearBasket(order.CustomerId);
             //return ok regardless of if the basket successfully clears because the order is complete
             //better customer service than clearing basket only to have order fail and customer needs to re-add everything to basket
             return Ok();
