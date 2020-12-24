@@ -94,7 +94,7 @@ namespace CustomerOrderingService.Controllers
 
 
         // DELETE api/<controller>/5
-        [HttpDelete("{customerId}")]
+        [HttpDelete("{productId}")]
         public async Task<IActionResult> Delete([FromRoute] int productId)
         {
             if (await _orderRepository.ProductExists(productId))
