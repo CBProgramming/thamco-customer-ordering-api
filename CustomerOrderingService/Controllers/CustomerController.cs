@@ -108,7 +108,7 @@ namespace CustomerOrderingService.Controllers
 
         // DELETE api/<controller>/5
         [HttpDelete("{customerId}")]
-        [Authorize(Policy = "CustomerOrAccountAPI")]
+        [Authorize(Policy = "CustomerAccountAPIOnly")]
         public async Task<IActionResult> Delete([FromRoute] int customerId)
         {
             if (await _orderRepository.CustomerExists(customerId)
