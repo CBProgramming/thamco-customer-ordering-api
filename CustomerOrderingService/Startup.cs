@@ -103,15 +103,7 @@ namespace CustomerOrderingService
                      optionsBuilder.EnableRetryOnFailure(10, TimeSpan.FromSeconds(10), null);
                  }
                 ));
-            services.AddHttpClient("StaffProductAPI", client =>
-                {
-                    client.BaseAddress = new Uri("http://localhost:49268");
-                })
-                    .AddTransientHttpErrorPolicy(p => p.OrResult(
-                        msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
-                    .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
-            services.AddScoped<IOrderRepository, OrderRepository>();
+
 
             if (Env.IsDevelopment())
             {
