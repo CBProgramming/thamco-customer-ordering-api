@@ -133,22 +133,20 @@ namespace CustomerOrderingService.Controllers
             {
                 return NotFound();
             }
+            if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
             {
-                if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
-                {
-                    //record to local db to attempt resend later
-                }
-                PurchaseDto purchases = _mapper.Map<PurchaseDto>(order);
-                purchases.CustomerAuthId = authId;
-                if (!await _reviewFacade.NewPurchases(purchases))
-                {
-                    //record to local db to attempt resend later
-                }
-                await _orderRepository.ClearBasket(order.CustomerId);
+                //record to local db to attempt resend later
+            }
+            PurchaseDto purchases = _mapper.Map<PurchaseDto>(order);
+            purchases.CustomerAuthId = authId;
+            if (!await _reviewFacade.NewPurchases(purchases))
+            {
+                //record to local db to attempt resend later
+            }
+            await _orderRepository.ClearBasket(order.CustomerId);
             //return ok regardless of if the basket successfully clears because the order is complete
             //better customer service than clearing basket only to have order fail and customer needs to re-add everything to basket
             return Ok();
-            }
             
         }
                                 
