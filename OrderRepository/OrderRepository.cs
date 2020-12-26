@@ -201,14 +201,14 @@ namespace Order.Repository
             return _context.Products.Any(p => p.ProductId == id);
         }
 
-        public async Task<bool> CreateProduct(ProductRepoModel product)
+        public async Task<bool> CreateProduct(ProductRepoModel productModel)
         {
-            if (product != null)
+            if (productModel != null)
             {
                 try
                 {
-                    var customer = _mapper.Map<Product>(product);
-                    _context.Add(customer);
+                    var product = _mapper.Map<Product>(productModel);
+                    _context.Add(product);
                     await _context.SaveChangesAsync();
                     return true;
                 }
