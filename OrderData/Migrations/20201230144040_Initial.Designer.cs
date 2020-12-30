@@ -10,8 +10,8 @@ using OrderData;
 namespace OrderData.Migrations
 {
     [DbContext(typeof(OrderDb))]
-    [Migration("20201224125448_dataStructureFinalised")]
-    partial class dataStructureFinalised
+    [Migration("20201230144040_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -96,6 +96,8 @@ namespace OrderData.Migrations
                             AddressOne = "85 Clifton Road",
                             AreaCode = "DL1 5RT",
                             CanPurchase = true,
+                            Country = "UK",
+                            CustomerAuthId = "f756701c-4336-47b1-8317-a16e84bd0059",
                             EmailAddress = "t7145969@live.tees.ac.uk",
                             FamilyName = "Burrell",
                             GivenName = "Chris",
@@ -190,21 +192,21 @@ namespace OrderData.Migrations
                             ProductId = 1,
                             Name = "Fake Product 1",
                             Price = 1.99,
-                            Quantity = 0
+                            Quantity = 20
                         },
                         new
                         {
                             ProductId = 2,
                             Name = "Fake Product 2",
                             Price = 2.98,
-                            Quantity = 0
+                            Quantity = 20
                         },
                         new
                         {
                             ProductId = 3,
                             Name = "Fake Product 3",
                             Price = 3.9700000000000002,
-                            Quantity = 0
+                            Quantity = 20
                         });
                 });
 
