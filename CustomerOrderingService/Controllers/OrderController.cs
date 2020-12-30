@@ -199,7 +199,8 @@ namespace CustomerOrderingService.Controllers
 
         private DateTime ValidateDate (DateTime orderDate)
         {
-            //if date is over 7 days old, or a future date, set date to now (7 days chosen arbitrarily as it would be a business decision above my position)
+            //if date is over 7 days old, or a future date, set date to now (7 days chosen arbitrarily as it would 
+            //likely be a business decision above my position)
             if (DateTime.Now.Ticks - orderDate.Ticks > (TimeSpan.TicksPerDay * 7) || orderDate > DateTime.Now)
             {
                 return DateTime.Now;
