@@ -1,4 +1,5 @@
-﻿using IdentityModel.Client;
+﻿using HttpManager;
+using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
 using Review.Facade.Models;
 using System;
@@ -11,13 +12,13 @@ namespace Review.Facade
 {
     public class ReviewFacade : IReviewFacade
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
+        private readonly IHttpHandler _handler;
 
-        public ReviewFacade(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public ReviewFacade(IConfiguration config, IHttpHandler handler)
         {
-            _httpClientFactory = httpClientFactory;
             _config = config;
+            _handler = handler;
         }
 
         public async Task<bool> NewPurchases(PurchaseDto purchases)
@@ -26,7 +27,7 @@ namespace Review.Facade
             {
                 return false;
             }
-            HttpClient httpClient = await GetClientWithAccessToken();
+            HttpClient httpClient = await _handler.GetClient("CustomerAuthServerUrl", "ReviewAPI", "ReviewScope");
             if (httpClient != null)
             {
                 string uri = _config.GetSection("ReviewProductUri").Value;
@@ -36,32 +37,6 @@ namespace Review.Facade
                 }
             }
             return false;
-        }
-
-        private async Task<HttpClient> GetClientWithAccessToken()
-        {
-            string reviewUrl = _config.GetSection("ReviewUrl").Value;
-            string authServerUrl = _config.GetSection("CustomerAuthServerUrl").Value;
-            string clientSecret = _config.GetSection("ClientSecret").Value;
-            string clientId = _config.GetSection("ClientId").Value;
-            if (string.IsNullOrEmpty(authServerUrl) 
-                || string.IsNullOrEmpty(clientSecret) 
-                || string.IsNullOrEmpty(clientId)
-                || string.IsNullOrEmpty(reviewUrl))
-            {
-                return null;
-            }
-            var client = _httpClientFactory.CreateClient("ReviewAPI");
-            var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                Scope = "review_api"
-            });
-            client.SetBearerToken(tokenResponse.AccessToken);
-            return client;
         }
     }
 }

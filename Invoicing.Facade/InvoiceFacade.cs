@@ -1,4 +1,5 @@
-﻿using IdentityModel.Client;
+﻿using HttpManager;
+using IdentityModel.Client;
 using Invoicing.Facade.Models;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -11,39 +12,13 @@ namespace Invoicing.Facade
 {
     public class InvoiceFacade : IInvoiceFacade
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
+        private readonly IHttpHandler _handler;
 
-        public InvoiceFacade(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public InvoiceFacade(IConfiguration config, IHttpHandler handler)
         {
-            _httpClientFactory = httpClientFactory;
             _config = config;
-        }
-
-        private async Task<HttpClient> GetClientWithAccessToken()
-        {
-            string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
-            string clientSecret = _config.GetSection("ClientSecret").Value;
-            string clientId = _config.GetSection("ClientId").Value;
-            string invoiceUrl = _config.GetSection("InvoiceUrl").Value;
-            if (string.IsNullOrEmpty(authServerUrl) 
-                || string.IsNullOrEmpty(clientSecret) 
-                || string.IsNullOrEmpty(clientId)
-                || string.IsNullOrEmpty(invoiceUrl))
-            {
-                return null;
-            }
-            var client = _httpClientFactory.CreateClient("InvoiceAPI");
-            var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                Scope = "invoice_api"
-            });
-            client.SetBearerToken(tokenResponse.AccessToken);
-            return client;
+            _handler = handler;
         }
 
         public async Task<bool> NewOrder(OrderInvoiceDto order)
@@ -52,7 +27,7 @@ namespace Invoicing.Facade
             {
                 return false;
             }
-            HttpClient httpClient = await GetClientWithAccessToken();
+            HttpClient httpClient = await _handler.GetClient("CustomerAuthServerUrl", "InvoiceAPI", "InvoiceScope");
             if (httpClient != null)
             {
                 string uri = _config.GetSection("InvoiceUri").Value;

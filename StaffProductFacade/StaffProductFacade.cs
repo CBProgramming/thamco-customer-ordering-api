@@ -6,44 +6,19 @@ using StaffProduct.Facade.Models;
 using System.Net.Http;
 using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
+using HttpManager;
 
 namespace StaffProduct.Facade
 {
     public class StaffProductFacade : IStaffProductFacade
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
+        private readonly IHttpHandler _handler;
 
-        public StaffProductFacade(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public StaffProductFacade(IConfiguration config, IHttpHandler handler)
         {
-            _httpClientFactory = httpClientFactory;
             _config = config;
-        }
-
-        private async Task<HttpClient> GetClientWithAccessToken()
-        {
-            string authServerUrl = _config.GetSection("StaffAuthServerUrl").Value;
-            string clientSecret = _config.GetSection("ClientSecret").Value;
-            string clientId = _config.GetSection("ClientId").Value;
-            string productUrl = _config.GetSection("StaffProductUrl").Value;
-            if (string.IsNullOrEmpty(authServerUrl) 
-                || string.IsNullOrEmpty(clientSecret) 
-                || string.IsNullOrEmpty(clientId)
-                || string.IsNullOrEmpty(productUrl))
-            {
-                return null;
-            }
-            var client = _httpClientFactory.CreateClient("StaffProductAPI");
-            var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                Scope = "staff_product_api"
-            });
-            client.SetBearerToken(tokenResponse.AccessToken);
-            return client;
+            _handler = handler;
         }
 
         public async Task<bool> UpdateStock(List<StockReductionDto> stockReductions)
@@ -53,7 +28,7 @@ namespace StaffProduct.Facade
                 return false;
             }
 
-            HttpClient httpClient = await GetClientWithAccessToken();
+            HttpClient httpClient = await _handler.GetClient("CustomerAuthServerUrl", "StaffProductAPI", "StaffProductScope");
             if (httpClient != null)
             {
                 string uri = _config.GetSection("StaffProductUri").Value;

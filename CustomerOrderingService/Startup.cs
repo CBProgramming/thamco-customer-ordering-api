@@ -26,6 +26,7 @@ using CustomerAccount.Facade;
 using Invoicing.Facade;
 using Review.Facade;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using HttpManager;
 
 namespace CustomerOrderingService
 {
@@ -129,7 +130,10 @@ namespace CustomerOrderingService
                 services.AddScoped<IReviewFacade, ReviewFacade>();
             }
 
-            
+            services.AddScoped<IHttpHandler, HttpHandler>();
+            services.AddScoped<IAccessTokenGetter, AccessTokenGetter>();
+
+
 
             services.AddHttpClient("CustomerAccountAPI", client =>
             {
