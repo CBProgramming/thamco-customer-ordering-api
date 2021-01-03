@@ -16,7 +16,7 @@ namespace CustomerOrderingService.UnitTests
 {
     public class ReviewFacadeTests
     {
-        public HttpClient client;
+        /*public HttpClient client;
         public Mock<IHttpClientFactory> mockFactory;
         public Mock<HttpClient> mockClient;
         public Mock<HttpMessageHandler> mockHandler;
@@ -182,6 +182,6 @@ namespace CustomerOrderingService.UnitTests
                     && req.RequestUri == expectedUri),
                 ItExpr.IsAny<CancellationToken>());
             mockFactory.Verify(factory => factory.CreateClient(It.IsAny<string>()), Times.Never);
-        }
+        }*/
     }
 }
