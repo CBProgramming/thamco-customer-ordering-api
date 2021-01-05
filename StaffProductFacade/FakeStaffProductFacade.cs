@@ -9,7 +9,7 @@ namespace StaffProduct.Facade
     public class FakeStaffProductFacade : IStaffProductFacade
     {
         public bool CompletesStockReduction = true;
-        public List<StockReductionDto> StockReductions;
+        public List<StockReductionDto> StockReductions { get; set; }
 
         public async Task<bool> UpdateStock(List<StockReductionDto> stockReductions)
         {

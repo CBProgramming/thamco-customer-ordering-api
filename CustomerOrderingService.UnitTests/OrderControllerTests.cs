@@ -268,6 +268,9 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(fakeRepo.Orders[i].OrderDate, historyResult[i].OrderDate);
                 Assert.Equal(fakeRepo.Orders[i].Total, historyResult[i].Total);
             }
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -316,6 +319,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var notResult = result as NotFoundResult;
             Assert.NotNull(notResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -366,6 +372,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var notResult = result as NotFoundResult;
             Assert.NotNull(notResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -418,6 +427,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -471,6 +483,9 @@ namespace CustomerOrderingService.UnitTests
             var historyResult = objResult.Value as List<OrderHistoryDto>;
             Assert.NotNull(historyResult);
             Assert.True(0 == historyResult.Count);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -536,6 +551,9 @@ namespace CustomerOrderingService.UnitTests
                 Assert.True(orderedItemsRepoModels[i].Price == orderResult.OrderedItems[i].Price);
                 Assert.True(orderedItemsRepoModels[i].Quantity == orderResult.OrderedItems[i].Quantity);
             }
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -586,6 +604,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -638,6 +659,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -690,6 +714,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -749,6 +776,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.True(fakeRepo.Orders[orderRequested].OrderDate == orderResult.OrderDate);
             Assert.True(fakeRepo.Orders[orderRequested].Total == orderResult.Total);
             Assert.True(0 == orderResult.OrderedItems.Count);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -811,6 +841,9 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(fakeRepo.Orders[i].OrderDate, historyResult[i].OrderDate);
                 Assert.Equal(fakeRepo.Orders[i].Total, historyResult[i].Total);
             }
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -859,6 +892,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var notResult = result as NotFoundResult;
             Assert.NotNull(notResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -909,6 +945,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var notResult = result as NotFoundResult;
             Assert.NotNull(notResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -963,6 +1002,9 @@ namespace CustomerOrderingService.UnitTests
             var historyResult = objResult.Value as List<OrderHistoryDto>;
             Assert.NotNull(historyResult);
             Assert.True(0 == historyResult.Count);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1028,6 +1070,9 @@ namespace CustomerOrderingService.UnitTests
                 Assert.True(orderedItemsRepoModels[i].Price == orderResult.OrderedItems[i].Price);
                 Assert.True(orderedItemsRepoModels[i].Quantity == orderResult.OrderedItems[i].Quantity);
             }
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1078,6 +1123,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1130,6 +1178,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(result);
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1188,6 +1239,9 @@ namespace CustomerOrderingService.UnitTests
             Assert.True(fakeRepo.Orders[orderRequested].OrderDate == orderResult.OrderDate);
             Assert.True(fakeRepo.Orders[orderRequested].Total == orderResult.Total);
             Assert.True(0 == orderResult.OrderedItems.Count);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1252,6 +1306,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -1301,6 +1381,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1363,6 +1446,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -1413,6 +1522,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1475,6 +1587,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -1525,6 +1663,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1575,6 +1716,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1624,6 +1768,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1672,6 +1819,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1721,6 +1871,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1770,6 +1923,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1820,6 +1976,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1870,6 +2029,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ConflictResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -1920,6 +2082,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ConflictResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
 
@@ -1971,6 +2136,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -2041,6 +2209,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
             }
         }
 
@@ -2120,6 +2314,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
             }
         }
 
@@ -2212,6 +2432,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2282,6 +2528,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -2332,6 +2581,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as UnprocessableEntityResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -2394,6 +2646,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2444,6 +2722,14 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as NotFoundResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2494,6 +2780,33 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as OkResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder != null);
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2557,6 +2870,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2619,6 +2958,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
             }
         }
 
@@ -2684,6 +3049,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2748,6 +3139,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2810,6 +3227,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -2871,6 +3314,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
             }
         }
 
@@ -2936,6 +3405,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -3000,6 +3495,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -3061,6 +3582,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeRepo.FinalisedOrder.OrderedItems[i].Quantity);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
             }
         }
 
@@ -3125,6 +3672,32 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeRepo.FinalisedOrder.OrderedItems[i].Price);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeRepo.FinalisedOrder.OrderedItems[i].Name);
             }
+            Assert.NotNull(fakeInvoiceFacade.Order);
+            Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
+            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
+            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
+            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
+            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
+            }
+            Assert.NotNull(fakeReviewFacade.Purchases);
+            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
+            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
+            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
+            }
+            Assert.NotNull(fakeProductFacade.StockReductions);
+            for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
+            {
+                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
+                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
+            }
         }
 
         [Fact]
@@ -3175,6 +3748,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -3225,6 +3801,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -3275,6 +3854,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -3325,6 +3907,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -3375,6 +3960,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -3425,6 +4013,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -3475,6 +4066,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
@@ -3525,6 +4119,9 @@ namespace CustomerOrderingService.UnitTests
             var objResult = result as ForbidResult;
             Assert.NotNull(objResult);
             Assert.True(fakeRepo.FinalisedOrder == null);
+            Assert.Null(fakeInvoiceFacade.Order);
+            Assert.Null(fakeReviewFacade.Purchases);
+            Assert.Null(fakeProductFacade.StockReductions);
         }
 
         [Fact]
