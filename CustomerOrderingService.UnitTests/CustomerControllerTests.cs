@@ -1339,22 +1339,6 @@ namespace CustomerOrderingService.UnitTests
         }
 
         [Fact]
-        public async void PostNewCustomer_FromWebApp_ShouldUnprocessableEntity()
-        {
-            //Arrange
-            DefaultSetup();
-            fakeRepo.Customer = null;
-
-            //Act
-            var result = await controller.Post(customerDto);
-
-            //Assert
-            Assert.NotNull(result);
-            var objResult = result as UnprocessableEntityResult;
-            Assert.NotNull(objResult);
-        }
-
-        [Fact]
         public async void PostNewCustomer_VerifyMocks()
         {
             //Arrange
@@ -1368,11 +1352,11 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.NotNull(result);
-            var objResult = result as UnprocessableEntityResult;
+            var objResult = result as OkResult;
             Assert.NotNull(objResult);
-            mockRepo.Verify(repo => repo.CustomerExists(It.IsAny<int>()), Times.Never);
+            mockRepo.Verify(repo => repo.CustomerExists(It.IsAny<int>()), Times.Once);
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.NewCustomer(It.IsAny<CustomerRepoModel>()), Times.Never);
+            mockRepo.Verify(repo => repo.NewCustomer(It.IsAny<CustomerRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.EditCustomer(It.IsAny<CustomerRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.AnonymiseCustomer(It.IsAny<CustomerRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomer(It.IsAny<int>()), Times.Never);
