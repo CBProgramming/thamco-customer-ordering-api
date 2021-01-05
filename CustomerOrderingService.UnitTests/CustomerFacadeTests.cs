@@ -27,11 +27,11 @@ namespace CustomerOrderingService.UnitTests
         public ICustomerAccountFacade facade;
         private Microsoft.Extensions.Configuration.IConfiguration config;
         private Mock<IHttpHandler> mockHttpHandler;
-        private string customerUriValue = "/api/CustomerAccount/";
+        private string customerUriValue = "/api/Customer/";
         private string customerAuthServerUrlKeyValue = "CustomerAuthServerUrl";
         private string customerApiKeyValue = "CustomerAPI";
         private string customerScopeKeyValue = "CustomerScope";
-        Uri expectedUri = new Uri("http://test/api/CustomerAccount/1");
+        Uri expectedUri = new Uri("http://test/api/Customer/1");
 
 
         private void SetupCustomer()

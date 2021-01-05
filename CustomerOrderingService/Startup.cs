@@ -135,7 +135,8 @@ namespace CustomerOrderingService
 
 
 
-            services.AddHttpClient(Configuration.GetSection("CustomerAccountAPIKey").Value, client =>
+            //services.AddHttpClient(Configuration.GetSection("CustomerAccountAPIKey").Value, client =>
+            services.AddHttpClient("CustomerAccountAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("CustomerAccountUrl").Value);
             })
@@ -143,8 +144,9 @@ namespace CustomerOrderingService
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
-            
-            services.AddHttpClient(Configuration.GetSection("InvoiceAPIKey").Value, client =>
+
+            //services.AddHttpClient(Configuration.GetSection("InvoiceAPIKey").Value, client =>
+            services.AddHttpClient("InvoiceAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("InvoiceUrl").Value);
             })
@@ -152,8 +154,9 @@ namespace CustomerOrderingService
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
-            
-            services.AddHttpClient(Configuration.GetSection("StaffProductAPIKey").Value, client =>
+
+            //services.AddHttpClient(Configuration.GetSection("StaffProductAPIKey").Value, client =>
+            services.AddHttpClient("StaffProductAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("StaffProductUrl").Value);
             })
@@ -161,8 +164,9 @@ namespace CustomerOrderingService
                         msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
-            
-            services.AddHttpClient(Configuration.GetSection("ReviewAPIKey").Value, client =>
+
+            //services.AddHttpClient(Configuration.GetSection("ReviewAPIKey").Value, client =>
+            services.AddHttpClient("ReviewAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("ReviewUrl").Value);
             })
