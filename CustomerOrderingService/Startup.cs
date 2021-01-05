@@ -131,7 +131,7 @@ namespace CustomerOrderingService
             }
 
             services.AddScoped<IHttpHandler, HttpHandler>();
-            services.AddScoped<IAccessTokenGetter, AccessTokenGetter>();
+            services.AddScoped<IUnmockablesWrapper, UnmockablesWrapper>();
 
 
 

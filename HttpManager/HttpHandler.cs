@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using IdentityModel.Client;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,31 +12,98 @@ namespace HttpManager
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
-        private readonly IAccessTokenGetter _tokenGetter;
+        private readonly ClientCredentialsTokenRequest _tokenRequest;
+        private readonly IUnmockablesWrapper _unmockablesWrapper;
 
-        public HttpHandler(IHttpClientFactory httpClientFactory, IConfiguration config, IAccessTokenGetter tokenGetter)
+        public HttpHandler(IHttpClientFactory httpClientFactory, IConfiguration config,
+            ClientCredentialsTokenRequest tokenRequest, IUnmockablesWrapper unmockablesWrapper)
         {
             _httpClientFactory = httpClientFactory;
             _config = config;
-            _tokenGetter = tokenGetter;
+            _tokenRequest = tokenRequest;
+            _unmockablesWrapper = unmockablesWrapper;
         }
 
         public async Task<HttpClient> GetClient(string urlKey, string clientKey, string scopeKey)
         {
-            string orderUrl = _config.GetSection(urlKey).Value;
-            string authServerUrl = _config.GetSection("CustomerAuthServerUrl").Value;
-            string clientSecret = _config.GetSection("ClientSecret").Value;
-            string clientId = _config.GetSection("ClientId").Value;
-            if (string.IsNullOrEmpty(authServerUrl)
-                || string.IsNullOrEmpty(clientSecret)
-                || string.IsNullOrEmpty(clientId)
-                || string.IsNullOrEmpty(orderUrl))
+            if (!InitialVariablesOk(urlKey, scopeKey, clientKey))
             {
                 return null;
             }
-            var client = _httpClientFactory.CreateClient(clientKey);
-            client = await _tokenGetter.GetToken(client, authServerUrl, clientId, clientSecret, scopeKey);
+            string authServerUrl = _config.GetSection(urlKey).Value;
+            string scope = _config.GetSection(scopeKey).Value;
+            if (string.IsNullOrEmpty(scope) || string.IsNullOrEmpty(authServerUrl))
+            {
+                return null;
+            }
+            HttpClient client = _httpClientFactory.CreateClient(clientKey);
+            if (client == null)
+            {
+                return null;
+            }
+            var disco = await GetDisco(client, authServerUrl);
+            if (disco == null)
+            {
+                return null;
+            }
+            var tokenEndPoint = await _unmockablesWrapper.GetTokenEndPoint(disco);
+            if (string.IsNullOrEmpty(tokenEndPoint))
+            {
+                return null;
+            }
+            _tokenRequest.Address = tokenEndPoint;
+            _tokenRequest.Scope = scope;
+            var tokenResponse = await GetTokenResponse(client, _tokenRequest);
+            if (tokenResponse == null)
+            {
+                return null;
+            }
+            var accessToken = await _unmockablesWrapper.GetAccessToken(tokenResponse);
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                return null;
+            }
+            client.SetBearerToken(accessToken);
             return client;
+        }
+
+        private bool InitialVariablesOk(string urlKey, string scopeKey, string clientKey)
+        {
+            return _httpClientFactory != null
+                && _config != null
+                && _tokenRequest != null
+                && _unmockablesWrapper != null
+                && !string.IsNullOrEmpty(urlKey)
+                && !string.IsNullOrEmpty(scopeKey)
+                && !string.IsNullOrEmpty(clientKey);
+        }
+
+        private async Task<DiscoveryDocumentResponse> GetDisco(HttpClient client, string authServerUrl)
+        {
+            DiscoveryDocumentResponse disco;
+            try
+            {
+                return await _unmockablesWrapper.GetDiscoveryDocumentAsync(client, authServerUrl);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        private async Task<TokenResponse> GetTokenResponse(HttpClient client,
+            ClientCredentialsTokenRequest tokenRequest)
+        {
+            TokenResponse tokenResponse;
+            try
+            {
+                return await _unmockablesWrapper
+                .RequestClientCredentialsTokenAsync(client, _tokenRequest);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 }
