@@ -12,31 +12,47 @@ namespace Review.Facade
 {
     public class ReviewFacade : IReviewFacade
     {
-        private readonly IConfiguration _config;
         private readonly IHttpHandler _handler;
+        private string customerAuthUrl;
+        private string reviewApi;
+        private string reviewScope;
+        private string reviewUri;
 
         public ReviewFacade(IConfiguration config, IHttpHandler handler)
         {
-            _config = config;
             _handler = handler;
+            if (config != null)
+            {
+                customerAuthUrl = config.GetSection("CustomerAuthServerUrlKey").Value;
+                reviewApi = config.GetSection("ReviewAPIKey").Value;
+                reviewScope = config.GetSection("ReviewScopeKey").Value;
+                reviewUri = config.GetSection("ReviewUri").Value;
+            }
         }
 
         public async Task<bool> NewPurchases(PurchaseDto purchases)
         {
-            if (purchases == null || purchases.OrderedItems.Count == 0)
+            if (purchases == null || purchases.OrderedItems.Count == 0 || !ValidConfigStrings())
             {
                 return false;
             }
             HttpClient httpClient = await _handler.GetClient("CustomerAuthServerUrl", "ReviewAPI", "ReviewScope");
             if (httpClient != null)
             {
-                string uri = _config.GetSection("ReviewProductUri").Value;
-                if ((await httpClient.PostAsJsonAsync<PurchaseDto>(uri, purchases)).IsSuccessStatusCode)
+                if ((await httpClient.PostAsJsonAsync<PurchaseDto>(reviewUri, purchases)).IsSuccessStatusCode)
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        private bool ValidConfigStrings()
+        {
+            return !string.IsNullOrEmpty(customerAuthUrl)
+                    && !string.IsNullOrEmpty(reviewApi)
+                    && !string.IsNullOrEmpty(reviewScope)
+                    && !string.IsNullOrEmpty(reviewUri);
         }
     }
 }

@@ -12,18 +12,27 @@ namespace StaffProduct.Facade
 {
     public class StaffProductFacade : IStaffProductFacade
     {
-        private readonly IConfiguration _config;
         private readonly IHttpHandler _handler;
+        private string staffAuthUrl;
+        private string staffProductApi;
+        private string staffProductScope;
+        private string staffProductUri;
 
         public StaffProductFacade(IConfiguration config, IHttpHandler handler)
         {
-            _config = config;
             _handler = handler;
+            if (config != null)
+            {
+                staffAuthUrl = config.GetSection("StaffAuthServerUrlKey").Value;
+                staffProductApi = config.GetSection("StaffProductAPIKey").Value;
+                staffProductScope = config.GetSection("StaffProductScopeKey").Value;
+                staffProductUri = config.GetSection("StaffProductUri").Value;
+            }
         }
 
         public async Task<bool> UpdateStock(List<StockReductionDto> stockReductions)
         {
-            if (stockReductions == null || stockReductions.Count == 0)
+            if (stockReductions == null || stockReductions.Count == 0 || !ValidConfigStrings())
             {
                 return false;
             }
@@ -31,13 +40,20 @@ namespace StaffProduct.Facade
             HttpClient httpClient = await _handler.GetClient("StaffAuthServerUrl", "StaffProductAPI", "StaffProductScope");
             if (httpClient != null)
             {
-                string uri = _config.GetSection("StaffProductUri").Value;
-                if ((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(uri, stockReductions)).IsSuccessStatusCode)
+                if ((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(staffProductUri, stockReductions)).IsSuccessStatusCode)
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        private bool ValidConfigStrings()
+        {
+            return !string.IsNullOrEmpty(staffAuthUrl)
+                    && !string.IsNullOrEmpty(staffProductApi)
+                    && !string.IsNullOrEmpty(staffProductScope)
+                    && !string.IsNullOrEmpty(staffProductUri);
         }
     }
 }

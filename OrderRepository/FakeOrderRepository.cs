@@ -76,15 +76,6 @@ namespace Order.Repository
             return null;
         }
 
-        public async Task<IList<OrderedItemRepoModel>> GetOrderItems(int orderId)
-        {
-            if (!AutoFails)
-            {
-                return OrderedItems;
-            }
-            return null;
-        }
-
         public async Task<bool> ProductsExist(List<ProductRepoModel> products)
         {
             if (!AutoFails)
@@ -133,7 +124,7 @@ namespace Order.Repository
             return false;
         }
 
-        public async Task<bool> ProductInStock(ProductRepoModel product)
+        private async Task<bool> ProductInStock(ProductRepoModel product)
         {
             if (!AutoFails)
             {
@@ -185,15 +176,6 @@ namespace Order.Repository
             return null;
         }
 
-        public async Task<bool> FinaliseOrder(int customerId)
-        {
-            if (!AutoFails)
-            {
-                return false;
-            }
-            return false;
-        }
-
         public async Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId)
         {
             if (!AutoFails)
@@ -212,15 +194,6 @@ namespace Order.Repository
                 return result;
             }
             return null;
-        }
-
-        public async Task<bool> OrderExists(int orderId)
-        {
-            if (!AutoFails)
-            {
-                return Orders.Any(o => o.OrderId == orderId);
-            }
-            return false;
         }
 
         public async Task<bool> IsCustomerActive(int customerId)
@@ -353,11 +326,6 @@ namespace Order.Repository
                 }
             }
             return false;
-        }
-
-        public Task<bool> ContactDetailsSufficient(int customerId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

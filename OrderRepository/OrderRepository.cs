@@ -263,11 +263,6 @@ namespace Order.Repository
             return false;
         }
 
-        public async Task<bool> FinaliseOrder(int customerId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IList<OrderRepoModel>> GetCustomerOrders(int customerId)
         {
             return _mapper.Map<List<OrderRepoModel>>(_context.Orders.Where(o => o.CustomerId == customerId));
@@ -288,7 +283,7 @@ namespace Order.Repository
 
         }
 
-        public async Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId)
+        private async Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId)
         {
             return _mapper.Map<List<OrderedItemRepoModel>>(_context.OrderedItems.Where(o => o.OrderId == orderId));
         }
@@ -398,19 +393,9 @@ namespace Order.Repository
             return true;
         }
 
-        public async Task<bool> ProductInStock(ProductRepoModel product)
+        private async Task<bool> ProductInStock(ProductRepoModel product)
         {
             return product.Quantity <= _context.Products.FirstOrDefault(p => p.ProductId == product.ProductId).Quantity;
-        }
-
-        public async Task<bool> OrderExists(int? orderId)
-        {
-            return _context.Orders.Any(o => o.OrderId == orderId);
-        }
-
-        public Task<bool> ContactDetailsSufficient(int customerId)
-        {
-            throw new NotImplementedException();
         }
 
     }

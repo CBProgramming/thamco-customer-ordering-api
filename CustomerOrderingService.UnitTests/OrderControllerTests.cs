@@ -66,7 +66,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Setup(repo => repo.IsCustomerActive(It.IsAny<int>())).ReturnsAsync(repoSucceeds && customerActive).Verifiable();
             mockRepo.Setup(repo => repo.GetCustomerOrders(It.IsAny<int>())).ReturnsAsync(ordersExist?orderRepoModels:new List<OrderRepoModel>()).Verifiable();
             mockRepo.Setup(repo => repo.GetCustomerOrder(It.IsAny<int>())).ReturnsAsync(ordersExist?new OrderRepoModel():null).Verifiable();
-            mockRepo.Setup(repo => repo.GetOrderItems(It.IsAny<int>())).ReturnsAsync(new List<OrderedItemRepoModel>()).Verifiable();
             mockRepo.Setup(repo => repo.GetCustomer(It.IsAny<int>())).ReturnsAsync(customerExists&&customerActive&&repoSucceeds?customerRepoModel:null).Verifiable();
             mockRepo.Setup(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>())).ReturnsAsync(repoSucceeds ? 1 : 0).Verifiable();
             mockRepo.Setup(repo => repo.ClearBasket(It.IsAny<int>())).ReturnsAsync(repoSucceeds).Verifiable();
@@ -292,7 +291,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -344,7 +342,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -398,7 +395,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -452,7 +448,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -508,7 +503,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Once);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -576,7 +570,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(finalisedOrder.CustomerId), Times.Once);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -630,7 +623,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(orderRequested), Times.Once);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -685,7 +677,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -741,7 +732,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -803,7 +793,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(customerId), Times.Once);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -865,7 +854,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Once);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -917,7 +905,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -971,7 +958,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1027,7 +1013,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(customerId), Times.Once);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1095,7 +1080,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(customerId), Times.Once);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1149,7 +1133,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(orderRequested), Times.Once);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1204,7 +1187,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1266,7 +1248,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(customerId), Times.Once);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1352,7 +1333,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1405,7 +1385,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1493,7 +1472,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1546,7 +1524,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1634,7 +1611,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1687,7 +1663,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1740,7 +1715,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1791,7 +1765,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1842,7 +1815,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1894,7 +1866,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -1947,7 +1918,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2000,7 +1970,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2053,7 +2022,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2107,7 +2075,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2160,7 +2127,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2265,7 +2231,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2371,7 +2336,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2499,7 +2463,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2552,7 +2515,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2605,7 +2567,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2693,7 +2654,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2751,7 +2711,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2828,7 +2787,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -2917,7 +2875,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3006,7 +2963,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3098,7 +3054,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3186,7 +3141,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3274,7 +3228,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3362,7 +3315,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3454,7 +3406,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3542,7 +3493,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3630,7 +3580,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3719,7 +3668,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Once);
             mockRepo.Verify(repo => repo.ClearBasket(finalisedOrder.CustomerId), Times.Once);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3772,7 +3720,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3825,7 +3772,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3878,7 +3824,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3931,7 +3876,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -3984,7 +3928,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -4037,7 +3980,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -4090,7 +4032,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);
@@ -4143,7 +4084,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.IsCustomerActive(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrders(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.GetCustomerOrder(It.IsAny<int>()), Times.Never);
-            mockRepo.Verify(repo => repo.GetOrderItems(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.CreateOrder(It.IsAny<FinalisedOrderRepoModel>()), Times.Never);
             mockRepo.Verify(repo => repo.ClearBasket(It.IsAny<int>()), Times.Never);
             mockRepo.Verify(repo => repo.ProductExists(It.IsAny<int>()), Times.Never);

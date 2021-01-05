@@ -18,13 +18,9 @@ namespace Order.Repository
 
         public Task<IList<BasketItemRepoModel>> GetBasket(int customerId);
 
-        public Task<bool> FinaliseOrder(int customerId);
-
         public Task<CustomerRepoModel> GetCustomer(int customerId);
 
         public Task<IList<OrderRepoModel>> GetCustomerOrders(int customerId);
-
-        public Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId);
 
         public Task<int> CreateOrder(FinalisedOrderRepoModel order);
 
@@ -38,11 +34,7 @@ namespace Order.Repository
        
         public Task<bool> ProductExists(int productId);
 
-        public Task<bool> OrderExists(int? orderId);
-
         public Task<bool> ProductsInStock(List<ProductRepoModel> products);
-
-        public Task<bool> ProductInStock(ProductRepoModel product);
 
         public Task<OrderRepoModel> GetCustomerOrder(int? orderId);
 
@@ -61,7 +53,5 @@ namespace Order.Repository
         public Task<bool> EditProduct(ProductRepoModel product);
 
         public Task<bool> DeleteProduct(int productId);
-
-        public Task<bool> ContactDetailsSufficient(int customerId);
     }
 }
