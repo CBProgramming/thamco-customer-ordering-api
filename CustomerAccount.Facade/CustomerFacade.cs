@@ -1,4 +1,5 @@
 ﻿using CustomerAccount.Facade.Models;
+using HttpManager;
 using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -10,19 +11,37 @@ namespace CustomerAccount.Facade
 {
     public class CustomerFacade : ICustomerAccountFacade
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IConfiguration _config;
+        private readonly IHttpHandler _handler;
+        private string customerAuthUrl;
+        private string customerApi;
+        private string customerScope;
+        private string customerUri;
 
-        public CustomerFacade(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public CustomerFacade(IConfiguration config, IHttpHandler handler)
         {
-            _httpClientFactory = httpClientFactory;
-            _config = config;
+            _handler = handler;
+            if (config != null)
+            {
+                customerAuthUrl = config.GetSection("CustomerAuthServerUrlKey").Value;
+                customerApi = config.GetSection("CustomerAccountAPIKey").Value;
+                customerScope = config.GetSection("CustomerAccountScopeKey").Value;
+                customerUri = config.GetSection("CustomerUri").Value;
+            }
         }
 
         public async Task<bool> DeleteCustomer(int customerId)
         {
-            HttpClient httpClient = await GetClientWithAccessToken();
-            string uri = "/api/Customer/" + customerId;
+            if (!ValidConfigStrings())
+            {
+                return false;
+            }
+            HttpClient httpClient = await _handler.GetClient(customerAuthUrl,
+                customerApi, customerScope);
+            if (httpClient == null)
+            {
+                return false;
+            }
+            string uri = customerUri + customerId;
             if ((await httpClient.DeleteAsync(uri)).IsSuccessStatusCode)
             {
                 return true;
@@ -32,37 +51,29 @@ namespace CustomerAccount.Facade
 
         public async Task<bool> EditCustomer(CustomerFacadeDto customer)
         {
-            if (customer != null)
+            if (ValidConfigStrings() &&customer != null)
             {
-                HttpClient httpClient = await GetClientWithAccessToken();
-                if (customer != null)
+                HttpClient httpClient = await _handler.GetClient(customerAuthUrl,
+                customerApi, customerScope);
+                if (httpClient == null)
                 {
-                    string uri = "/api/Customer/" + customer.CustomerId;
-                    if ((await httpClient.PutAsJsonAsync<CustomerFacadeDto>(uri, customer)).IsSuccessStatusCode)
-                    {
-                        return true;
-                    }
+                    return false;
+                }
+                string uri = customerUri + customer.CustomerId;
+                if ((await httpClient.PutAsJsonAsync<CustomerFacadeDto>(uri, customer)).IsSuccessStatusCode)
+                {
+                    return true;
                 }
             }
             return false;
         }
 
-        private async Task<HttpClient> GetClientWithAccessToken()
+        private bool ValidConfigStrings()
         {
-            var client = _httpClientFactory.CreateClient("CustomerAccountAPI");
-            string authServerUrl = _config.GetSection("CustomerAuthServerUrl").Value;
-            string clientSecret = _config.GetSection("ClientSecret").Value;
-            string clientId = _config.GetSection("ClientId").Value;
-            var disco = await client.GetDiscoveryDocumentAsync(authServerUrl);
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                Scope = "customer_account_api"
-            });
-            client.SetBearerToken(tokenResponse.AccessToken);
-            return client;
+            return !string.IsNullOrEmpty(customerAuthUrl)
+                    && !string.IsNullOrEmpty(customerApi)
+                    && !string.IsNullOrEmpty(customerScope)
+                    && !string.IsNullOrEmpty(customerUri);
         }
     }
 }

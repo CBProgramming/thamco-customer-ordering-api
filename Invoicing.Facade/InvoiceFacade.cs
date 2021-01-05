@@ -12,31 +12,47 @@ namespace Invoicing.Facade
 {
     public class InvoiceFacade : IInvoiceFacade
     {
-        private readonly IConfiguration _config;
         private readonly IHttpHandler _handler;
+        private string staffAuthUrl;
+        private string invoiceApi;
+        private string invoiceScope;
+        private string invoiceUri;
 
         public InvoiceFacade(IConfiguration config, IHttpHandler handler)
         {
-            _config = config;
             _handler = handler;
+            if (config != null)
+            {
+                staffAuthUrl = config.GetSection("StaffAuthServerUrlKey").Value;
+                invoiceApi = config.GetSection("InvoiceAPIKey").Value;
+                invoiceScope = config.GetSection("InvoiceScopeKey").Value;
+                invoiceUri = config.GetSection("InvoiceUri").Value;
+            }
         }
 
         public async Task<bool> NewOrder(OrderInvoiceDto order)
         {
-            if (order == null || order.OrderedItems.Count == 0)
+            if (order == null || order.OrderedItems.Count == 0 || !ValidConfigStrings())
             {
                 return false;
             }
-            HttpClient httpClient = await _handler.GetClient("CustomerAuthServerUrl", "InvoiceAPI", "InvoiceScope");
+            HttpClient httpClient = await _handler.GetClient("StaffAuthServerUrl", "InvoiceAPI", "InvoiceScope");
             if (httpClient != null)
             {
-                string uri = _config.GetSection("InvoiceUri").Value;
-                if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(uri, order)).IsSuccessStatusCode)
+                if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(invoiceUri, order)).IsSuccessStatusCode)
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        private bool ValidConfigStrings()
+        {
+            return !string.IsNullOrEmpty(staffAuthUrl)
+                    && !string.IsNullOrEmpty(invoiceApi)
+                    && !string.IsNullOrEmpty(invoiceScope)
+                    && !string.IsNullOrEmpty(invoiceUri);
         }
     }
 }

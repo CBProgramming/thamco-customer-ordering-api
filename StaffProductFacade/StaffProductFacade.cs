@@ -28,7 +28,7 @@ namespace StaffProduct.Facade
                 return false;
             }
 
-            HttpClient httpClient = await _handler.GetClient("CustomerAuthServerUrl", "StaffProductAPI", "StaffProductScope");
+            HttpClient httpClient = await _handler.GetClient("StaffAuthServerUrl", "StaffProductAPI", "StaffProductScope");
             if (httpClient != null)
             {
                 string uri = _config.GetSection("StaffProductUri").Value;

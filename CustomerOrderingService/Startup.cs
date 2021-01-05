@@ -135,7 +135,7 @@ namespace CustomerOrderingService
 
 
 
-            services.AddHttpClient("CustomerAccountAPI", client =>
+            services.AddHttpClient(Configuration.GetValue<string>("CustomerAccountAPIKey"), client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("CustomerAccountUrl").Value);
             })
@@ -144,7 +144,7 @@ namespace CustomerOrderingService
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
             
-            services.AddHttpClient("InvoiceAPI", client =>
+            services.AddHttpClient(Configuration.GetValue<string>("InvoiceAPIKey"), client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("InvoiceUrl").Value);
             })
@@ -153,7 +153,7 @@ namespace CustomerOrderingService
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
             
-            services.AddHttpClient("StaffProductAPI", client =>
+            services.AddHttpClient(Configuration.GetValue<string>("StaffProductAPIKey"), client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("StaffProductUrl").Value);
             })
@@ -162,7 +162,7 @@ namespace CustomerOrderingService
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
             
-            services.AddHttpClient("ReviewAPI", client =>
+            services.AddHttpClient(Configuration.GetValue<string>("ReviewAPIKey"), client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("ReviewUrl").Value);
             })

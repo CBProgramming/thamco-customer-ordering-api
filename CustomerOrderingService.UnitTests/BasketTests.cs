@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Order.Repository;
 using Order.Repository.Data;
 using Order.Repository.Models;
-using StaffProduct.Facade;
 using System;
 using System.Collections.Generic;
 using System.Text;
