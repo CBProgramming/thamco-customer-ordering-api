@@ -36,7 +36,7 @@ namespace Review.Facade
             {
                 return false;
             }
-            HttpClient httpClient = await _handler.GetClient("CustomerAuthServerUrl", "ReviewAPI", "ReviewScope");
+            HttpClient httpClient = await _handler.GetClient(customerAuthUrl, reviewApi, reviewScope);
             if (httpClient != null)
             {
                 if ((await httpClient.PostAsJsonAsync<PurchaseDto>(reviewUri, purchases)).IsSuccessStatusCode)

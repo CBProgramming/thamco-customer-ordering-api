@@ -36,7 +36,7 @@ namespace Invoicing.Facade
             {
                 return false;
             }
-            HttpClient httpClient = await _handler.GetClient("StaffAuthServerUrl", "InvoiceAPI", "InvoiceScope");
+            HttpClient httpClient = await _handler.GetClient(staffAuthUrl, invoiceApi, invoiceScope);
             if (httpClient != null)
             {
                 if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(invoiceUri, order)).IsSuccessStatusCode)

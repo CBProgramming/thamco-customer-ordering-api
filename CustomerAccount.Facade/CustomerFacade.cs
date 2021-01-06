@@ -41,7 +41,7 @@ namespace CustomerAccount.Facade
             {
                 return false;
             }
-            string uri = customerUri + customerId;
+            string uri = customerUri + "/" + customerId;
             if ((await httpClient.DeleteAsync(uri)).IsSuccessStatusCode)
             {
                 return true;
@@ -59,7 +59,7 @@ namespace CustomerAccount.Facade
                 {
                     return false;
                 }
-                string uri = customerUri + customer.CustomerId;
+                string uri = customerUri + "/" + customer.CustomerId;
                 if ((await httpClient.PutAsJsonAsync<CustomerFacadeDto>(uri, customer)).IsSuccessStatusCode)
                 {
                     return true;

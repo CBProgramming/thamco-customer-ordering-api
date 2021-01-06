@@ -37,7 +37,7 @@ namespace StaffProduct.Facade
                 return false;
             }
 
-            HttpClient httpClient = await _handler.GetClient("StaffAuthServerUrl", "StaffProductAPI", "StaffProductScope");
+            HttpClient httpClient = await _handler.GetClient(staffAuthUrl, staffProductApi, staffProductScope);
             if (httpClient != null)
             {
                 if ((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(staffProductUri, stockReductions)).IsSuccessStatusCode)
