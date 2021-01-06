@@ -23,7 +23,7 @@ namespace Invoicing.Facade
             _handler = handler;
             if (config != null)
             {
-                staffAuthUrl = config.GetSection("StaffAuthServerUrlKey").Value;
+                staffAuthUrl = config.GetSection("CustomerAuthServerUrlKey").Value;
                 invoiceApi = config.GetSection("InvoiceAPIKey").Value;
                 invoiceScope = config.GetSection("InvoiceScopeKey").Value;
                 invoiceUri = config.GetSection("InvoiceUri").Value;
