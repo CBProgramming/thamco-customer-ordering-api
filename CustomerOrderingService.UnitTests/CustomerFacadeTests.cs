@@ -141,7 +141,7 @@ namespace CustomerOrderingService.UnitTests
                 It.IsAny<string>()), Times.Never);
 
         }
-
+/*
         [Fact]
         public async Task EditCustomer_OKResult_ShouldReturnTrue()
         {
@@ -163,7 +163,7 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(customerAuthServerUrlKeyValue, customerApiKeyValue,
                 customerScopeKeyValue), Times.Once);
-        }
+        }*/
 
         [Fact]
         public async Task EditCustomer_NotFoundResult_ShouldFalse()
@@ -380,7 +380,7 @@ namespace CustomerOrderingService.UnitTests
                 It.IsAny<string>()), Times.Never);
         }
 
-        [Fact]
+/*        [Fact]
         public async Task DeleteCustomer_OKResult_ShouldReturnTrue()
         {
             //Arrange
@@ -401,7 +401,7 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete && req.RequestUri == expectedUri), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(customerAuthServerUrlKeyValue, customerApiKeyValue,
                 customerScopeKeyValue), Times.Once);
-        }
+        }*/
 
         [Fact]
         public async Task DeleteCustomer_NotFoundResult_ShouldFalse()
