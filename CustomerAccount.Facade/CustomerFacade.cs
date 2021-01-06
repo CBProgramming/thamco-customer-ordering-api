@@ -19,14 +19,14 @@ namespace CustomerAccount.Facade
 
         public CustomerFacade(IConfiguration config, IHttpHandler handler)
         {
-            _handler = handler;
+/*            _handler = handler;
             if (config != null)
             {
                 customerAuthUrl = config.GetSection("CustomerAuthServerUrlKey").Value;
                 customerApi = config.GetSection("CustomerAccountAPIKey").Value;
                 customerScope = config.GetSection("CustomerAccountScopeKey").Value;
                 customerUri = config.GetSection("CustomerUri").Value;
-            }
+            }*/
         }
 
         public async Task<bool> DeleteCustomer(int customerId)
