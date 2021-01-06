@@ -40,7 +40,6 @@ namespace CustomerOrderingService.Controllers
         [Authorize(Policy = "CustomerOrAccountAPI")]
         public async Task<IActionResult> Get([FromRoute] int customerId)
         {
-            _logger.Log(LogLevel.Error,"Get Customer accessed");
             if (await _orderRepository.CustomerExists(customerId)
                 && await _orderRepository.IsCustomerActive(customerId))
             {
@@ -62,7 +61,6 @@ namespace CustomerOrderingService.Controllers
         [Authorize(Policy = "CustomerAccountAPIOnly")]
         public async Task<IActionResult> Post([FromBody] CustomerDto customer)
         {
-            _logger.Log(LogLevel.Error, "Post Customer accessed");
             if (customer != null 
                 && ! await _orderRepository.CustomerExists(customer.CustomerId))
             {
