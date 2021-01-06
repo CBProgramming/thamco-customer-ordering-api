@@ -25,8 +25,8 @@ namespace CustomerOrderingService.Controllers
         private string clientId;
 
         public CustomerController(ILogger<CustomerController> logger, IOrderRepository orderRepository, 
-            IMapper mapper)
-            //, ICustomerAccountFacade customerFacade)
+            IMapper mapper,
+            ICustomerAccountFacade customerFacade)
         {
             _logger = logger;
             _orderRepository = orderRepository;

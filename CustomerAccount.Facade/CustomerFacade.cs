@@ -17,7 +17,9 @@ namespace CustomerAccount.Facade
         private string customerScope;
         private string customerUri;
 
-        public CustomerFacade(IConfiguration config, IHttpHandler handler)
+        public CustomerFacade(
+            IConfiguration config)
+            //IHttpHandler handler)
         {
 /*            _handler = handler;
             if (config != null)
