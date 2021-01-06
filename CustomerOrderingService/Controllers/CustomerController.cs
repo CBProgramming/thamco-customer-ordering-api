@@ -37,7 +37,7 @@ namespace CustomerOrderingService.Controllers
 
         // GET: api/<controller>
         [HttpGet("{customerId}")]
-        [Authorize(Policy = "CustomerOrAccountAPI")]
+        //[Authorize(Policy = "CustomerOrAccountAPI")]
         public async Task<IActionResult> Get([FromRoute] int customerId)
         {
             if (await _orderRepository.CustomerExists(customerId)
