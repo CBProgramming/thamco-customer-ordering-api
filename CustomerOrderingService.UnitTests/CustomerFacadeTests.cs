@@ -27,7 +27,7 @@ namespace CustomerOrderingService.UnitTests
         public ICustomerAccountFacade facade;
         private Microsoft.Extensions.Configuration.IConfiguration config;
         private Mock<IHttpHandler> mockHttpHandler;
-        private string customerUriValue = "/api/Customer/";
+        private string customerUriValue = "/api/Customer";
         private string customerAuthServerUrlKeyValue = "CustomerAuthServerUrl";
         private string customerApiKeyValue = "CustomerAPI";
         private string customerScopeKeyValue = "CustomerScope";
@@ -141,7 +141,7 @@ namespace CustomerOrderingService.UnitTests
                 It.IsAny<string>()), Times.Never);
 
         }
-/*
+
         [Fact]
         public async Task EditCustomer_OKResult_ShouldReturnTrue()
         {
@@ -163,9 +163,9 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(customerAuthServerUrlKeyValue, customerApiKeyValue,
                 customerScopeKeyValue), Times.Once);
-        }*/
+        }
 
-/*        [Fact]
+        [Fact]
         public async Task EditCustomer_NotFoundResult_ShouldFalse()
         {
             //Arrange
@@ -186,7 +186,7 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(customerAuthServerUrlKeyValue, customerApiKeyValue,
                 customerScopeKeyValue), Times.Once);
-        }*/
+        }
 
         [Fact]
         public async Task EditCustomer_UriNull_ShouldFalse()
@@ -380,7 +380,7 @@ namespace CustomerOrderingService.UnitTests
                 It.IsAny<string>()), Times.Never);
         }
 
-/*        [Fact]
+        [Fact]
         public async Task DeleteCustomer_OKResult_ShouldReturnTrue()
         {
             //Arrange
@@ -401,9 +401,9 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete && req.RequestUri == expectedUri), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(customerAuthServerUrlKeyValue, customerApiKeyValue,
                 customerScopeKeyValue), Times.Once);
-        }*/
+        }
 
-/*        [Fact]
+        [Fact]
         public async Task DeleteCustomer_NotFoundResult_ShouldFalse()
         {
             //Arrange
@@ -424,7 +424,7 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(customerAuthServerUrlKeyValue, customerApiKeyValue,
                 customerScopeKeyValue), Times.Once);
-        }*/
+        }
 
         [Fact]
         public async Task DeleteCustomer_UriNull_ShouldFalse()

@@ -23,7 +23,7 @@ namespace StaffProduct.Facade
             _handler = handler;
             if (config != null)
             {
-                staffAuthUrl = config.GetSection("CustomerAuthServerUrlKey").Value;
+                staffAuthUrl = config.GetSection("StaffAuthServerUrlKey").Value;
                 staffProductApi = config.GetSection("StaffProductAPIKey").Value;
                 staffProductScope = config.GetSection("StaffProductScopeKey").Value;
                 staffProductUri = config.GetSection("StaffProductUri").Value;

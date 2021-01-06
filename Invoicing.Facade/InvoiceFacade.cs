@@ -23,7 +23,7 @@ namespace Invoicing.Facade
             _handler = handler;
             if (config != null)
             {
-                staffAuthUrl = config.GetSection("CustomerAuthServerUrlKey").Value;
+                staffAuthUrl = config.GetSection("StaffAuthServerUrlKey").Value;
                 invoiceApi = config.GetSection("InvoiceAPIKey").Value;
                 invoiceScope = config.GetSection("InvoiceScopeKey").Value;
                 invoiceUri = config.GetSection("InvoiceUri").Value;
@@ -39,6 +39,7 @@ namespace Invoicing.Facade
             HttpClient httpClient = await _handler.GetClient(staffAuthUrl, invoiceApi, invoiceScope);
             if (httpClient != null)
             {
+
                 if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(invoiceUri, order)).IsSuccessStatusCode)
                 {
                     return true;
