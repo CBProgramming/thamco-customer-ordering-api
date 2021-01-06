@@ -313,88 +313,13 @@ namespace CustomerOrderingService.UnitTests
 
             //Assert
             Assert.True(false == result);
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                 (req => req.Method == HttpMethod.Get), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Post), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Put), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
-            mockHttpHandler.Verify(m => m.GetClient(It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task UpdateStock_ApiKeyEmpty_ShouldReturnFalse()
-        {
-            //Arrange
-            invoiceApiKeyValue = "";
-            DefaultSetup(HttpStatusCode.OK);
-
-            //Act
-            var result = await facade.NewOrder(order);
-
-            //Assert
-            Assert.True(false == result);
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                 (req => req.Method == HttpMethod.Get), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Post), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Put), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
-            mockHttpHandler.Verify(m => m.GetClient(It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task UpdateStock_ScopeNull_ShouldReturnFalse()
-        {
-            //Arrange
-            invoiceScopeKeyValue = null;
-            DefaultSetup(HttpStatusCode.OK);
-
-            //Act
-            var result = await facade.NewOrder(order);
-
-            //Assert
-            Assert.True(false == result);
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                 (req => req.Method == HttpMethod.Get), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Post), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Put), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
-            mockHttpHandler.Verify(m => m.GetClient(It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task UpdateStock_ScopeEmpty_ShouldReturnFalse()
-        {
-            //Arrange
-            invoiceScopeKeyValue = "";
-            DefaultSetup(HttpStatusCode.OK);
-
-            //Act
-            var result = await facade.NewOrder(order);
-
-            //Assert
-            Assert.True(false == result);
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                 (req => req.Method == HttpMethod.Get), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Post), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Put), ItExpr.IsAny<CancellationToken>());
-            mockHandler.Protected().Verify("SendAsync", Times.Never(), ItExpr.Is<HttpRequestMessage>
-                (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
-            mockHttpHandler.Verify(m => m.GetClient(It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>()), Times.Never);
+            mockHandler.Protected().Verify("SendAsync",
+                Times.Never(),
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post
+                    && req.RequestUri == expectedUri),
+                ItExpr.IsAny<CancellationToken>());
+            mockFactory.Verify(factory => factory.CreateClient(It.IsAny<string>()), Times.Never);
         }
     }
 }
