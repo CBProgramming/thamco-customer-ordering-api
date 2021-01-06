@@ -21,7 +21,7 @@ namespace CustomerOrderingService.UnitTests
 {
     public class CustomerControllerTests
     {
-        private CustomerDto customerDto;
+        /*private CustomerDto customerDto;
         private CustomerRepoModel customerRepoModel;
         private FakeOrderRepository fakeRepo;
         private Mock<IOrderRepository> mockRepo;
@@ -1612,6 +1612,6 @@ namespace CustomerOrderingService.UnitTests
             mockRepo.Verify(repo => repo.GetCustomer(It.IsAny<int>()), Times.Never);
             mockCustomerFacade.Verify(facade => facade.EditCustomer(It.IsAny<CustomerFacadeDto>()), Times.Never);
             mockCustomerFacade.Verify(facade => facade.DeleteCustomer(It.IsAny<int>()), Times.Never);
-        }
+        }*/
     }
 }
