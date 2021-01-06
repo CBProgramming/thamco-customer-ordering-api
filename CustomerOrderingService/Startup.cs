@@ -134,6 +134,14 @@ namespace CustomerOrderingService
             services.AddScoped<IHttpHandler, HttpHandler>();
             services.AddScoped<IUnmockablesWrapper, UnmockablesWrapper>();
 
+            services.AddSingleton(new ClientCredentialsTokenRequest
+            {
+                Address = "",
+                ClientId = Configuration.GetValue<string>("ClientId"),
+                ClientSecret = Configuration.GetValue<string>("ClientSecret"),
+                Scope = ""
+            });
+
 
 
             //services.AddHttpClient(Configuration.GetSection("CustomerAccountAPIKey").Value, client =>

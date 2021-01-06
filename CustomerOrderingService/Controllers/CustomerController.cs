@@ -21,7 +21,7 @@ namespace CustomerOrderingService.Controllers
         private readonly ILogger<CustomerController> _logger;
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
-        //private readonly ICustomerAccountFacade _customerFacade;
+        private readonly ICustomerAccountFacade _customerFacade;
         private string clientId;
 
         public CustomerController(ILogger<CustomerController> logger, IOrderRepository orderRepository, 
@@ -31,12 +31,12 @@ namespace CustomerOrderingService.Controllers
             _logger = logger;
             _orderRepository = orderRepository;
             _mapper = mapper;
-            //_customerFacade = customerFacade;
+            _customerFacade = customerFacade;
         }
 
         // GET: api/<controller>
         [HttpGet("{customerId}")]
-        //[Authorize(Policy = "CustomerOrAccountAPI")]
+        [Authorize(Policy = "CustomerOrAccountAPI")]
         public async Task<IActionResult> Get([FromRoute] int customerId)
         {
             if (await _orderRepository.CustomerExists(customerId)
@@ -89,10 +89,10 @@ namespace CustomerOrderingService.Controllers
                         GetTokenDetails();
                         if (clientId != "customer_account_api")
                         {
-                            /*if (!await _customerFacade.EditCustomer(_mapper.Map<CustomerFacadeDto>(customer))) ;
+                            if (!await _customerFacade.EditCustomer(_mapper.Map<CustomerFacadeDto>(customer))) ;
                             {
                                 //write to local db to be reattempted later
-                            }*/
+                            }
                         }
                         return Ok();
                     }
@@ -114,10 +114,10 @@ namespace CustomerOrderingService.Controllers
                 GetTokenDetails();
                 if (clientId != "customer_account_api")
                 {
-                    /*if (!await _customerFacade.DeleteCustomer(customerId))
+                    if (!await _customerFacade.DeleteCustomer(customerId))
                     {
                         //write to local db to be reattempted later
-                    }*/
+                    }
                 }
                 return Ok();
             }
