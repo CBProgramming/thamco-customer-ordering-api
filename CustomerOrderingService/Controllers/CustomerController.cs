@@ -12,8 +12,6 @@ using Microsoft.Extensions.Logging;
 using Order.Repository;
 using Order.Repository.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace CustomerOrderingService.Controllers
 {
     [Route("api/[controller]")]
@@ -27,7 +25,8 @@ namespace CustomerOrderingService.Controllers
         private string clientId;
 
         public CustomerController(ILogger<CustomerController> logger, IOrderRepository orderRepository, 
-            IMapper mapper, ICustomerAccountFacade customerFacade)
+            IMapper mapper)
+            //, ICustomerAccountFacade customerFacade)
         {
             _logger = logger;
             _orderRepository = orderRepository;
