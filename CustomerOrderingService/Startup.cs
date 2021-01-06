@@ -45,13 +45,14 @@ namespace CustomerOrderingService
         public void ConfigureServices(IServiceCollection services)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            services.AddAuthentication(options =>
+            services.AddAuthentication()
+/*            services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer()
+                .AddJwtBearer()*/
                 .AddJwtBearer("CustomerAuth", options =>
                 {
                     options.Authority = Configuration.GetValue<string>("CustomerAuthServerUrl");
