@@ -231,7 +231,7 @@ namespace Order.Repository
                     {
                         product.Name = productModel.Name;
                         product.Price = productModel.Price;
-                        product.Quantity += productModel.Quantity;
+                        product.Quantity = productModel.Quantity;
                         await _context.SaveChangesAsync();
                         return true;
                     }
@@ -281,11 +281,6 @@ namespace Order.Repository
             var mappedOrder = _mapper.Map<OrderRepoModel>(order);
             return mappedOrder;
 
-        }
-
-        private async Task<IList<OrderedItemRepoModel>> GetOrderItems(int? orderId)
-        {
-            return _mapper.Map<List<OrderedItemRepoModel>>(_context.OrderedItems.Where(o => o.OrderId == orderId));
         }
 
         public async Task<int> CreateOrder(FinalisedOrderRepoModel finalisedOrder)

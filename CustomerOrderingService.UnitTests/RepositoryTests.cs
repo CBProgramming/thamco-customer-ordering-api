@@ -1249,7 +1249,6 @@ namespace CustomerOrderingService.UnitTests
         {
             //Arrange
             DefaultSetup();
-            int oldStock = dbProduct1.Quantity;
 
             //Act
             var result = await repo.EditProduct(productRepoModel);
@@ -1258,7 +1257,7 @@ namespace CustomerOrderingService.UnitTests
             Assert.True(true == result);
             Assert.Equal(productRepoModel.ProductId, dbProduct1.ProductId);
             Assert.Equal(productRepoModel.Name, dbProduct1.Name);
-            Assert.Equal(productRepoModel.Quantity + oldStock, dbProduct1.Quantity);
+            Assert.Equal(productRepoModel.Quantity, dbProduct1.Quantity);
             Assert.Equal(productRepoModel.Price, dbProduct1.Price);
             mockDbContext.Verify(m => m.Add(It.IsAny<Customer>()), Times.Never());
             mockCustomers.Verify(m => m.Remove(It.IsAny<Customer>()), Times.Never());
