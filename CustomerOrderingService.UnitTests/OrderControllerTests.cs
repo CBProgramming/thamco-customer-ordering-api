@@ -93,8 +93,14 @@ namespace CustomerOrderingService.UnitTests
         {
             orderRepoModels =  new List<OrderRepoModel>()
             {
-                new OrderRepoModel {OrderId = 1, OrderDate = new DateTime(2020,11,01), Total = 10.99 },
-                new OrderRepoModel {OrderId = 2, OrderDate = new DateTime(2020,11,02), Total = 20.99 }
+                new OrderRepoModel {
+                    OrderId = 1, 
+                    OrderDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day), 
+                    Total = 10.99 },
+                new OrderRepoModel {
+                    OrderId = 2, 
+                    OrderDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day), 
+                    Total = 20.99 }
             };
         }
 
