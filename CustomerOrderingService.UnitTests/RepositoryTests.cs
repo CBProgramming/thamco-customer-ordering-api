@@ -105,7 +105,7 @@ namespace CustomerOrderingService.UnitTests
             SetupDbCustomer();
             dbCustomers = new List<Customer>
             {
-                dbCustomer1
+                dbCustomer1, dbCustomer2
             }.AsQueryable();
         }
 
@@ -594,7 +594,7 @@ namespace CustomerOrderingService.UnitTests
             DefaultSetup();
 
             //Act
-            var customer = await repo.GetCustomer(2);
+            var customer = await repo.GetCustomer(3);
 
             //Assert
             Assert.Null(customer);
