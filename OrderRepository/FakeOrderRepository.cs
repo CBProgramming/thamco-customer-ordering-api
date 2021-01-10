@@ -327,5 +327,10 @@ namespace Order.Repository
             }
             return false;
         }
+
+        public async Task<bool> DeleteOrder(int orderId)
+        {
+            return true;
+        }
     }
 }
