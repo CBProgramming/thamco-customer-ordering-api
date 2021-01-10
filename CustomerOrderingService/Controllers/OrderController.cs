@@ -122,7 +122,7 @@ namespace CustomerOrderingService.Controllers
             var stockReductionList = GenerateStockReductions(order);
             if (!await _staffProductFacade.UpdateStock(stockReductionList))
             {
-                return NotFound();
+                //return NotFound();
             }
             order.OrderDate = ValidateDate(order.OrderDate);
             order.OrderId = await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderRepoModel>(order));

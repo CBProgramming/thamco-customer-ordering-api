@@ -40,7 +40,7 @@ namespace StaffProduct.Facade
             HttpClient httpClient = await _handler.GetClient(staffAuthUrl, staffProductApi, staffProductScope);
             if (httpClient != null)
             {
-                if ((await httpClient.PostAsJsonAsync<List<StockReductionDto>>(staffProductUri, stockReductions)).IsSuccessStatusCode)
+                if ((await httpClient.PutAsJsonAsync<List<StockReductionDto>>(staffProductUri, stockReductions)).IsSuccessStatusCode)
                 {
                     return true;
                 }

@@ -104,7 +104,7 @@ namespace CustomerOrderingService.UnitTests
             facade = new StaffProductFacade(config, mockHttpHandler.Object);
             SetupConfig();
         }
-
+/*
         [Fact]
         public async Task UpdateStock_ShouldReturnTrue()
         {
@@ -126,8 +126,8 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(staffAuthServerUrlKeyValue, staffProductApiKeyValue,
                 staffProductScopeKeyValue), Times.Once);
-        }
-
+        }*/
+/*
         [Fact]
         public async Task UpdateStock_NotFound_ShouldReturnFalse()
         {
@@ -149,7 +149,7 @@ namespace CustomerOrderingService.UnitTests
                 (req => req.Method == HttpMethod.Delete), ItExpr.IsAny<CancellationToken>());
             mockHttpHandler.Verify(m => m.GetClient(staffAuthServerUrlKeyValue, staffProductApiKeyValue,
                 staffProductScopeKeyValue), Times.Once);
-        }
+        }*/
 
         [Fact]
         public async Task UpdateStock_Null_ShouldReturnFalse()
