@@ -53,5 +53,7 @@ namespace Order.Repository
         public Task<bool> EditProduct(ProductRepoModel product);
 
         public Task<bool> DeleteProduct(int productId);
+
+        public Task<bool> DeleteOrder(int orderId);
     }
 }

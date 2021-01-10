@@ -393,5 +393,23 @@ namespace Order.Repository
             return product.Quantity <= _context.Products.FirstOrDefault(p => p.ProductId == product.ProductId).Quantity;
         }
 
+        public async Task<bool> DeleteOrder(int orderId)
+        {
+            try
+            {
+                var order = _context.Orders.SingleOrDefault(o => o.OrderId == orderId);
+                if (order != null)
+                {
+                    _context.Orders.Remove(order);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+            return false;
+        }
     }
 }

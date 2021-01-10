@@ -94,10 +94,7 @@ namespace CustomerOrderingService.Controllers
         public async Task<IActionResult> Create(FinalisedOrderDto order)
         {
             GetTokenDetails();
-            //how is stock reduced in customer product service
-            //need to send the order to invoice service
-
-            if (!ModelState.IsValid || !ValidateOrder(order))
+            if (!ValidateOrder(order))
             {
                 return UnprocessableEntity();
             }
@@ -123,10 +120,9 @@ namespace CustomerOrderingService.Controllers
             //reduce stock before creating order (it's worse customer service to allow a customer to order something out of stock
             //than for the company to innacurately display stock levels as lower than they are if an order fails
             var stockReductionList = GenerateStockReductions(order);
-            _logger.LogError("Attempting to update stock facade");
             if (!await _staffProductFacade.UpdateStock(stockReductionList))
             {
-                //return NotFound();
+                return NotFound();
             }
             order.OrderDate = ValidateDate(order.OrderDate);
             order.OrderId = await _orderRepository.CreateOrder(_mapper.Map<FinalisedOrderRepoModel>(order));
@@ -136,17 +132,21 @@ namespace CustomerOrderingService.Controllers
             }
             if (!await _invoiceFacade.NewOrder(_mapper.Map<OrderInvoiceDto>(order)))
             {
-                //record to local db to attempt resend later
+                await _orderRepository.DeleteOrder(order.OrderId);
+                return NotFound();
             }
             PurchaseDto purchases = _mapper.Map<PurchaseDto>(order);
             purchases.CustomerAuthId = authId;
             if (!await _reviewFacade.NewPurchases(purchases))
             {
                 //record to local db to attempt resend later
+                //insufficient time to implement however system continues to function
+                //customer service issue as customer cannot leave review
             }
             await _orderRepository.ClearBasket(order.CustomerId);
             //return ok regardless of if the basket successfully clears because the order is complete
-            //better customer service than clearing basket only to have order fail and customer needs to re-add everything to basket
+            //better customer service than clearing basket only to have order fail and customer needs 
+            //to re-add everything to basket
             return Ok();
             
         }
@@ -163,7 +163,7 @@ namespace CustomerOrderingService.Controllers
 
         private bool ValidateOrder(FinalisedOrderDto order)
         {
-            if (order.Total < 0)
+            if (order == null || order.Total < 0)
             {
                 return false;
             }

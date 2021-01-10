@@ -88,7 +88,8 @@ namespace CustomerOrderingService
                 policy.AddAuthenticationSchemes("CustomerAuth","StaffAuth")
                 .RequireAssertion(context =>
                 context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer")
-                || context.User.HasClaim(c => c.Type == "role" && c.Value == "ManageCustomerAccounts"))
+                || context.User.HasClaim(c => c.Type == "role" && c.Value == "Customer Account Manager")
+                || context.User.HasClaim(c => c.Type == "role" && c.Value == "Order Manager"))
                 .Build());
 
                 OptionsBuilderConfigurationExtensions.AddPolicy("CustomerOnly", policy =>
@@ -143,8 +144,6 @@ namespace CustomerOrderingService
             });
 
 
-
-            //services.AddHttpClient(Configuration.GetSection("CustomerAccountAPIKey").Value, client =>
             services.AddHttpClient("CustomerAccountAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("CustomerAccountUrl").Value);
@@ -154,7 +153,6 @@ namespace CustomerOrderingService
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
 
-            //services.AddHttpClient(Configuration.GetSection("InvoiceAPIKey").Value, client =>
             services.AddHttpClient("InvoiceAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("InvoiceUrl").Value);
@@ -164,7 +162,6 @@ namespace CustomerOrderingService
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
 
-            //services.AddHttpClient(Configuration.GetSection("StaffProductAPIKey").Value, client =>
             services.AddHttpClient("StaffProductAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("StaffProductUrl").Value);
@@ -174,7 +171,6 @@ namespace CustomerOrderingService
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(60)));
 
-            //services.AddHttpClient(Configuration.GetSection("ReviewAPIKey").Value, client =>
             services.AddHttpClient("ReviewAPI", client =>
             {
                 client.BaseAddress = new Uri(Configuration.GetSection("ReviewUrl").Value);
