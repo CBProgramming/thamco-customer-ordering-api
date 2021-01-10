@@ -31,9 +31,9 @@ namespace CustomerOrderingService.Controllers
         private readonly IInvoiceFacade _invoiceFacade;
         private readonly IReviewFacade _reviewFacade;
         private string authId, role;
-        
 
-        public OrderController(ILogger<OrderController> logger, IOrderRepository orderRepository, IMapper mapper, 
+
+        public OrderController(ILogger<OrderController> logger, IOrderRepository orderRepository, IMapper mapper,
             IStaffProductFacade staffProductFacade, IInvoiceFacade invoiceFacade, IReviewFacade reviewFacade)
         {
             _logger = logger;
@@ -54,9 +54,9 @@ namespace CustomerOrderingService.Controllers
                 .FirstOrDefault(c => c.Type == "role")?.Value;
         }
 
-        [HttpGet]
+        [HttpGet("{customerId}")]
         [Authorize(Policy = "CustomerOrStaffWebApp")]
-        public async Task<IActionResult> Get (int customerId, int? orderId)
+        public async Task<IActionResult> Get([FromRoute] int customerId, [FromQuery] int? orderId)
         {
             GetTokenDetails();
             var customer = _mapper.Map <CustomerDto>(await _orderRepository.GetCustomer(customerId));

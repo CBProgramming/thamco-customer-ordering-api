@@ -68,7 +68,7 @@ namespace CustomerOrderingService
             {
                 OptionsBuilderConfigurationExtensions.DefaultPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                .AddAuthenticationSchemes("CustomerAuth")
+                .AddAuthenticationSchemes("CustomerAuth", "StaffAuth")
                 .Build();
 
                 OptionsBuilderConfigurationExtensions.AddPolicy("CustomerOrAccountAPI", policy =>
