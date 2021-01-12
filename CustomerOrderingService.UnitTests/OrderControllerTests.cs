@@ -2731,7 +2731,7 @@ namespace CustomerOrderingService.UnitTests
             mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Never);
             mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
         }
-/*
+
         [Fact]
         public async Task CreateOrder_ProductFacadeFailure_ShouldNotFound()
         {
@@ -2748,34 +2748,16 @@ namespace CustomerOrderingService.UnitTests
             Assert.NotNull(objResult);
             Assert.Null(fakeRepo.FinalisedOrder);
             Assert.Null(fakeInvoiceFacade.Order);
-            *//*Assert.Equal(finalisedOrder.CustomerId, fakeInvoiceFacade.Order.CustomerId);
-            Assert.Equal(finalisedOrder.Total, fakeInvoiceFacade.Order.Total);
-            Assert.Equal(finalisedOrder.OrderId, fakeInvoiceFacade.Order.OrderId);
-            Assert.Equal(finalisedOrder.OrderedItems.Count, fakeInvoiceFacade.Order.OrderedItems.Count);
-            for (int i = 0; i < fakeInvoiceFacade.Order.OrderedItems.Count; i++)
-            {
-                Assert.Equal(finalisedOrder.OrderedItems[i].OrderId, fakeInvoiceFacade.Order.OrderedItems[i].OrderId);
-                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeInvoiceFacade.Order.OrderedItems[i].ProductId);
-                Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeInvoiceFacade.Order.OrderedItems[i].Quantity);
-                Assert.Equal(finalisedOrder.OrderedItems[i].Price, fakeInvoiceFacade.Order.OrderedItems[i].Price);
-                Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
-            }*//*
             Assert.Null(fakeReviewFacade.Purchases);
-            *//*Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
-            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
-            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
-            {
-                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
-            }*//*
             Assert.NotNull(fakeProductFacade.StockReductions);
             for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
             {
                 Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeProductFacade.StockReductions[i].ProductId);
                 Assert.Equal(finalisedOrder.OrderedItems[i].Quantity, fakeProductFacade.StockReductions[i].Quantity);
             }
-        }*/
+        }
 
-/*        [Fact]
+        [Fact]
         public async Task CreateOrder_ProductFacadeFailure_CheckMocks()
         {
             //Arrange
@@ -2805,7 +2787,7 @@ namespace CustomerOrderingService.UnitTests
             mockInvoiceFacade.Verify(facade => facade.NewOrder(It.IsAny<OrderInvoiceDto>()), Times.Never);
             mockProductFacade.Verify(facade => facade.UpdateStock(It.IsAny<List<StockReductionDto>>()), Times.Once);
             mockReviewFacade.Verify(facade => facade.NewPurchases(It.IsAny<PurchaseDto>()), Times.Never);
-        }*/
+        }
 
         [Fact]
         public async Task CreateOrder_InvoiceFacadeFailure_ShouldOk()
@@ -2849,12 +2831,6 @@ namespace CustomerOrderingService.UnitTests
                 Assert.Equal(finalisedOrder.OrderedItems[i].Name, fakeInvoiceFacade.Order.OrderedItems[i].Name);
             }
             Assert.Null(fakeReviewFacade.Purchases);
-/*            Assert.Equal(finalisedOrder.CustomerId, fakeReviewFacade.Purchases.CustomerId);
-            Assert.Equal(customerRepoModel.CustomerAuthId, fakeReviewFacade.Purchases.CustomerAuthId);
-            for (int i = 0; i < fakeReviewFacade.Purchases.OrderedItems.Count; i++)
-            {
-                Assert.Equal(finalisedOrder.OrderedItems[i].ProductId, fakeReviewFacade.Purchases.OrderedItems[i].ProductId);
-            }*/
             Assert.NotNull(fakeProductFacade.StockReductions);
             for (int i = 0; i < fakeProductFacade.StockReductions.Count; i++)
             {
