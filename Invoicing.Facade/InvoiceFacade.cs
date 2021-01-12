@@ -39,7 +39,6 @@ namespace Invoicing.Facade
             HttpClient httpClient = await _handler.GetClient(staffAuthUrl, invoiceApi, invoiceScope);
             if (httpClient != null)
             {
-                //team member deviated from agreed dto, as such I've set up a new model here
                 if ((await httpClient.PostAsJsonAsync<OrderInvoiceDto>(invoiceUri, order)).IsSuccessStatusCode)
                 {
                     return true;
